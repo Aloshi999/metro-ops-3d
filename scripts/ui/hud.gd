@@ -52,11 +52,16 @@ var screen: int = Screen.NONE
 var title_index: int = 0
 var pause_index: int = 0
 var quit_requested: bool = false
+var would_quit: bool = false
+var paused: bool = false
+var menu_open: bool = false
+var tree_paused: bool = false
 var _brush_hidden: bool = false
 var brush_chrome_hidden: bool = false
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	event_toast.visible = false
 	if paused_label:
 		paused_label.visible = false
@@ -193,19 +198,46 @@ func cycle_graphics_focus(dir: int) -> int:
 func request_quit() -> void:
 	## P0 Exit. Flag first so headless smoke can intercept. Process dies on Deck.
 	quit_requested = true
+	would_quit = true
 	exit_clicked.emit()
 	OS.set_restart_on_exit(false)
-	var skip := Engine.is_editor_hint() or OS.has_feature("headless")
-	for a in OS.get_cmdline_args():
-		if a == "--quit-smoke":
-			skip = true
-	for a in OS.get_cmdline_user_args():
-		if a == "--quit-smoke":
-			skip = true
-	if skip or not is_inside_tree():
+	# Documented headless smoke guard: skip process death ONLY for
+	# tests/smoke_headless.gd or --quit-smoke. Never the engine headless feature tag
+	# — that tag is compiled into Linux templates and made Deck Exit a no-op.
+	if Engine.is_editor_hint() or _is_headless_smoke():
 		return
-	if get_tree():
+	if is_inside_tree() and get_tree():
 		get_tree().quit()
+
+
+func _is_headless_smoke() -> bool:
+	## Smoke-only. A real Deck/Linux export never matches these tokens or this script.
+	## Never use OS.has_feature("headless") — Linux export templates compile that tag in.
+	for a in OS.get_cmdline_args():
+		if a == "--quit-smoke" or a.contains("smoke_headless.gd"):
+			return true
+	for a in OS.get_cmdline_user_args():
+		if a == "--quit-smoke" or a.contains("smoke_headless.gd"):
+			return true
+	var loop := Engine.get_main_loop()
+	if loop and loop.get_script():
+		if str(loop.get_script().resource_path).contains("smoke_headless"):
+			return true
+	return false
+
+
+func _apply_menu_pause(p: bool) -> void:
+	## Stop the city while a menu is up. HUD stays PROCESS_MODE_ALWAYS under tree.paused.
+	paused = p
+	menu_open = p
+	tree_paused = p
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	var t: SceneTree = get_tree() if is_inside_tree() else null
+	if t == null:
+		t = Engine.get_main_loop() as SceneTree
+	if t:
+		t.paused = p
+	_push_menu_exclusive()
 
 
 func is_title_open() -> bool:
@@ -331,6 +363,25 @@ func activate_focused() -> void:
 		pass
 
 
+
+func _push_menu_exclusive() -> void:
+	## Tell City Controls a menu is up. Play / hide_title / set_paused(false) clears it.
+	var on := screen != Screen.NONE
+	var n := get_parent()
+	var d: Node = null
+	if n:
+		d = n.get_node_or_null("DeckController")
+		if d == null and n.get("deck") != null:
+			d = n.deck as Node
+	if d == null:
+		return
+	if d.has_method("set_menu_exclusive"):
+		d.set_menu_exclusive(on)
+	else:
+		d.set("menu_focus", on)
+		d.set("graphics_focus", on)
+
+
 func show_title() -> void:
 	_ensure_title_ui()
 	_ensure_pause_menu()
@@ -346,6 +397,7 @@ func show_title() -> void:
 	_set_play_chrome(false)
 	_set_help(Glyphs.help_title())
 	_apply_title_focus()
+	_apply_menu_pause(true)
 
 
 func hide_title() -> void:
@@ -356,6 +408,7 @@ func hide_title() -> void:
 		screen = Screen.NONE
 	_set_play_chrome(true)
 	_set_help(Glyphs.help_play())
+	_apply_menu_pause(false)
 
 
 func show_pause() -> void:
@@ -375,6 +428,7 @@ func show_pause() -> void:
 	_show_graphics_items(false)
 	_set_help(Glyphs.help_pause())
 	_apply_pause_focus()
+	_apply_menu_pause(true)
 
 
 func show_graphics_screen() -> void:
@@ -390,6 +444,7 @@ func show_graphics_screen() -> void:
 	var vp := get_viewport()
 	if vp:
 		vp.gui_release_focus()
+	_apply_menu_pause(true)
 
 
 func back_from_menu() -> String:
@@ -955,6 +1010,7 @@ func set_paused(p: bool) -> void:
 		if vp:
 			vp.gui_release_focus()
 		_set_help(Glyphs.help_play())
+		_apply_menu_pause(false)
 	# Arm after main.gd has connected — skip boot FOCUS_IN, never pause on advisor.
 	call_deferred("_arm_focus_watch")
 	_paint_graphics_rows()

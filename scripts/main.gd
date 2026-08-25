@@ -41,7 +41,9 @@ var bench: BenchmarkMode
 var campaign: CampaignSystem
 
 var paused: bool = false
+var menu_open: bool = false
 var quit_requested: bool = false
+var would_quit: bool = false
 var sim_accum: float = 0.0
 var cursor: Vector2i = Vector2i(64, 64)
 
@@ -179,7 +181,11 @@ func _ready() -> void:
 		hud.set_happiness(sim.happiness)
 	hud.set_event_status(0, 0)
 	_refresh_advisor()
-	paused = false
+	if hud:
+		hud.process_mode = Node.PROCESS_MODE_ALWAYS
+	if deck:
+		deck.process_mode = Node.PROCESS_MODE_ALWAYS
+	_apply_city_pause(false)
 	hud.set_paused(false)
 	_boot_graphics()
 	_boot_audio()
@@ -190,9 +196,32 @@ func _ready() -> void:
 		hud.play_pressed.connect(_on_title_play)
 	if hud.has_method("show_title"):
 		hud.show_title()
-		paused = true
-		if deck:
-			deck.graphics_focus = true
+		_apply_city_pause(true)
+
+
+
+func _sync_menu_exclusive() -> void:
+	## Title / pause / graphics → city input dead. Play / Resume is the only clear.
+	if deck == null:
+		return
+	var on := false
+	if hud:
+		if hud.has_method("is_menu_open"):
+			on = bool(hud.is_menu_open())
+		else:
+			on = paused
+			if hud.has_method("is_title_open") and hud.is_title_open():
+				on = true
+	if deck.has_method("set_menu_exclusive"):
+		deck.set_menu_exclusive(on)
+	else:
+		deck.menu_focus = on
+		deck.graphics_focus = on
+		if on:
+			deck.pan_vector = Vector2.ZERO
+			deck.orbit_vector = Vector2.ZERO
+			deck.zoom_delta = 0.0
+			deck.painting = false
 
 
 func _setup_environment() -> void:
@@ -203,6 +232,9 @@ func _setup_environment() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if deck and deck.has_method("is_menu_exclusive") and deck.is_menu_exclusive():
+		get_viewport().set_input_as_handled()
+		return
 	if event is InputEventMouseMotion and deck.rmb_orbit:
 		if camera_rig != null and camera_rig.has_method("apply_mouse_orbit"):
 			camera_rig.apply_mouse_orbit((event as InputEventMouseMotion).relative)
@@ -221,7 +253,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _process(dt: float) -> void:
 	if bench != null and bench.is_running():
 		bench.tick(dt)
-	if not deck.radial_open and not (bench != null and bench.is_blocking()):
+	var menu_up: bool = deck != null and deck.has_method("is_menu_exclusive") and bool(deck.is_menu_exclusive())
+	if not menu_up and not deck.radial_open and not (bench != null and bench.is_blocking()):
 		if camera_rig != null and camera_rig.has_method("apply_input"):
 			camera_rig.apply_input(deck.pan_vector, deck.orbit_vector, deck.zoom_delta, dt)
 
@@ -242,7 +275,7 @@ func _process(dt: float) -> void:
 		if radial.get("sticky_index") != deck.radial_index:
 			radial.set_index(deck.radial_index)
 
-	if deck.painting and not paused and not deck.radial_open and not (bench != null and bench.is_blocking()):
+	if deck.painting and not menu_up and not paused and not deck.radial_open and not (bench != null and bench.is_blocking()):
 		_try_paint_at(cursor)
 
 	if not paused or (bench != null and bench.is_running()):
@@ -266,6 +299,8 @@ func _process(dt: float) -> void:
 
 
 func _update_cursor_from_input() -> void:
+	if deck and deck.has_method("is_menu_exclusive") and deck.is_menu_exclusive():
+		return
 	if deck.using_mouse() and not deck.radial_open:
 		var mouse := get_viewport().get_mouse_position()
 		var hit := _ray_lot(mouse)
@@ -344,12 +379,15 @@ func _resume_play() -> void:
 func _on_title_play() -> void:
 	if hud != null and hud.has_method("hide_title"):
 		hud.hide_title()
-	paused = false
+	_apply_city_pause(false)
 	hud.set_paused(false)
-	deck.graphics_focus = false
 
 
 func _on_paint() -> void:
+	if deck and deck.has_method("is_menu_exclusive") and deck.is_menu_exclusive():
+		if hud != null and hud.has_method("activate_focused"):
+			hud.activate_focused()
+		return
 	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
 		if hud.has_method("activate_focused"):
 			hud.activate_focused()
@@ -377,10 +415,10 @@ func _on_pause_confirm() -> void:
 		id = str(hud.confirm_pause_item())
 	elif hud.has_method("activate_pause_item"):
 		id = str(hud.activate_pause_item())
-	if id == "benchmark" or id == "resume":
+	if id == "benchmark":
 		_start_benchmark_from_pause()
 	elif id == "resume":
-		pass  # A never unpauses free play. View resumes.
+		pass  # A never unpauses free play. View / Resume signal resumes.
 	elif id == "" and hud.has_method("activate_focused"):
 		hud.activate_focused()
 
@@ -578,20 +616,53 @@ func _on_brush_cycled(size: int) -> void:
 func request_quit() -> void:
 	## Confirm on Exit. Flag first so headless smoke can intercept. Process must die on Deck.
 	quit_requested = true
+	would_quit = true
 	OS.set_restart_on_exit(false)
-	var skip := Engine.is_editor_hint() or OS.has_feature("headless")
-	for a in OS.get_cmdline_args():
-		if a == "--quit-smoke":
-			skip = true
-	for a in OS.get_cmdline_user_args():
-		if a == "--quit-smoke":
-			skip = true
 	if hud != null:
 		hud.quit_requested = true
-	if skip:
+		hud.set("would_quit", true)
+	# Documented headless smoke guard: skip process death ONLY for
+	# tests/smoke_headless.gd or --quit-smoke. Never the engine headless feature tag
+	# — that tag is compiled into Linux templates and made Deck Exit a no-op.
+	if Engine.is_editor_hint() or _is_headless_smoke():
 		return
 	if get_tree():
 		get_tree().quit()
+
+
+func _is_headless_smoke() -> bool:
+	## Smoke-only. A real Deck/Linux export never matches these tokens or this script.
+	## Never use OS.has_feature("headless") — Linux export templates compile that tag in.
+	for a in OS.get_cmdline_args():
+		if a == "--quit-smoke" or a.contains("smoke_headless.gd"):
+			return true
+	for a in OS.get_cmdline_user_args():
+		if a == "--quit-smoke" or a.contains("smoke_headless.gd"):
+			return true
+	var loop := Engine.get_main_loop()
+	if loop and loop.get_script():
+		if str(loop.get_script().resource_path).contains("smoke_headless"):
+			return true
+	return false
+
+
+func _apply_city_pause(p: bool) -> void:
+	## Stop city cash / RCI / camera idle / events. HUD + Deck stay live for menus.
+	paused = p
+	menu_open = p
+	if hud != null:
+		hud.process_mode = Node.PROCESS_MODE_ALWAYS
+		hud.set("paused", p)
+		hud.set("menu_open", p)
+		hud.set("tree_paused", p)
+	if deck:
+		deck.process_mode = Node.PROCESS_MODE_ALWAYS
+	var t: SceneTree = get_tree() if is_inside_tree() else null
+	if t == null:
+		t = Engine.get_main_loop() as SceneTree
+	if t:
+		t.paused = p
+	_sync_menu_exclusive()
 
 
 func _on_hud_exit() -> void:
@@ -601,15 +672,14 @@ func _on_hud_exit() -> void:
 func _resume_from_menu() -> void:
 	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
 		return
-	paused = false
+	_apply_city_pause(false)
 	hud.set_paused(false)
-	if deck:
-		deck.graphics_focus = false
 	_refresh_advisor()
 
 
 func _open_pause_from_start() -> void:
-	## Start / Menu — open pause if it is not already open. Do not quit.
+	## Start / Menu also emits toggle_pause first. Re-opening here after a resume
+	## toggle would make Start a no-op. View/Start unpause via _toggle_pause only.
 	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
 		return
 	if deck.radial_open:
@@ -620,11 +690,6 @@ func _open_pause_from_start() -> void:
 	if bench != null and bench.is_results():
 		_dismiss_benchmark()
 		return
-	if not paused:
-		paused = true
-		hud.set_paused(true)
-		deck.graphics_focus = true
-		_refresh_advisor()
 
 
 func _toggle_pause() -> void:
@@ -637,9 +702,8 @@ func _toggle_pause() -> void:
 		return
 	if bench != null and bench.is_results():
 		_dismiss_benchmark()
-	paused = not paused
+	_apply_city_pause(not paused)
 	hud.set_paused(paused)
-	deck.graphics_focus = paused
 	if not paused:
 		var vp := get_viewport()
 		if vp:
@@ -654,7 +718,7 @@ func _on_overlay_focus_out() -> void:
 		bench.abort()
 	if paused:
 		return
-	paused = true
+	_apply_city_pause(true)
 	hud.set_paused(true)
 
 
@@ -712,9 +776,8 @@ func _start_benchmark(lock_low: bool, p_smoke: bool) -> void:
 	_lock_bench_low()
 	if hud.has_method("set_bench_results"):
 		hud.set_bench_results(false, {})
-	paused = false
+	_apply_city_pause(false)
 	hud.set_paused(false)
-	deck.graphics_focus = false
 	var preset := "low"
 	if gfx != null:
 		preset = gfx.name()
@@ -773,9 +836,8 @@ func _on_cancel_pressed() -> void:
 			hud.back_from_menu()
 		return
 	# B opens pause if it is not already open.
-	paused = true
+	_apply_city_pause(true)
 	hud.set_paused(true)
-	deck.graphics_focus = true
 	_refresh_advisor()
 
 
@@ -791,9 +853,8 @@ func _on_bench_finished(results: Dictionary) -> void:
 		hud.set_bench_live(false, 0.0, 0.0, 0.0)
 	if hud.has_method("set_bench_results"):
 		hud.set_bench_results(true, results)
-	paused = true
+	_apply_city_pause(true)
 	hud.set_paused(true)
-	deck.graphics_focus = true
 
 
 func _on_bench_aborted() -> void:
@@ -803,9 +864,8 @@ func _on_bench_aborted() -> void:
 		hud.set_bench_live(false, 0.0, 0.0, 0.0)
 	if hud.has_method("set_bench_results"):
 		hud.set_bench_results(false, {})
-	paused = true
+	_apply_city_pause(true)
 	hud.set_paused(true)
-	deck.graphics_focus = true
 
 
 func _dismiss_benchmark() -> void:
@@ -862,6 +922,8 @@ func _on_campaign_goal(card: Dictionary) -> void:
 
 
 func _on_heatmap_toggled() -> void:
+	if deck and deck.has_method("is_menu_exclusive") and deck.is_menu_exclusive():
+		return
 	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
 		return
 	if bench != null and bench.is_blocking():
@@ -891,6 +953,8 @@ func _refresh_advisor() -> void:
 
 
 func _trigger_war() -> void:
+	if deck and deck.has_method("is_menu_exclusive") and deck.is_menu_exclusive():
+		return
 	var info: Dictionary = sim.start_war(budget)
 	hud.show_event(info["title"], info["body"])
 	hud.set_event_status(sim.war_timer, sim.disaster_timer)
@@ -901,6 +965,8 @@ func _trigger_war() -> void:
 
 
 func _trigger_disaster() -> void:
+	if deck and deck.has_method("is_menu_exclusive") and deck.is_menu_exclusive():
+		return
 	var info: Dictionary = sim.start_disaster(map, budget)
 	hud.show_event(info["title"], info["body"])
 	hud.set_event_status(sim.war_timer, sim.disaster_timer)

@@ -11,6 +11,7 @@ script = ExtResource("1_main")
 [node name="World" parent="." instance=ExtResource("2_world")]
 
 [node name="DeckController" type="Node" parent="."]
+process_mode = 3
 script = ExtResource("3_deck")
 
 [node name="HUD" parent="." instance=ExtResource("4_hud")]

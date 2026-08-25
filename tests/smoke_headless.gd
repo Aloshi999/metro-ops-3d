@@ -1154,6 +1154,12 @@ func _init() -> void:
 		if hx.has_method("focused_action") and str(hx.focused_action()) != "play":
 			ok = false
 			errors.append("title default focus is %s not play" % str(hx.focused_action()))
+		if not bool(hx.get("paused")):
+			ok = false
+			errors.append("opening title did not set paused")
+		if not _tree_is_paused(hx):
+			ok = false
+			errors.append("opening title did not set tree.paused")
 		if hx.has_method("highlight_exit"):
 			hx.highlight_exit()
 		if hx.has_method("focused_action") and str(hx.focused_action()) != "exit":
@@ -1164,15 +1170,48 @@ func _init() -> void:
 		if not bool(hx.get("quit_requested")):
 			ok = false
 			errors.append("title Exit did not set quit_requested")
+		if not bool(hx.get("would_quit")):
+			ok = false
+			errors.append("title Exit did not set would_quit")
 		if hx.get_script():
 			hx.set("quit_requested", false)
+			hx.set("would_quit", false)
 		if hx.has_method("hide_title"):
 			hx.hide_title()
+		if bool(hx.get("paused")):
+			ok = false
+			errors.append("hide_title did not clear paused")
+		if _tree_is_paused(hx):
+			ok = false
+			errors.append("hide_title did not clear tree.paused")
 		if hx.has_method("show_pause"):
 			hx.show_pause()
 		if hx.has_method("focused_action") and str(hx.focused_action()) != "resume":
 			ok = false
 			errors.append("pause default focus is %s not resume" % str(hx.focused_action()))
+		if not bool(hx.get("paused")):
+			ok = false
+			errors.append("opening pause did not set paused")
+		if not _tree_is_paused(hx):
+			ok = false
+			errors.append("opening pause did not set tree.paused")
+		# Confirm on Resume must not unpause (View/Start does).
+		if hx.has_method("focused_action") and str(hx.focused_action()) == "resume":
+			if hx.has_method("activate_focused"):
+				hx.activate_focused()
+			if not bool(hx.get("paused")) or not _tree_is_paused(hx):
+				ok = false
+				errors.append("confirm on Resume unpaused")
+			if bool(hx.get("quit_requested")):
+				ok = false
+				errors.append("confirm on Resume requested quit")
+		# FOCUS_IN must not auto-resume.
+		if hx.has_method("_notification"):
+			hx._notification(Node.NOTIFICATION_APPLICATION_FOCUS_IN)
+			hx._notification(Node.NOTIFICATION_WM_WINDOW_FOCUS_IN)
+		if not bool(hx.get("paused")) or not _tree_is_paused(hx):
+			ok = false
+			errors.append("FOCUS_IN auto-resumed")
 		if hx.has_method("move_menu"):
 			hx.move_menu(1)
 		if hx.has_method("focused_action") and str(hx.focused_action()) != "exit":
@@ -1183,11 +1222,22 @@ func _init() -> void:
 		if not bool(hx.get("quit_requested")):
 			ok = false
 			errors.append("pause Exit did not set quit_requested")
+		if not bool(hx.get("would_quit")):
+			ok = false
+			errors.append("pause Exit did not set would_quit")
 		if hx.has_method("get_exit_control"):
 			var ex = hx.get_exit_control()
 			if ex == null:
 				ok = false
 				errors.append("pause Exit control missing")
+		if hx.has_method("set_paused"):
+			hx.set_paused(false)
+		if bool(hx.get("paused")):
+			ok = false
+			errors.append("resume did not clear paused")
+		if _tree_is_paused(hx):
+			ok = false
+			errors.append("resume did not clear tree.paused")
 		hx.free()
 	for gn in ["pause", "confirm", "cancel", "paint", "radial", "brush", "orbit", "zoom", "pan", "heatmap"]:
 		if not FileAccess.file_exists("res://assets/ui/glyphs/deck/%s.png" % gn):
@@ -1196,6 +1246,37 @@ func _init() -> void:
 	if main_src.find("show_title") < 0 or main_src.find("_on_title_play") < 0:
 		ok = false
 		errors.append("main.gd does not boot title / wire Play")
+	var rq_main := _func_slice(main_src, "func request_quit")
+	if rq_main.find("get_tree().quit()") < 0:
+		ok = false
+		errors.append("main request_quit missing get_tree().quit()")
+	if rq_main.find("or OS.has_feature") >= 0 or rq_main.find("skip := Engine.is_editor_hint() or OS.has_feature") >= 0:
+		ok = false
+		errors.append("main request_quit still skips on OS.has_feature(headless)")
+	var rq_hud := _func_slice(hud_src2, "func request_quit")
+	if rq_hud.find("get_tree().quit()") < 0:
+		ok = false
+		errors.append("hud request_quit missing get_tree().quit()")
+	if rq_hud.find("or OS.has_feature") >= 0 or rq_hud.find("skip := Engine.is_editor_hint() or OS.has_feature") >= 0:
+		ok = false
+		errors.append("hud request_quit still skips on OS.has_feature(headless)")
+	if main_src.find("get_tree().paused") < 0 and main_src.find("t.paused") < 0:
+		ok = false
+		errors.append("main.gd does not set get_tree().paused")
+	var focus_in := _func_slice(main_src, "func _on_overlay_focus_in")
+	if focus_in == "":
+		ok = false
+		errors.append("main.gd missing _on_overlay_focus_in")
+	else:
+		if focus_in.find("paused = false") >= 0 or focus_in.find("_apply_city_pause(false)") >= 0 or focus_in.find("set_paused(false)") >= 0:
+			ok = false
+			errors.append("FOCUS_IN still auto-resumes")
+	if rq_main.find("OS.has_feature") >= 0 or rq_hud.find("OS.has_feature") >= 0:
+		ok = false
+		errors.append("request_quit still mentions OS.has_feature")
+	if rq_main.find("_is_headless_smoke") < 0 or rq_hud.find("_is_headless_smoke") < 0:
+		ok = false
+		errors.append("request_quit missing smoke-only _is_headless_smoke guard")
 
 	print("=== Metro Ops 3D smoke ===")
 
@@ -1218,6 +1299,15 @@ func _init() -> void:
 		for e in errors:
 			print("  - ", e)
 		quit(1)
+
+
+func _tree_is_paused(n: Node) -> bool:
+	## Live tree when inside a running SceneTree; smoke _init uses the HUD tree_paused flag.
+	if n.is_inside_tree():
+		var t := n.get_tree()
+		if t:
+			return bool(t.paused)
+	return bool(n.get("tree_paused"))
 
 
 func _func_slice(src: String, header: String) -> String:

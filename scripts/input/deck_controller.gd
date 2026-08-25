@@ -45,7 +45,38 @@ const BRUSH_STEPS: Array[int] = [1, 3, 5]
 const RADIAL_SLICES: int = 6
 
 
+func is_menu_exclusive() -> bool:
+	## Single source of truth: title, pause, or graphics is up. City input is dead.
+	return menu_focus or graphics_focus
+
+
+func set_menu_exclusive(on: bool) -> void:
+	menu_focus = on
+	graphics_focus = on
+	if on:
+		_clear_city_vectors()
+		if radial_open:
+			_set_radial(false)
+	else:
+		painting = false
+
+
+func _clear_city_vectors() -> void:
+	pan_smooth = Vector2.ZERO
+	pan_vector = Vector2.ZERO
+	orbit_vector = Vector2.ZERO
+	zoom_delta = 0.0
+	radial_aim = Vector2.ZERO
+	painting = false
+	rmb_orbit = false
+
+
 func _process(dt: float) -> void:
+	if is_menu_exclusive():
+		_clear_city_vectors()
+		if mouse_active_until > 0.0:
+			mouse_active_until = maxf(0.0, mouse_active_until - dt)
+		return
 	_update_pan()
 	_update_look()
 	_update_radial_aim()
@@ -53,10 +84,14 @@ func _process(dt: float) -> void:
 		mouse_active_until = maxf(0.0, mouse_active_until - dt)
 
 
+func _physics_process(_dt: float) -> void:
+	if is_menu_exclusive():
+		_clear_city_vectors()
+
+
 func _update_pan() -> void:
-	if graphics_focus or menu_focus:
-		pan_smooth = Vector2.ZERO
-		pan_vector = Vector2.ZERO
+	if is_menu_exclusive():
+		_clear_city_vectors()
 		return
 	var raw := Vector2.ZERO
 	if not radial_open:
@@ -87,6 +122,8 @@ func _update_pan() -> void:
 func _update_look() -> void:
 	orbit_vector = Vector2.ZERO
 	zoom_delta = 0.0
+	if is_menu_exclusive():
+		return
 	if radial_open:
 		return
 	if Input.is_action_pressed("zoom_in"):
@@ -108,6 +145,8 @@ func _update_look() -> void:
 
 func _update_radial_aim() -> void:
 	radial_aim = Vector2.ZERO
+	if is_menu_exclusive():
+		return
 	if not radial_open:
 		return
 	var stick := Vector2(
@@ -140,10 +179,73 @@ func _is_keyboard_b(event: InputEvent) -> bool:
 	return false
 
 
+func _is_blockable_device(event: InputEvent) -> bool:
+	return event is InputEventJoypadButton \
+		or event is InputEventJoypadMotion \
+		or event is InputEventKey \
+		or event is InputEventMouseButton \
+		or event is InputEventMouseMotion
+
+
+func _is_menu_nav(event: InputEvent) -> bool:
+	## Events that still drive title / pause / graphics while exclusive.
+	if event is InputEventJoypadMotion:
+		return false
+	if event.is_action("paint") or event.is_action("cancel"):
+		return true
+	if event.is_action("pause_advisor") or event.is_action("view_resume"):
+		return true
+	if event.is_action("pan_up") or event.is_action("pan_down") \
+			or event.is_action("pan_left") or event.is_action("pan_right"):
+		return true
+	if event.is_action("cycle_tool_next") or event.is_action("cycle_tool_prev"):
+		return true
+	if event is InputEventJoypadButton:
+		var b: int = (event as InputEventJoypadButton).button_index
+		if b == JOY_BUTTON_A or b == JOY_BUTTON_B:
+			return true
+		if b == JOY_BUTTON_START or b == JOY_BUTTON_GUIDE or b == JOY_BUTTON_BACK:
+			return true
+		if b == JOY_BUTTON_DPAD_UP or b == JOY_BUTTON_DPAD_DOWN \
+				or b == JOY_BUTTON_DPAD_LEFT or b == JOY_BUTTON_DPAD_RIGHT:
+			return true
+		if b == JOY_BUTTON_LEFT_SHOULDER or b == JOY_BUTTON_RIGHT_SHOULDER:
+			return true
+	return false
+
+
+func _route_menu_event(event: InputEvent) -> bool:
+	## Drive the overlay. Returns true if this event was a menu action.
+	if event.is_action_pressed("paint"):
+		painting = false
+		paint_pressed.emit()
+		return true
+	if event.is_action_released("paint"):
+		painting = false
+		return true
+	if event.is_action_pressed("pan_up"):
+		menu_row_shift.emit(-1)
+		if has_signal("gfx_row"):
+			gfx_row.emit(-1)
+		return true
+	if event.is_action_pressed("pan_down"):
+		menu_row_shift.emit(1)
+		if has_signal("gfx_row"):
+			gfx_row.emit(1)
+		return true
+	if event.is_action_pressed("pan_left") or event.is_action_pressed("cycle_tool_prev"):
+		gfx_cycle.emit(-1)
+		return true
+	if event.is_action_pressed("pan_right") or event.is_action_pressed("cycle_tool_next"):
+		gfx_cycle.emit(1)
+		return true
+	return false
+
+
 func _input(event: InputEvent) -> void:
 	## High-priority: radial cancel and pause so GUI focus can never trap Start/Esc/B.
 	## Keyboard B is also brush_size — while bench is active it MUST abort, not cycle brush.
-	if (bench_blocking or graphics_focus) and _is_keyboard_b(event):
+	if (bench_blocking or is_menu_exclusive()) and _is_keyboard_b(event):
 		if radial_open:
 			_set_radial(false)
 		else:
@@ -184,6 +286,16 @@ func _input(event: InputEvent) -> void:
 		toggle_pause.emit()
 		_eat(event)
 		return
+	if is_menu_exclusive():
+		if radial_open:
+			_set_radial(false)
+		if _route_menu_event(event):
+			_eat(event)
+			return
+		if _is_blockable_device(event):
+			## Sticks (JoypadMotion), Y/X, heatmap, war, mouse orbit — consumed.
+			_eat(event)
+		return
 	if event.is_action_pressed("radial"):
 		if bench_blocking:
 			_eat(event)
@@ -197,6 +309,13 @@ func _input(event: InputEvent) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if is_menu_exclusive():
+		if _route_menu_event(event):
+			_eat(event)
+			return
+		if _is_blockable_device(event):
+			_eat(event)
+		return
 	if event is InputEventMouseMotion:
 		if (event as InputEventMouseMotion).relative.length() > 1.5:
 			_mark_mouse()
@@ -263,7 +382,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		gfx_cycle.emit(1)
 		_eat(event)
 	elif event.is_action_pressed("brush_size"):
-		if bench_blocking or graphics_focus:
+		if bench_blocking or is_menu_exclusive():
 			cancel_pressed.emit()
 			_eat(event)
 			return
@@ -298,7 +417,7 @@ func _mark_mouse() -> void:
 
 
 func _cycle_brush() -> void:
-	if bench_blocking:
+	if bench_blocking or is_menu_exclusive():
 		return
 	var idx := BRUSH_STEPS.find(brush_size)
 	if idx < 0:
@@ -309,6 +428,8 @@ func _cycle_brush() -> void:
 
 func _set_radial(open: bool) -> void:
 	if radial_open == open:
+		return
+	if open and (is_menu_exclusive() or bench_blocking):
 		return
 	radial_open = open
 	if open:
@@ -345,7 +466,7 @@ static func aim_to_index(aim: Vector2, count: int) -> int:
 
 func handle_brush_action() -> void:
 	## Keyboard B is brush_size in play. Bench: abort (do not cycle 1→3). Pause: Back.
-	if bench_blocking or graphics_focus:
+	if bench_blocking or is_menu_exclusive():
 		cancel_pressed.emit()
 		return
 	_cycle_brush()
@@ -356,4 +477,3 @@ func handle_gamepad_b() -> void:
 		_set_radial(false)
 		return
 	cancel_pressed.emit()
-
