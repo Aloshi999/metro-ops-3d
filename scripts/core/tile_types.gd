@@ -26,18 +26,18 @@ static func zone_color(z: int, occupancy: float = 0.0, damaged: bool = false) ->
 	var base: Color
 	match z:
 		Zone.RESIDENTIAL:
-			base = Color(0.18, 0.78, 0.32, 0.55)
+			base = Color(0.08, 0.88, 0.22, 0.22)
 		Zone.COMMERCIAL:
-			base = Color(0.18, 0.48, 0.95, 0.55)
+			base = Color(0.08, 0.38, 1.00, 0.22)
 		Zone.INDUSTRIAL:
-			base = Color(0.92, 0.72, 0.12, 0.55)
+			base = Color(1.00, 0.68, 0.04, 0.22)
 		_:
 			return Color(0, 0, 0, 0)
 	if damaged:
-		return Color(base.r * 0.35, base.g * 0.28, base.b * 0.28, 0.7)
+		return Color(base.r * 0.35, base.g * 0.28, base.b * 0.28, 0.38)
 	var mass := clampf(occupancy, 0.0, 1.0)
 	base = base.lightened(mass * 0.12)
-	base.a = 0.38 + mass * 0.28
+	base.a = 0.22 + mass * 0.16
 	return base
 
 

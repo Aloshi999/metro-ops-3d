@@ -9,10 +9,10 @@
 size = Vector2(2048, 2048)
 
 [sub_resource type="StandardMaterial3D" id="Mat_ground"]
-albedo_color = Color(0.30, 0.52, 0.24, 1)
+albedo_color = Color(0.16, 0.32, 0.14, 1)
 albedo_texture = ExtResource("4_grass")
 uv1_scale = Vector3(96, 96, 96)
-roughness = 0.92
+roughness = 0.94
 
 [node name="WorldRoot" type="Node3D"]
 script = ExtResource("1_world")
@@ -21,8 +21,8 @@ script = ExtResource("1_world")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.766044, -0.492404, 0.413176, 0, 0.642788, 0.766044, -0.642788, -0.586824, 0.492404, 0, 80, 0)
-light_energy = 1.2
-light_color = Color(1, 0.91, 0.76, 1)
+light_energy = 0.58
+light_color = Color(1, 0.84, 0.68, 1)
 shadow_enabled = true
 directional_shadow_max_distance = 320.0
 

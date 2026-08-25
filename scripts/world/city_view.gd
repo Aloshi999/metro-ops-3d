@@ -16,6 +16,8 @@ var cursor_tint: Color = Color(1.0, 0.92, 0.18, 0.72)
 
 @onready var terrain_mi: MeshInstance3D = $Terrain
 @onready var water_mi: MeshInstance3D = $Water
+var dirt_mi: MeshInstance3D
+var road_bed_mi: MeshInstance3D
 @onready var roads_root: Node3D = $Roads
 @onready var buildings_root: Node3D = $Buildings
 @onready var services_root: Node3D = $Services
@@ -38,6 +40,10 @@ var _paint_flash_lot: Vector2i = Vector2i.ZERO
 var _flash_mi: MeshInstance3D
 var _cursor_mat: StandardMaterial3D
 var _cursor_rim: Node3D
+var _fx_mi: MeshInstance3D
+var _fx_mat: StandardMaterial3D
+var _war_t: float = 0.0
+var _disaster_t: float = 0.0
 
 
 func setup(p_map: MapData, p_catalog: BuildingCatalog, _env: WorldEnvironment = null) -> void:
@@ -49,6 +55,7 @@ func setup(p_map: MapData, p_catalog: BuildingCatalog, _env: WorldEnvironment = 
 	_densify_downtown()
 	_build_terrain()
 	_build_cursor()
+	_ensure_event_fx()
 	map.map_changed.connect(_on_map_changed)
 	map.fog_changed.connect(_on_map_changed)
 	rebuild_all()
@@ -133,11 +140,12 @@ func notify_occupancy() -> void:
 	_dirty_occ = true
 
 
-func _process(_dt: float) -> void:
+func _process(dt: float) -> void:
 	if map == null:
 		return
 	if _dirty_full:
 		_dirty_full = false
+		_build_terrain()
 		_rebuild_roads()
 		_rebuild_services()
 		_rebuild_lots_and_buildings()
@@ -146,6 +154,7 @@ func _process(_dt: float) -> void:
 		_dirty_occ = false
 		_rebuild_lots_and_buildings()
 	_update_cursor()
+	_tick_event_fx(dt)
 
 
 func rebuild_all() -> void:
@@ -154,17 +163,45 @@ func rebuild_all() -> void:
 	_scatter_trees()
 
 
+func _ensure_ground_mesh(node_name: String) -> MeshInstance3D:
+	var existing := get_node_or_null(node_name) as MeshInstance3D
+	if existing:
+		return existing
+	var mi := MeshInstance3D.new()
+	mi.name = node_name
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
+	return mi
+
+
+func _make_ground_mat(tex: Texture2D, n: int, albedo: Color = Color(1.0, 1.0, 1.0, 1.0)) -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = tex
+	mat.albedo_color = albedo
+	mat.vertex_color_use_as_albedo = true
+	mat.roughness = 0.94
+	mat.metallic = 0.0
+	mat.uv1_scale = Vector3(float(n) * 0.35, float(n) * 0.35, 1.0)
+	return mat
+
+
 func _build_terrain() -> void:
+	## Three committed meshes (grass / dirt / asphalt road bed) — not per-lot instances.
 	var s := GameConstants.LOT_METERS
 	var n: int = map.size
-	var st := SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var grass_mat := StandardMaterial3D.new()
-	grass_mat.albedo_texture = grass_tex
-	grass_mat.vertex_color_use_as_albedo = true
-	grass_mat.roughness = 0.92
-	grass_mat.metallic = 0.0
-	grass_mat.uv1_scale = Vector3(float(n) * 0.35, float(n) * 0.35, 1.0)
+	dirt_mi = _ensure_ground_mesh("Dirt")
+	road_bed_mi = _ensure_ground_mesh("RoadBed")
+
+	var grass_st := SurfaceTool.new()
+	grass_st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var dirt_st := SurfaceTool.new()
+	dirt_st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var road_st := SurfaceTool.new()
+	road_st.begin(Mesh.PRIMITIVE_TRIANGLES)
+
+	var grass_col := Color(0.18, 0.42, 0.16)
+	var dirt_col := Color(0.62, 0.34, 0.12)
+	var asphalt_col := Color(0.16, 0.16, 0.18)
 
 	for y in n:
 		for x in n:
@@ -173,22 +210,43 @@ func _build_terrain() -> void:
 			if t == TileTypes.Terrain.WATER:
 				continue
 			var revealed: bool = map.revealed[i] == 1
-			var col := TileTypes.terrain_color(t, revealed)
 			var x0 := float(x) * s
 			var z0 := float(y) * s
 			var x1 := x0 + s
 			var z1 := z0 + s
-			var yb := 0.0
-			_quad(st, Vector3(x0, yb, z0), Vector3(x1, yb, z0), Vector3(x1, yb, z1), Vector3(x0, yb, z1), col)
+			var is_road_bed := revealed and map.road[i] == 1 and map.service[i] == TileTypes.Service.NONE
+			if is_road_bed:
+				_quad(road_st, Vector3(x0, 0.03, z0), Vector3(x1, 0.03, z0), Vector3(x1, 0.03, z1), Vector3(x0, 0.03, z1), asphalt_col)
+			elif t == TileTypes.Terrain.DIRT:
+				var col := dirt_col
+				if not revealed:
+					col = col.darkened(0.72)
+					col.s *= 0.70
+				_quad(dirt_st, Vector3(x0, 0.0, z0), Vector3(x1, 0.0, z0), Vector3(x1, 0.0, z1), Vector3(x0, 0.0, z1), col)
+			else:
+				var col := grass_col
+				if not revealed:
+					col = col.darkened(0.72)
+					col.s *= 0.70
+				_quad(grass_st, Vector3(x0, 0.0, z0), Vector3(x1, 0.0, z0), Vector3(x1, 0.0, z1), Vector3(x0, 0.0, z1), col)
 
-	terrain_mi.mesh = st.commit()
-	terrain_mi.material_override = grass_mat
+	terrain_mi.mesh = grass_st.commit()
+	terrain_mi.material_override = _make_ground_mat(grass_tex, n)
 	terrain_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+	dirt_mi.mesh = dirt_st.commit()
+	dirt_mi.material_override = _make_ground_mat(dirt_tex, n, Color(0.70, 0.38, 0.14))
+	dirt_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+	road_bed_mi.mesh = road_st.commit()
+	# Dark charcoal bed — no albedo lift; Kenney roads sit on asphalt not sidewalk.
+	road_bed_mi.material_override = _make_ground_mat(asphalt_tex, n, Color(0.82, 0.82, 0.86))
+	road_bed_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	# Water as a slightly lower plane covering water lots + a world-surrounding rim
 	var wst := SurfaceTool.new()
 	wst.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var wcol := Color(0.12, 0.42, 0.72)
+	var wcol := Color(0.07, 0.24, 0.46)
 	for y in n:
 		for x in n:
 			if map.terrain[map.idx(x, y)] != TileTypes.Terrain.WATER:
@@ -197,11 +255,11 @@ func _build_terrain() -> void:
 			var z0 := float(y) * s
 			_quad(wst, Vector3(x0, -0.6, z0), Vector3(x0 + s, -0.6, z0), Vector3(x0 + s, -0.6, z0 + s), Vector3(x0, -0.6, z0 + s), wcol)
 	var wmat := StandardMaterial3D.new()
-	wmat.albedo_color = Color(0.15, 0.42, 0.72)
-	wmat.roughness = 0.18
-	wmat.metallic = 0.15
+	wmat.albedo_color = Color(0.07, 0.24, 0.46)
+	wmat.roughness = 0.22
+	wmat.metallic = 0.18
 	wmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	wmat.albedo_color.a = 0.92
+	wmat.albedo_color.a = 0.94
 	water_mi.mesh = wst.commit()
 	water_mi.material_override = wmat
 	water_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
@@ -351,7 +409,9 @@ func _rebuild_roads() -> void:
 			var node := catalog.instantiate_road(map.road_mask(x, y))
 			if node == null:
 				continue
-			node.position = map.lot_to_world(x, y)
+			var pos := map.lot_to_world(x, y)
+			pos.y += 0.06
+			node.position = pos
 			roads_root.add_child(node)
 			_road_nodes[i] = node
 
@@ -539,8 +599,61 @@ func _scatter_trees() -> void:
 
 
 func pulse_war() -> void:
-	pass
+	_ensure_event_fx()
+	_war_t = 2.4
 
 
 func pulse_disaster() -> void:
+	_ensure_event_fx()
+	_disaster_t = 2.0
 	notify_occupancy()
+
+
+func _ensure_event_fx() -> void:
+	## One full-map wash plane — not a mesh per lot.
+	if _fx_mi != null and is_instance_valid(_fx_mi):
+		return
+	var world := 2048.0
+	if map:
+		world = float(map.size) * GameConstants.LOT_METERS
+	_fx_mi = MeshInstance3D.new()
+	_fx_mi.name = "EventWash"
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(world, world)
+	plane.orientation = PlaneMesh.FACE_Y
+	_fx_mi.mesh = plane
+	_fx_mat = StandardMaterial3D.new()
+	_fx_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_fx_mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	_fx_mat.no_depth_test = true
+	_fx_mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_fx_mat.render_priority = 18
+	_fx_mat.albedo_color = Color(1.0, 0.0, 0.0, 0.0)
+	_fx_mi.material_override = _fx_mat
+	_fx_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_fx_mi.position = Vector3(world * 0.5, 0.4, world * 0.5)
+	_fx_mi.visible = false
+	add_child(_fx_mi)
+
+
+func _tick_event_fx(dt: float) -> void:
+	if _war_t > 0.0:
+		_war_t = maxf(0.0, _war_t - dt)
+	if _disaster_t > 0.0:
+		_disaster_t = maxf(0.0, _disaster_t - dt)
+	if _fx_mat == null or _fx_mi == null:
+		return
+	var war_a := 0.0
+	if _war_t > 0.0:
+		war_a = (_war_t / 2.4) * 0.24
+	var dis_a := 0.0
+	if _disaster_t > 0.0:
+		var flicker := 0.55 + 0.45 * sin(Time.get_ticks_msec() * 0.017)
+		dis_a = (_disaster_t / 2.0) * 0.22 * flicker
+	var col := Color(0.0, 0.0, 0.0, 0.0)
+	if war_a >= dis_a and war_a > 0.002:
+		col = Color(0.82, 0.07, 0.10, war_a)
+	elif dis_a > 0.002:
+		col = Color(1.0, 0.62, 0.10, dis_a)
+	_fx_mat.albedo_color = col
+	_fx_mi.visible = col.a > 0.002

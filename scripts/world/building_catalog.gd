@@ -14,6 +14,8 @@ const ROAD := "res://assets/city/kenney_roads/"
 var _scenes: Dictionary = {}  # path -> PackedScene
 var loaded_count: int = 0
 var failed: PackedStringArray = []
+var _emissive_cache: Dictionary = {}  # path -> Array of StandardMaterial3D (walk order)
+var _albedo_cache: Dictionary = {}  # path -> Array of StandardMaterial3D (walk order)
 
 const RES_LOW: Array[String] = [
 	SUB + "building-type-a.glb",
@@ -69,14 +71,12 @@ const COM_MID: Array[String] = [
 ]
 const COM_HIGH: Array[String] = [
 	COM + "building-skyscraper-a.glb",
-	COM + "building-skyscraper-a.glb",
 	COM + "building-skyscraper-b.glb",
-	COM + "building-skyscraper-b.glb",
-	COM + "building-skyscraper-c.glb",
 	COM + "building-skyscraper-c.glb",
 	COM + "building-skyscraper-d.glb",
 	COM + "building-skyscraper-e.glb",
-	COM + "building-skyscraper-e.glb",
+	COM + "building-m.glb",
+	COM + "building-n.glb",
 ]
 
 const IND_LOW: Array[String] = [
@@ -190,11 +190,28 @@ func pick_zone_building(z: int, occupancy: float, lot_index: int) -> Node3D:
 	var n := instantiate_path(path, GameConstants.BUILDING_SCALE)
 	if n:
 		n.rotate_y(float((lot_index * 17) % 4) * PI * 0.5)
+		# Look pass: tower step vs houses at the 190 m camera. Does not change BUILDING_SCALE.
+		if z == TileTypes.Zone.COMMERCIAL and occupancy >= 0.58:
+			n.scale.y *= 1.12 + occupancy * 0.18
+			# Albedo mul first so white Kenney walls have headroom, then window sheen.
+			_apply_albedo_tint(n, path, Color(0.68, 0.70, 0.74))
+			_apply_window_emission(n, path)
+		elif z == TileTypes.Zone.RESIDENTIAL:
+			# Umber multiply kills mint roofs and greys Kenney sidewalk pads.
+			_apply_albedo_tint(n, path, Color(0.55, 0.42, 0.32))
+		elif z == TileTypes.Zone.INDUSTRIAL:
+			_apply_albedo_tint(n, path, Color(0.60, 0.55, 0.48))
+			if occupancy >= 0.58:
+				n.scale.y *= 1.06
 	return n
 
 
 func instantiate_hq() -> Node3D:
-	return instantiate_path(HQ_PATH, GameConstants.BUILDING_SCALE * 1.15)
+	var n := instantiate_path(HQ_PATH, GameConstants.BUILDING_SCALE * 1.15)
+	if n:
+		_apply_albedo_tint(n, HQ_PATH, Color(0.68, 0.70, 0.74))
+		_apply_window_emission(n, HQ_PATH)
+	return n
 
 
 func instantiate_power() -> Node3D:
@@ -282,6 +299,85 @@ func instantiate_tree(large: bool) -> Node3D:
 
 func instantiate_lamp() -> Node3D:
 	return instantiate_path(LAMP, GameConstants.PROP_SCALE)
+
+
+func _apply_albedo_tint(root: Node3D, path: String, mul: Color) -> void:
+	## Path-cached albedo multiply (houses warmer/darker, industry sooty). Not uniqued per instance.
+	if root == null:
+		return
+	if not _albedo_cache.has(path):
+		_albedo_cache[path] = _build_albedo_mats(root, mul)
+	var idx := [0]
+	_walk_assign_emissive(root, _albedo_cache[path], idx)
+
+
+func _build_albedo_mats(n: Node, mul: Color) -> Array:
+	var mats: Array = []
+	_walk_dupe_albedo(n, mats, mul)
+	return mats
+
+
+func _walk_dupe_albedo(n: Node, mats: Array, mul: Color) -> void:
+	if n is MeshInstance3D:
+		var mi := n as MeshInstance3D
+		var src: Material = mi.material_override
+		if src == null:
+			src = mi.get_active_material(0)
+		if src is StandardMaterial3D:
+			var dupe := (src as StandardMaterial3D).duplicate() as StandardMaterial3D
+			dupe.albedo_color = dupe.albedo_color * mul
+			mats.append(dupe)
+		else:
+			mats.append(null)
+	for c in n.get_children():
+		_walk_dupe_albedo(c, mats, mul)
+
+
+func _apply_window_emission(root: Node3D, path: String) -> void:
+	## Small cool albedo emission so COM_HIGH / HQ silhouettes hold at 190 m.
+	## Duplicated materials are cached by GLB path — not uniqued per instance.
+	if root == null:
+		return
+	if not _emissive_cache.has(path):
+		_emissive_cache[path] = _build_emissive_mats(root, path)
+	var idx := [0]
+	_walk_assign_emissive(root, _emissive_cache[path], idx)
+
+
+func _build_emissive_mats(n: Node, path: String) -> Array:
+	var mats: Array = []
+	_walk_dupe_emissive(n, mats, path)
+	return mats
+
+
+func _walk_dupe_emissive(n: Node, mats: Array, path: String) -> void:
+	if n is MeshInstance3D:
+		var mi := n as MeshInstance3D
+		var src: Material = mi.material_override
+		if src == null:
+			src = mi.get_active_material(0)
+		if src is StandardMaterial3D:
+			var dupe := (src as StandardMaterial3D).duplicate() as StandardMaterial3D
+			dupe.emission_enabled = true
+			# Cool sheen only — do not bind albedo as emission_texture (clips sunlit whites).
+			dupe.emission = Color(0.45, 0.62, 0.95)
+			dupe.emission_energy_multiplier = 0.23
+			dupe.emission_texture = null
+			mats.append(dupe)
+		else:
+			mats.append(null)
+	for c in n.get_children():
+		_walk_dupe_emissive(c, mats, path)
+
+
+func _walk_assign_emissive(n: Node, mats: Array, idx: Array) -> void:
+	if n is MeshInstance3D:
+		var i: int = idx[0]
+		if i < mats.size() and mats[i] != null:
+			(n as MeshInstance3D).material_override = mats[i]
+		idx[0] = i + 1
+	for c in n.get_children():
+		_walk_assign_emissive(c, mats, idx)
 
 
 func _low(z: int) -> Array[String]:

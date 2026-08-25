@@ -63,6 +63,8 @@ func _print_instance_counts() -> void:
 	var svc_n := city_view.services_root.get_child_count() if city_view.services_root else 0
 	var prop_n := city_view.props_root.get_child_count() if city_view.props_root else 0
 	print("CITY_MESH instances buildings=", bld_n, " roads=", rd_n, " lots=", lot_n, " services=", svc_n, " props=", prop_n)
+	if catalog:
+		print("CITY_MESH caches albedo=", catalog._albedo_cache.size(), " emissive=", catalog._emissive_cache.size())
 
 
 func _setup_environment() -> void:
@@ -70,23 +72,31 @@ func _setup_environment() -> void:
 	var hdr = load("res://assets/env/sky.hdr")
 	if hdr:
 		sky_mat.panorama = hdr
+	# Drop HDRI energy so Kenney whites keep form under filmic 0.78.
+	if "energy_multiplier" in sky_mat:
+		sky_mat.energy_multiplier = 0.55
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
 	var env := Environment.new()
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
+	if not ("energy_multiplier" in sky_mat) and "background_energy_multiplier" in env:
+		env.background_energy_multiplier = 0.55
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.62
-	env.ambient_light_color = Color(0.78, 0.82, 0.92)
+	env.ambient_light_energy = 0.30
+	env.ambient_light_color = Color(0.52, 0.60, 0.78)
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.05
+	env.tonemap_exposure = 0.78
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 1.08
-	env.adjustment_contrast = 1.03
+	env.adjustment_saturation = 1.10
+	env.adjustment_contrast = 1.14
 	env.fog_enabled = true
-	env.fog_density = 0.0007
-	env.fog_light_color = Color(0.68, 0.76, 0.90)
-	env.fog_aerial_perspective = 0.35
+	env.fog_density = 0.00175
+	env.fog_light_color = Color(0.42, 0.52, 0.70)
+	env.fog_aerial_perspective = 0.55
+	if "fog_sky_affect" in env:
+		env.fog_sky_affect = 0.62
+	env.volumetric_fog_enabled = false
 	env.glow_enabled = false
 	env.ssao_enabled = false
 	env.ssil_enabled = false
@@ -96,8 +106,8 @@ func _setup_environment() -> void:
 		world_env.environment = env
 	if sun:
 		sun.rotation_degrees = Vector3(-50.0, 40.0, 0.0)
-		sun.light_energy = 1.2
-		sun.light_color = Color(1.0, 0.91, 0.76)
+		sun.light_energy = 0.58
+		sun.light_color = Color(1.0, 0.84, 0.68)
 		sun.shadow_enabled = true
 		sun.directional_shadow_max_distance = 320.0
 

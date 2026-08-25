@@ -9,6 +9,12 @@ script = ExtResource("1_view")
 
 [node name="Water" type="MeshInstance3D" parent="."]
 
+[node name="Dirt" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+
+[node name="RoadBed" type="MeshInstance3D" parent="."]
+cast_shadow = 0
+
 [node name="Roads" type="Node3D" parent="."]
 
 [node name="Buildings" type="Node3D" parent="."]
