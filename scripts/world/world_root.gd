@@ -72,44 +72,68 @@ func _setup_environment() -> void:
 	var hdr = load("res://assets/env/sky.hdr")
 	if hdr:
 		sky_mat.panorama = hdr
-	# Drop HDRI energy so Kenney whites keep form under filmic 0.78.
+	# Hair toward 014: 0.84/0.64/0.62 — whites held at 0.78, do not return to 1.05/1.18.
 	if "energy_multiplier" in sky_mat:
-		sky_mat.energy_multiplier = 0.55
+		sky_mat.energy_multiplier = 0.62
 	var sky := Sky.new()
 	sky.sky_material = sky_mat
 	var env := Environment.new()
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	if not ("energy_multiplier" in sky_mat) and "background_energy_multiplier" in env:
-		env.background_energy_multiplier = 0.55
+		env.background_energy_multiplier = 0.62
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.30
-	env.ambient_light_color = Color(0.52, 0.60, 0.78)
+	env.ambient_light_energy = 0.34
+	# Slightly more dusk than the exposure-pull cool blue (do not raise energy).
+	env.ambient_light_color = Color(0.55, 0.56, 0.70)
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 0.78
+	env.tonemap_exposure = 0.84
 	env.adjustment_enabled = true
 	env.adjustment_saturation = 1.10
 	env.adjustment_contrast = 1.14
 	env.fog_enabled = true
-	env.fog_density = 0.00175
-	env.fog_light_color = Color(0.42, 0.52, 0.70)
-	env.fog_aerial_perspective = 0.55
+	env.fog_density = 0.00155
+	env.fog_light_color = Color(0.52, 0.54, 0.66)
+	env.fog_aerial_perspective = 0.58
 	if "fog_sky_affect" in env:
-		env.fog_sky_affect = 0.62
+		env.fog_sky_affect = 0.68
+	if "fog_light_energy" in env:
+		env.fog_light_energy = 0.82
 	env.volumetric_fog_enabled = false
 	env.glow_enabled = false
-	env.ssao_enabled = false
+	# Cheap SSAO — low intensity. Builder: kill SSAO first if 1% lows slip.
+	env.ssao_enabled = true
+	env.ssao_intensity = 0.42
+	env.ssao_radius = 1.0
+	if "ssao_quality" in env:
+		env.ssao_quality = 0
 	env.ssil_enabled = false
 	env.sdfgi_enabled = false
 	env.ssr_enabled = false
+	if ProjectSettings.has_setting("rendering/environment/ssao/quality"):
+		ProjectSettings.set_setting("rendering/environment/ssao/quality", 0)
 	if world_env:
 		world_env.environment = env
 	if sun:
 		sun.rotation_degrees = Vector3(-50.0, 40.0, 0.0)
-		sun.light_energy = 0.58
+		sun.light_energy = 0.64
 		sun.light_color = Color(1.0, 0.84, 0.68)
 		sun.shadow_enabled = true
 		sun.directional_shadow_max_distance = 320.0
+	_ensure_fill_light()
+
+
+func _ensure_fill_light() -> void:
+	## One unshadowed cool fill, opposite-ish the sun. Not a second shadow caster.
+	var fill := get_node_or_null("FillLight") as DirectionalLight3D
+	if fill == null:
+		fill = DirectionalLight3D.new()
+		fill.name = "FillLight"
+		add_child(fill)
+	fill.rotation_degrees = Vector3(-28.0, -140.0, 0.0)
+	fill.light_energy = 0.22
+	fill.light_color = Color(0.55, 0.68, 0.90)
+	fill.shadow_enabled = false
 
 
 func _save_capture() -> void:

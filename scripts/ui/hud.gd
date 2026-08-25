@@ -1,5 +1,5 @@
 extends CanvasLayer
-## Cash HUD, tool strip, RCI, advisor, War/Disaster event cards, optional FPS.
+## Cash HUD, tool strip, RCI, advisor side card, War/Disaster chips, optional FPS.
 
 const GameConstants = preload("res://scripts/core/game_constants.gd")
 const AdvisorSystem = preload("res://scripts/systems/advisor_system.gd")
@@ -8,6 +8,8 @@ signal war_clicked
 signal disaster_clicked
 signal advisor_dismissed
 signal resume_clicked
+signal overlay_focus_out
+signal overlay_focus_in
 
 @onready var cash_label: Label = %CashLabel
 @onready var flow_label: Label = %FlowLabel
@@ -29,6 +31,7 @@ signal resume_clicked
 var show_fps: bool = false
 var _toast_timer: float = 0.0
 var _flash_timer: float = 0.0
+var _focus_armed: bool = false
 
 
 func _ready() -> void:
@@ -37,33 +40,30 @@ func _ready() -> void:
 	fps_label.visible = false
 	if pause_overlay:
 		pause_overlay.visible = false
-		pause_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+		pause_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if flash:
 		flash.visible = false
-	help_label.text = "A paint · Y tools · X brush · L1/R1 cycle · Start pause · sticks pan/orbit"
-	help_label.add_theme_font_size_override("font_size", 17)
-	_set_no_focus(get_node_or_null("Root/TopBar/HBox/WarButton") as Control)
-	_set_no_focus(get_node_or_null("Root/TopBar/HBox/DisasterButton") as Control)
-	_set_no_focus(advisor_panel)
-	_set_no_focus(advisor_text)
-	_set_no_focus(help_label)
+	if advisor_panel:
+		advisor_panel.visible = true
+		advisor_panel.modulate.a = 1.0
+	help_label.text = "L-stick pan · R-stick orbit · A paint · LB/RB cycle · Y radial · X brush · View pause · L3 FPS"
+	_force_mouse_ignore(get_node_or_null("Root"))
 	if resume_button:
-		resume_button.focus_mode = Control.FOCUS_ALL
-		var p := resume_button.get_path()
-		resume_button.focus_neighbor_top = p
-		resume_button.focus_neighbor_bottom = p
-		resume_button.focus_neighbor_left = p
-		resume_button.focus_neighbor_right = p
-		resume_button.focus_next = p
-		resume_button.focus_previous = p
+		resume_button.visible = false
+		resume_button.focus_mode = Control.FOCUS_NONE
+		resume_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Arm after main.gd has connected — skip boot FOCUS_IN, never pause on advisor.
+	call_deferred("_arm_focus_watch")
 
 
-func _set_no_focus(c: Control) -> void:
-	if c == null:
+func _force_mouse_ignore(n: Node) -> void:
+	if n == null:
 		return
-	c.focus_mode = Control.FOCUS_NONE
-	if c is RichTextLabel:
-		(c as RichTextLabel).selection_enabled = false
+	if n is Control:
+		(n as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+		(n as Control).focus_mode = Control.FOCUS_NONE
+	for c in n.get_children():
+		_force_mouse_ignore(c)
 
 
 func _process(dt: float) -> void:
@@ -125,24 +125,29 @@ func set_advisor(messages: Array) -> void:
 			_:
 				bb += "[color=#a0e7a0]ℹ %s[/color]\n" % t
 	advisor_text.text = bb
+	if advisor_panel:
+		advisor_panel.visible = true
+		advisor_panel.modulate.a = 1.0
 
 
 func set_paused(p: bool) -> void:
+	# Advisor stays a side card. Pause is a chip + dim, no mouse modal.
 	paused_label.visible = p
 	if advisor_panel:
-		advisor_panel.modulate.a = 1.0 if p else 0.85
+		advisor_panel.modulate.a = 1.0
+		advisor_panel.visible = true
 	if pause_overlay:
 		pause_overlay.visible = p
-		pause_overlay.mouse_filter = Control.MOUSE_FILTER_STOP if p else Control.MOUSE_FILTER_IGNORE
+		pause_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if resume_button:
-		if p:
-			resume_button.focus_mode = Control.FOCUS_ALL
-			resume_button.grab_focus()
-		else:
-			resume_button.focus_mode = Control.FOCUS_NONE
-			var vp := get_viewport()
-			if vp:
-				vp.gui_release_focus()
+		resume_button.visible = false
+		resume_button.focus_mode = Control.FOCUS_NONE
+		resume_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Arm after main.gd has connected — skip boot FOCUS_IN, never pause on advisor.
+	call_deferred("_arm_focus_watch")
+	var vp := get_viewport()
+	if vp:
+		vp.gui_release_focus()
 
 
 func toggle_fps_overlay() -> void:
@@ -184,9 +189,22 @@ func _on_disaster_button_pressed() -> void:
 
 
 func _on_advisor_close_pressed() -> void:
-	## Advisor is non-modal; dismiss must never pause the sim.
 	advisor_dismissed.emit()
 
 
 func _on_resume_pressed() -> void:
 	resume_clicked.emit()
+
+
+func _arm_focus_watch() -> void:
+	_focus_armed = true
+
+
+func _notification(what: int) -> void:
+	if not _focus_armed:
+		return
+	# Steam overlay / QAM / sleep — pause sim so the city does not tick under the overlay.
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		overlay_focus_out.emit()
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN:
+		overlay_focus_in.emit()

@@ -200,7 +200,7 @@ func _build_terrain() -> void:
 	road_st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
 	var grass_col := Color(0.18, 0.42, 0.16)
-	var dirt_col := Color(0.62, 0.34, 0.12)
+	var dirt_col := Color(0.72, 0.36, 0.10)
 	var asphalt_col := Color(0.16, 0.16, 0.18)
 
 	for y in n:
@@ -235,12 +235,12 @@ func _build_terrain() -> void:
 	terrain_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	dirt_mi.mesh = dirt_st.commit()
-	dirt_mi.material_override = _make_ground_mat(dirt_tex, n, Color(0.70, 0.38, 0.14))
+	dirt_mi.material_override = _make_ground_mat(dirt_tex, n, Color(0.92, 0.42, 0.10))
 	dirt_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	road_bed_mi.mesh = road_st.commit()
 	# Dark charcoal bed — no albedo lift; Kenney roads sit on asphalt not sidewalk.
-	road_bed_mi.material_override = _make_ground_mat(asphalt_tex, n, Color(0.82, 0.82, 0.86))
+	road_bed_mi.material_override = _make_ground_mat(asphalt_tex, n, Color(0.48, 0.48, 0.52))
 	road_bed_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	# Water as a slightly lower plane covering water lots + a world-surrounding rim

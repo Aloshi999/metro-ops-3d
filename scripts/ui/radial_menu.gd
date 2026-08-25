@@ -4,7 +4,7 @@ extends Control
 
 signal tool_hovered(index: int)
 
-@export var radius: float = 118.0
+@export var radius: float = 140.0
 @export var slice_count: int = 6
 
 var open: bool = false
@@ -114,13 +114,16 @@ func _draw() -> void:
 		var label_pos := c + Vector2(cos(mid), sin(mid)) * (radius * 0.68)
 		var text: String = labels[i] if i < labels.size() else str(i)
 		var font := ThemeDB.fallback_font
-		var fs := 16 if selected else 14
+		var fs := 20 if selected else 18
 		var sz := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs)
 		draw_string(font, label_pos - sz * 0.5, text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(1, 1, 1, 1 if selected else 0.85))
 	if aim.length() > 0.2:
 		draw_circle(c + aim.normalized() * (radius * 0.42), 7.0, Color(1, 1, 1, 0.95))
-	draw_circle(c, 22.0, Color(0.08, 0.09, 0.11, 0.9))
-	draw_string(ThemeDB.fallback_font, c + Vector2(-18, 5), "TOOL", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 1, 1, 0.8))
-	var hint := "A confirm  ·  B / Start / Esc close"
-	var hsz := ThemeDB.fallback_font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 14)
-	draw_string(ThemeDB.fallback_font, c + Vector2(-hsz.x * 0.5, radius + 40.0), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color(1, 1, 1, 0.8))
+	draw_circle(c, 28.0, Color(0.08, 0.09, 0.11, 0.9))
+	var caption := "TOOL"
+	var cfs := 18
+	var csz := ThemeDB.fallback_font.get_string_size(caption, HORIZONTAL_ALIGNMENT_LEFT, -1, cfs)
+	draw_string(ThemeDB.fallback_font, c - csz * 0.5, caption, HORIZONTAL_ALIGNMENT_LEFT, -1, cfs, Color(1, 1, 1, 0.9))
+	var hint := "A confirm  ·  B / View close"
+	var hsz := ThemeDB.fallback_font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 18)
+	draw_string(ThemeDB.fallback_font, c + Vector2(-hsz.x * 0.5, radius + 44.0), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color(1, 1, 1, 0.85))

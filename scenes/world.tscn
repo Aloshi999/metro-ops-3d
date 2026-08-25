@@ -21,10 +21,16 @@ script = ExtResource("1_world")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.766044, -0.492404, 0.413176, 0, 0.642788, 0.766044, -0.642788, -0.586824, 0.492404, 0, 80, 0)
-light_energy = 0.58
+light_energy = 0.64
 light_color = Color(1, 0.84, 0.68, 1)
 shadow_enabled = true
 directional_shadow_max_distance = 320.0
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.766044, 0.301769, -0.567546, 0, 0.882948, 0.469472, 0.642788, 0.359635, -0.67638, 0, 80, 0)
+light_energy = 0.22
+light_color = Color(0.55, 0.68, 0.9, 1)
+shadow_enabled = false
 
 [node name="Ground" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, -0.08, 1024)

@@ -17,6 +17,14 @@ var failed: PackedStringArray = []
 var _emissive_cache: Dictionary = {}  # path -> Array of StandardMaterial3D (walk order)
 var _albedo_cache: Dictionary = {}  # path -> Array of StandardMaterial3D (walk order)
 
+## Path-cached roughness/metal (never uniqued per lot).
+const RES_ROUGHNESS: float = 0.88
+const RES_METALLIC: float = 0.0
+const IND_ROUGHNESS: float = 0.70
+const IND_METALLIC: float = 0.10
+const COM_ROUGHNESS: float = 0.45
+const COM_METALLIC: float = 0.16
+
 const RES_LOW: Array[String] = [
 	SUB + "building-type-a.glb",
 	SUB + "building-type-c.glb",
@@ -194,13 +202,13 @@ func pick_zone_building(z: int, occupancy: float, lot_index: int) -> Node3D:
 		if z == TileTypes.Zone.COMMERCIAL and occupancy >= 0.58:
 			n.scale.y *= 1.12 + occupancy * 0.18
 			# Albedo mul first so white Kenney walls have headroom, then window sheen.
-			_apply_albedo_tint(n, path, Color(0.68, 0.70, 0.74))
+			_apply_albedo_tint(n, path, Color(0.68, 0.70, 0.74), COM_ROUGHNESS, COM_METALLIC)
 			_apply_window_emission(n, path)
 		elif z == TileTypes.Zone.RESIDENTIAL:
 			# Umber multiply kills mint roofs and greys Kenney sidewalk pads.
-			_apply_albedo_tint(n, path, Color(0.55, 0.42, 0.32))
+			_apply_albedo_tint(n, path, Color(0.42, 0.30, 0.22), RES_ROUGHNESS, RES_METALLIC)
 		elif z == TileTypes.Zone.INDUSTRIAL:
-			_apply_albedo_tint(n, path, Color(0.60, 0.55, 0.48))
+			_apply_albedo_tint(n, path, Color(0.60, 0.55, 0.48), IND_ROUGHNESS, IND_METALLIC)
 			if occupancy >= 0.58:
 				n.scale.y *= 1.06
 	return n
@@ -209,7 +217,7 @@ func pick_zone_building(z: int, occupancy: float, lot_index: int) -> Node3D:
 func instantiate_hq() -> Node3D:
 	var n := instantiate_path(HQ_PATH, GameConstants.BUILDING_SCALE * 1.15)
 	if n:
-		_apply_albedo_tint(n, HQ_PATH, Color(0.68, 0.70, 0.74))
+		_apply_albedo_tint(n, HQ_PATH, Color(0.68, 0.70, 0.74), COM_ROUGHNESS, COM_METALLIC)
 		_apply_window_emission(n, HQ_PATH)
 	return n
 
@@ -301,23 +309,23 @@ func instantiate_lamp() -> Node3D:
 	return instantiate_path(LAMP, GameConstants.PROP_SCALE)
 
 
-func _apply_albedo_tint(root: Node3D, path: String, mul: Color) -> void:
+func _apply_albedo_tint(root: Node3D, path: String, mul: Color, roughness: float = RES_ROUGHNESS, metallic: float = RES_METALLIC) -> void:
 	## Path-cached albedo multiply (houses warmer/darker, industry sooty). Not uniqued per instance.
 	if root == null:
 		return
 	if not _albedo_cache.has(path):
-		_albedo_cache[path] = _build_albedo_mats(root, mul)
+		_albedo_cache[path] = _build_albedo_mats(root, mul, roughness, metallic)
 	var idx := [0]
 	_walk_assign_emissive(root, _albedo_cache[path], idx)
 
 
-func _build_albedo_mats(n: Node, mul: Color) -> Array:
+func _build_albedo_mats(n: Node, mul: Color, roughness: float, metallic: float) -> Array:
 	var mats: Array = []
-	_walk_dupe_albedo(n, mats, mul)
+	_walk_dupe_albedo(n, mats, mul, roughness, metallic)
 	return mats
 
 
-func _walk_dupe_albedo(n: Node, mats: Array, mul: Color) -> void:
+func _walk_dupe_albedo(n: Node, mats: Array, mul: Color, roughness: float, metallic: float) -> void:
 	if n is MeshInstance3D:
 		var mi := n as MeshInstance3D
 		var src: Material = mi.material_override
@@ -326,11 +334,13 @@ func _walk_dupe_albedo(n: Node, mats: Array, mul: Color) -> void:
 		if src is StandardMaterial3D:
 			var dupe := (src as StandardMaterial3D).duplicate() as StandardMaterial3D
 			dupe.albedo_color = dupe.albedo_color * mul
+			dupe.roughness = roughness
+			dupe.metallic = metallic
 			mats.append(dupe)
 		else:
 			mats.append(null)
 	for c in n.get_children():
-		_walk_dupe_albedo(c, mats, mul)
+		_walk_dupe_albedo(c, mats, mul, roughness, metallic)
 
 
 func _apply_window_emission(root: Node3D, path: String) -> void:
@@ -363,6 +373,9 @@ func _walk_dupe_emissive(n: Node, mats: Array, path: String) -> void:
 			dupe.emission = Color(0.45, 0.62, 0.95)
 			dupe.emission_energy_multiplier = 0.23
 			dupe.emission_texture = null
+			# Specular towers so COM/HQ still read when the left HUD card covers the horizon.
+			dupe.roughness = COM_ROUGHNESS
+			dupe.metallic = COM_METALLIC
 			mats.append(dupe)
 		else:
 			mats.append(null)

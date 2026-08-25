@@ -140,6 +140,7 @@ anti_aliasing/quality/msaa_3d=0
 anti_aliasing/quality/use_debanding=false
 lights_and_shadows/directional_shadow/size=1024
 environment/defaults/default_clear_color=Color(0.45, 0.62, 0.82, 1)
+environment/ssao/quality=0
 scaling_3d/mode=2
 scaling_3d/scale=0.67
 scaling_3d/fsr_sharpness=0.2

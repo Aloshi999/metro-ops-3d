@@ -124,6 +124,10 @@ func _ready() -> void:
 	hud.advisor_dismissed.connect(func(): pass)
 	if hud.has_signal("resume_clicked"):
 		hud.resume_clicked.connect(_resume_play)
+	if hud.has_signal("overlay_focus_out"):
+		hud.overlay_focus_out.connect(_on_overlay_focus_out)
+	if hud.has_signal("overlay_focus_in"):
+		hud.overlay_focus_in.connect(_on_overlay_focus_in)
 
 	tools.tool_changed.connect(func(_id, label): hud.set_tool(label, tools.brush))
 	budget.cash_changed.connect(hud.set_cash)
@@ -141,47 +145,10 @@ func _ready() -> void:
 
 
 func _setup_environment() -> void:
-	if world_env == null:
-		return
-	var env := Environment.new()
-	env.background_mode = Environment.BG_SKY
-	var sky := Sky.new()
-	var pan := PanoramaSkyMaterial.new()
-	var hdr = load("res://assets/env/sky.hdr")
-	if hdr:
-		pan.panorama = hdr
-		sky.sky_material = pan
-	else:
-		var proc := ProceduralSkyMaterial.new()
-		proc.sky_top_color = Color(0.40, 0.62, 0.92)
-		proc.sky_horizon_color = Color(0.72, 0.80, 0.90)
-		proc.ground_bottom_color = Color(0.22, 0.28, 0.18)
-		proc.ground_horizon_color = Color(0.55, 0.62, 0.48)
-		sky.sky_material = proc
-	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_color = Color(0.72, 0.78, 0.88)
-	env.ambient_light_energy = 0.9
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.05
-	env.ssao_enabled = false
-	env.ssil_enabled = false
-	env.glow_enabled = false
-	env.volumetric_fog_enabled = false
-	env.fog_enabled = true
-	env.fog_light_color = Color(0.62, 0.76, 0.90)
-	env.fog_density = 0.00055
-	env.fog_sky_affect = 0.35
-	world_env.environment = env
-
-	if sun == null:
-		return
-	sun.rotation_degrees = Vector3(-48.0, 38.0, 0.0)
-	sun.light_energy = 1.18
-	sun.light_color = Color(1.0, 0.96, 0.88)
-	sun.shadow_enabled = true
-	sun.directional_shadow_max_distance = 320.0
-	sun.light_angular_distance = 0.4
+	## WorldRoot owns 0.1.4 filmic look (sun 0.58 / exposure 0.78 / fill / cheap SSAO).
+	## Do not restore high-key sun/exposure — that is the Kenney diorama.
+	if world != null and world.has_method("_setup_environment"):
+		world._setup_environment()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -425,6 +392,20 @@ func _toggle_pause() -> void:
 		if vp:
 			vp.gui_release_focus()
 	_refresh_advisor()
+
+
+
+func _on_overlay_focus_out() -> void:
+	# QAM / Steam overlay / sleep — stop the sim. Stay paused until View (no auto-resume on FOCUS_IN).
+	if paused:
+		return
+	paused = true
+	hud.set_paused(true)
+
+
+func _on_overlay_focus_in() -> void:
+	# Deck Tech: no auto-resume. View / A still unpause via _toggle_pause / _resume_play.
+	pass
 
 
 func _on_demand_changed(_r: float, _c: float, _i: float) -> void:

@@ -1,6 +1,24 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
+
+; Metro Ops 0.1.4 HUD — side-card advisor, QAM-safe right inset, Xbox glyphs
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.06, 0.07, 0.1, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.9, 1, 0.55)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -53,9 +71,13 @@ vertical_alignment = 1
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 60.0
+offset_left = 24.0
+offset_top = 16.0
+offset_right = -96.0
+offset_bottom = 80.0
 grow_horizontal = 2
 mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="HBox" type="HBoxContainer" parent="Root/TopBar"]
 layout_mode = 2
@@ -65,26 +87,30 @@ mouse_filter = 2
 [node name="CashLabel" type="Label" parent="Root/TopBar/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
 text = "$40,000"
 
 [node name="FlowLabel" type="Label" parent="Root/TopBar/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
 text = "Δ +0"
 
 [node name="RciLabel" type="Label" parent="Root/TopBar/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
 text = "RCI R — · C — · I —"
 
 [node name="EventStatus" type="Label" parent="Root/TopBar/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 0.6, 0.4, 1)
 text = ""
 
@@ -92,31 +118,36 @@ text = ""
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 17
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
 text = "Tool: Residential"
 
-[node name="WarButton" type="Button" parent="Root/TopBar/HBox"]
+[node name="WarChip" type="Label" parent="Root/TopBar/HBox"]
 layout_mode = 2
-focus_mode = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.55, 0.5, 1)
 text = "War"
 
-[node name="DisasterButton" type="Button" parent="Root/TopBar/HBox"]
+[node name="DisasterChip" type="Label" parent="Root/TopBar/HBox"]
 layout_mode = 2
-focus_mode = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.82, 0.4, 1)
 text = "Disaster"
 
 [node name="AdvisorPanel" type="PanelContainer" parent="Root"]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
+anchor_right = 0.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = -228.0
-offset_right = 430.0
-offset_bottom = -52.0
-grow_vertical = 0
+offset_left = 24.0
+offset_top = 92.0
+offset_right = 360.0
+offset_bottom = -72.0
+grow_vertical = 2
 mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="VBox" type="VBoxContainer" parent="Root/AdvisorPanel"]
 layout_mode = 2
@@ -129,7 +160,8 @@ mouse_filter = 2
 [node name="AdvisorTitle" type="Label" parent="Root/AdvisorPanel/VBox/AdvisorHeader"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
 text = "Advisor"
 
 [node name="AdvisorText" type="RichTextLabel" parent="Root/AdvisorPanel/VBox"]
@@ -138,8 +170,9 @@ layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 focus_mode = 0
+theme_override_font_sizes/normal_font_size = 18
 bbcode_enabled = true
-fit_content = true
+fit_content = false
 scroll_active = true
 text = "Loading…"
 
@@ -151,11 +184,12 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -240.0
-offset_top = 68.0
+offset_top = 88.0
 offset_right = 240.0
-offset_bottom = 158.0
+offset_bottom = 188.0
 grow_horizontal = 2
 mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="EventVBox" type="VBoxContainer" parent="Root/EventToast"]
 layout_mode = 2
@@ -164,13 +198,16 @@ mouse_filter = 2
 [node name="EventTitle" type="Label" parent="Root/EventToast/EventVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
 text = "Event"
 horizontal_alignment = 1
 
 [node name="EventBody" type="Label" parent="Root/EventToast/EventVBox"]
 unique_name_in_owner = true
 layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
 autowrap_mode = 3
 text = "Details"
 horizontal_alignment = 1
@@ -199,13 +236,13 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -80.0
-offset_top = 56.0
-offset_right = 80.0
-offset_bottom = 88.0
+offset_left = -100.0
+offset_top = 88.0
+offset_right = 100.0
+offset_bottom = 128.0
 grow_horizontal = 2
 mouse_filter = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 28
 text = "PAUSED"
 horizontal_alignment = 1
 
@@ -216,16 +253,16 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 12.0
-offset_top = -44.0
-offset_right = -12.0
-offset_bottom = -6.0
+offset_left = 24.0
+offset_top = -56.0
+offset_right = -96.0
+offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 18
 autowrap_mode = 3
-text = "A paint · Y tools · X brush · L1/R1 cycle · Start pause · sticks pan/orbit"
+text = "Controls"
 
 [node name="PauseOverlay" type="Control" parent="Root"]
 unique_name_in_owner = true
@@ -236,7 +273,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
+mouse_filter = 2
 z_index = 50
 
 [node name="PauseDim" type="ColorRect" parent="Root/PauseOverlay"]
@@ -246,8 +283,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 0
-color = Color(0.02, 0.03, 0.05, 0.55)
+mouse_filter = 2
+color = Color(0.02, 0.03, 0.05, 0.45)
 
 [node name="PauseBox" type="VBoxContainer" parent="Root/PauseOverlay"]
 layout_mode = 1
@@ -256,34 +293,35 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -160.0
+offset_left = -180.0
 offset_top = -70.0
-offset_right = 160.0
+offset_right = 180.0
 offset_bottom = 70.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/separation = 14
 
 [node name="PauseTitle" type="Label" parent="Root/PauseOverlay/PauseBox"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_font_sizes/font_size = 28
 text = "PAUSED"
 horizontal_alignment = 1
 
 [node name="ResumeButton" type="Button" parent="Root/PauseOverlay/PauseBox"]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-focus_mode = 2
+focus_mode = 0
+mouse_filter = 2
 theme_override_font_sizes/font_size = 20
 text = "Resume"
 
 [node name="PauseHint" type="Label" parent="Root/PauseOverlay/PauseBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "A / Start / Esc to resume"
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "View to resume"
 horizontal_alignment = 1
-
-[connection signal="pressed" from="Root/TopBar/HBox/WarButton" to="." method="_on_war_button_pressed"]
-[connection signal="pressed" from="Root/TopBar/HBox/DisasterButton" to="." method="_on_disaster_button_pressed"]
-[connection signal="pressed" from="Root/PauseOverlay/PauseBox/ResumeButton" to="." method="_on_resume_pressed"]

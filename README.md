@@ -63,7 +63,7 @@ tar czf /workspace/MetroOps3D-deck.tar.gz -C /workspace/metro-ops-3d/builds/linu
 | Viewport | 1280×800 |
 | Max FPS | **40** (`force_fps=40`, physics 40 Hz) |
 | FSR | `scaling_3d/mode=2` (FSR2), `scale=0.67`, `fsr_sharpness=0.2` |
-| Shadows | Directional map 1024, no SSAO / glow / volumetrics |
+| Shadows | Directional map 1024, FillLight (no shadows), cheap SSAO quality 0 (kill first if 1% lows slip); no glow / volumetrics |
 
 Do **not** raise FSR scale, switch FSR off, or lift the 40 FPS cap.
 
