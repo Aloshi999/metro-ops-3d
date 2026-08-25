@@ -1,0 +1,7 @@
+.godot/
+builds/
+*.translation
+.import/
+*.apk
+*.aab
+export_credentials.cfg
