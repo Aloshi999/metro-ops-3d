@@ -26,3 +26,12 @@ cast_shadow = 0
 [node name="Props" type="Node3D" parent="."]
 
 [node name="Cursor" type="MeshInstance3D" parent="."]
+
+[node name="Park" type="Node3D" parent="."]
+
+[node name="Waterfront" type="Node3D" parent="."]
+
+[node name="Landmarks" type="Node3D" parent="."]
+
+[node name="Heatmap" type="Node3D" parent="."]
+

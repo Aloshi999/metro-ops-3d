@@ -56,6 +56,10 @@ func is_blocking() -> bool:
 	return state == State.RUNNING or state == State.RESULTS
 
 
+func is_aborted() -> bool:
+	return state == State.ABORTED
+
+
 func start(p_preset: String = DEFAULT_PRESET) -> void:
 	_begin(p_preset, false)
 

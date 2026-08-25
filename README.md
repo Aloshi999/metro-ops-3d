@@ -69,18 +69,25 @@ Do **not** raise FSR scale, switch FSR off, or lift the 40 FPS cap.
 
 ## Controls (gamepad-first)
 
-| Input | Action |
-|-------|--------|
-| Left stick / D-pad / WASD | Pan (camera-relative) |
-| Right stick | Orbit yaw + zoom (down = out) |
-| A / Space / LMB | Paint current tool |
-| L1 / R1 (Q / E) | Cycle tool |
-| Y / R | Radial tool select |
-| X / B | Brush 1 → 3 → 5 |
-| RMB drag + wheel | Orbit / zoom after the mouse has moved |
-| Start / Esc | Pause + advisor |
-| Select / F3 | FPS overlay |
-| UI **War** / **Disaster** or keys `1` / `2` | Events |
+HUD shows **action glyphs + verbs** (Paint / Tools / Brush / Pause / Heatmap). No console button names.
+
+Godot InputMap (config only — never printed in HUD):
+
+| Action | Bind |
+|--------|------|
+| `pan_*` | L-stick / D-pad / WASD |
+| orbit / zoom | R-stick |
+| `paint` | joy 0 + Space + LMB |
+| `radial` | joy 3 + R |
+| `brush_size` | joy 2 + B key |
+| `cancel` | joy 1 (B) — Back / Abort; opens pause if closed |
+| `pause_advisor` | joy 6 (Start) + Esc — Pause / Resume |
+| `cycle_tool_prev` / `cycle_tool_next` | joy 4/5 (Back/Guide) + Q / E |
+| `toggle_heatmap` | joy 7 + H |
+| `toggle_fps` | joy 8 + F3 |
+| War / Disaster | keys `1` / `2` |
+
+Boot **Title**: Play (default) + Exit. Pause: Resume (default) · Exit · Graphics. Exit is a menu item (`get_tree().quit()`). Steam Input IGA draft lives in `extras/steam/metro_ops_iga.vdf` — CoS must approve any Steamworks upload. AppID unknown.
 
 Mouse picking only takes over **after real pointer motion** — sticks stay in charge on Deck.
 

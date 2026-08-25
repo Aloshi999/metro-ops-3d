@@ -42,8 +42,18 @@ static func from_env(default_id: int = Id.LOW) -> int:
 	return id_from_name(g)
 
 
-static func apply(world: Node, viewport: Viewport, preset: int) -> void:
+static func detect_handheld() -> bool:
+	if OS.has_feature("steam_deck"):
+		return true
+	var sz := DisplayServer.screen_get_size()
+	if sz.x > 0 and sz.x <= 1280 and sz.y <= 800:
+		return true
+	return false
+
+
+static func apply(world: Node, viewport: Viewport, preset: int, force_handheld: int = -1) -> void:
 	preset = clampi(preset, Id.LOW, Id.ULTRA)
+	var handheld := detect_handheld() if force_handheld < 0 else (force_handheld != 0)
 	if world != null and world.has_method("_ensure_fill_light"):
 		world.call("_ensure_fill_light")
 	var env := _make_film_env()
@@ -55,18 +65,25 @@ static func apply(world: Node, viewport: Viewport, preset: int) -> void:
 		Id.HIGH:
 			_apply_high(env, world)
 		Id.ULTRA:
-			_apply_ultra(env, world)
+			_apply_ultra(env, world, handheld)
+	if handheld:
+		env.sdfgi_enabled = false
+		_apply_deck_shadows(world, preset)
+	if handheld:
+		# Deck GI always off — even if a desktop Ultra path left SDFGI on.
+		env.sdfgi_enabled = false
+		env.volumetric_fog_enabled = false
 	_assign_env(world, env)
 	_apply_sun(world)
 	_apply_fill(world)
 	_apply_camera_far(world, preset)
-	_apply_viewport(viewport, preset)
-	_apply_window(preset)
-	_apply_fps(preset)
+	_apply_viewport(viewport, preset, handheld)
+	_apply_window(preset, handheld)
+	# FPS is owned by GraphicsSettings (30/40/60/Uncapped). Do not clobber a saved Uncapped.
 	_disable_voxel_gi(world)
 	if world != null and world.get("graphics_preset") != null:
 		world.set("graphics_preset", preset)
-	print("GRAPHICS_PRESET=", name_of(preset))
+	print("GRAPHICS_PRESET=", name_of(preset), " handheld=", handheld)
 
 
 static func _make_film_env() -> Environment:
@@ -151,28 +168,27 @@ static func _apply_high(env: Environment, world: Node) -> void:
 	_ssao_quality(1)
 
 
-static func _apply_ultra(env: Environment, world: Node) -> void:
-	## SDFGI only — never VoxelGI, never both GI.
+static func _apply_ultra(env: Environment, world: Node, handheld: bool = false) -> void:
+	## Desktop Ultra: one GI (SDFGI). Handheld Ultra: no GI, no vol fog, SSAO + better shadows.
 	env.ssao_enabled = true
-	env.ssao_intensity = 0.52
-	env.ssao_radius = 1.2
+	env.ssao_intensity = 0.48
+	env.ssao_radius = 1.0
 	if "ssao_quality" in env:
 		env.ssao_quality = 1
-	env.sdfgi_enabled = true
-	if "sdfgi_energy" in env:
-		env.sdfgi_energy = 0.70
-	if "sdfgi_bounce_feedback" in env:
-		env.sdfgi_bounce_feedback = 0.35
-	env.volumetric_fog_enabled = true
-	if "volumetric_fog_density" in env:
-		env.volumetric_fog_density = 0.008
-	if "volumetric_fog_albedo" in env:
-		env.volumetric_fog_albedo = Color(0.70, 0.55, 0.45)
-	env.fog_density = 0.0012
-	env.fog_aerial_perspective = 0.62
+	env.ssil_enabled = false
+	env.ssr_enabled = false
+	env.volumetric_fog_enabled = false
+	env.sdfgi_enabled = not handheld
+	env.fog_density = 0.0014
+	env.fog_aerial_perspective = 0.58
 	if "fog_sky_affect" in env:
-		env.fog_sky_affect = 0.72
-	_shadow(world, 520.0, 2048, 1)
+		env.fog_sky_affect = 0.68
+	if handheld:
+		_shadow(world, 280.0, 2048, 1)
+		_shadow_cascades(world, 1)
+	else:
+		_shadow(world, 360.0, 2048, 1)
+		_shadow_cascades(world, 1)
 	_ssao_quality(1)
 
 
@@ -246,7 +262,7 @@ static func _apply_camera_far(world: Node, preset: int) -> void:
 			cam.far = 820.0
 
 
-static func _apply_viewport(viewport: Viewport, preset: int) -> void:
+static func _apply_viewport(viewport: Viewport, preset: int, handheld: bool = false) -> void:
 	if viewport == null:
 		return
 	# Never MSAA / TAA / MSAA+FSR2.
@@ -256,27 +272,24 @@ static func _apply_viewport(viewport: Viewport, preset: int) -> void:
 		viewport.msaa_2d = Viewport.MSAA_DISABLED
 	if "use_taa" in viewport:
 		viewport.use_taa = false
-	match preset:
-		Id.LOW:
-			viewport.scaling_3d_mode = 2  # FSR2
-			viewport.scaling_3d_scale = 0.67
-			viewport.fsr_sharpness = 0.2
-		Id.MEDIUM:
-			viewport.scaling_3d_mode = 2
-			viewport.scaling_3d_scale = 0.77
-			viewport.fsr_sharpness = 0.2
-		Id.HIGH:
-			viewport.scaling_3d_mode = 0  # native bilinear
-			viewport.scaling_3d_scale = 1.0
-			viewport.fsr_sharpness = 0.2
-		Id.ULTRA:
-			viewport.scaling_3d_mode = 0
-			viewport.scaling_3d_scale = 1.0
+	# FSR Off vs On/Quality 0.67 is owned by GraphicsSettings except Deck Ultra default.
+	if handheld and preset == Id.ULTRA:
+		viewport.scaling_3d_mode = 2
+		viewport.scaling_3d_scale = 0.67
+		if "fsr_sharpness" in viewport:
 			viewport.fsr_sharpness = 0.2
 
 
-static func _apply_window(preset: int) -> void:
+static func _apply_window(preset: int, handheld: bool = false) -> void:
 	if DisplayServer.get_name() == "headless":
+		return
+	## Deck / 800p handheld stays 1280×800. Do not auto-up the window with Ultra.
+	if handheld or OS.has_feature("steam_deck"):
+		DisplayServer.window_set_size(Vector2i(1280, 800))
+		return
+	var sz := DisplayServer.screen_get_size()
+	if sz.x > 0 and sz.x <= 1280 and sz.y <= 800:
+		DisplayServer.window_set_size(Vector2i(1280, 800))
 		return
 	var size := Vector2i(1280, 800)
 	match preset:
@@ -285,15 +298,14 @@ static func _apply_window(preset: int) -> void:
 		Id.MEDIUM, Id.HIGH:
 			size = Vector2i(1920, 1080)
 		Id.ULTRA:
-			size = Vector2i(2560, 1440)
+			size = Vector2i(1920, 1080)
 	DisplayServer.window_set_size(size)
 
 
-static func _apply_fps(preset: int) -> void:
-	if preset == Id.LOW:
-		Engine.max_fps = 40
-	else:
-		Engine.max_fps = 60
+static func _apply_fps(_preset: int) -> void:
+	## FPS cap is owned by GraphicsSettings (30 / 40 / 60 / Uncapped).
+	## Presets must not stomp a player-chosen Uncapped or 60 on apply.
+	pass
 
 
 static func _shadow(world: Node, dist: float, size: int, quality: int) -> void:
@@ -311,6 +323,16 @@ static func _ssao_quality(q: int) -> void:
 		ProjectSettings.set_setting("rendering/environment/ssao/quality", q)
 
 
+static func _shadow_cascades(world: Node, mode: int) -> void:
+	var s := _sun_of(world)
+	if s == null:
+		return
+	if mode <= 0:
+		s.directional_shadow_mode = DirectionalLight3D.SHADOW_ORTHOGONAL
+	else:
+		s.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_2_SPLITS
+
+
 static func _disable_voxel_gi(world: Node) -> void:
 	## Never add VoxelGI. If one is already a direct child, keep it off so it cannot pair with SDFGI.
 	if world == null:
@@ -318,3 +340,27 @@ static func _disable_voxel_gi(world: Node) -> void:
 	for c in world.get_children():
 		if c is VoxelGI:
 			(c as VoxelGI).visible = false
+
+
+static func _apply_deck_shadows(world: Node, preset: int) -> void:
+	## Deck: 1 cascade, 1K atlas, no soft PCF / contact. Ultra may use a longer reach.
+	var dist := 180.0
+	match preset:
+		Id.MEDIUM:
+			dist = 220.0
+		Id.HIGH:
+			dist = 260.0
+		Id.ULTRA:
+			dist = 320.0
+		_:
+			dist = 180.0
+	var atlas := 2048 if preset == Id.ULTRA else 1024
+	var q := 1 if preset == Id.ULTRA else 0
+	_shadow(world, dist, atlas, q)
+	_shadow_cascades(world, 1 if preset == Id.ULTRA else 0)
+	var s := _sun_of(world)
+	if s:
+		if "directional_shadow_blend_splits" in s:
+			s.directional_shadow_blend_splits = false
+		if "shadow_blur" in s:
+			s.shadow_blur = 0.0

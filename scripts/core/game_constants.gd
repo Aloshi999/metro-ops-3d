@@ -21,6 +21,21 @@ const DISTRICT_LARGE_LOTS: int = 2  # Large_2 pad
 const TARGET_FPS: int = 40
 const VIEWPORT_W: int = 1280
 const VIEWPORT_H: int = 800
+## Chrome safe rect at 1280×800: left/top/bottom ≥48, right ≤1184 (QAM 96).
+const HUD_SAFE := Rect2(48, 48, 1136, 704)
+const HUD_MARGIN_L: int = 48
+const HUD_MARGIN_T: int = 48
+const HUD_MARGIN_R: int = 96
+const HUD_MARGIN_B: int = 48
+
+## Deck overscan + Steam QAM strip. Design res 1280×800.
+## Left/top/bottom ≥ 48; right edge ≤ 1184 (96px QAM).
+const HUD_SAFE_LEFT: float = 48.0
+const HUD_SAFE_TOP: float = 48.0
+const HUD_SAFE_RIGHT: float = 1184.0
+const HUD_SAFE_BOTTOM: float = 752.0
+const HUD_SAFE_RECT := Rect2(48, 48, 1136, 704)
+
 
 const FSR_MODE: int = 2  # FSR2
 const FSR_SCALE: float = 0.67

@@ -453,7 +453,7 @@ func _in_tutor_window() -> bool:
 func _tutor_hold_card() -> Dictionary:
 	return {
 		"title": "Advisor",
-		"body": "Finish the first lesson — View/L3 recap first."
+		"body": "Finish the first lesson — recap the first district first."
 	}
 
 

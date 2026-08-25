@@ -1,12 +1,13 @@
 extends Node
 ## Gamepad-first Deck controls for the 3D city. Mouse only wins after real pointer motion.
-## L-stick / WASD pan · R-stick orbit+zoom · A paint · L1/R1 cycle tools.
+## Gamepad-first. HUD uses action glyphs + verbs, never console button names.
 
 signal paint_pressed
 signal paint_released
 signal cycle_next
 signal cycle_prev
 signal toggle_pause
+signal open_menu
 signal toggle_fps
 signal war_pressed
 signal disaster_pressed
@@ -14,7 +15,10 @@ signal radial_toggled(open: bool)
 signal radial_select(index: int)
 signal brush_cycled(size: int)
 signal gfx_cycle(dir: int)
+signal menu_row_shift(dir: int)
+signal gfx_row(dir: int)
 signal cancel_pressed
+signal heatmap_toggled
 
 @export var pan_lerp: float = 0.22
 @export var stick_deadzone: float = 0.22
@@ -34,6 +38,8 @@ var prefer_gamepad: bool = true
 var mouse_active_until: float = 0.0
 var rmb_orbit: bool = false
 var graphics_focus: bool = false
+var menu_focus: bool = false
+var bench_blocking: bool = false
 
 const BRUSH_STEPS: Array[int] = [1, 3, 5]
 const RADIAL_SLICES: int = 6
@@ -48,7 +54,7 @@ func _process(dt: float) -> void:
 
 
 func _update_pan() -> void:
-	if graphics_focus:
+	if graphics_focus or menu_focus:
 		pan_smooth = Vector2.ZERO
 		pan_vector = Vector2.ZERO
 		return
@@ -119,33 +125,74 @@ func _update_radial_aim() -> void:
 		var idx := aim_to_index(radial_aim, RADIAL_SLICES)
 		if idx >= 0:
 			radial_index = idx
-	# D-pad / WASD cycle the sticky index in _unhandled_input (no analog fight).
+
+
+func _eat(_event: InputEvent = null) -> void:
+	var vp := get_viewport()
+	if vp:
+		vp.set_input_as_handled()
+
+
+func _is_keyboard_b(event: InputEvent) -> bool:
+	if event is InputEventKey and event.pressed and not event.echo:
+		var k := event as InputEventKey
+		return k.physical_keycode == KEY_B or k.keycode == KEY_B
+	return false
 
 
 func _input(event: InputEvent) -> void:
 	## High-priority: radial cancel and pause so GUI focus can never trap Start/Esc/B.
-	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B:
+	## Keyboard B is also brush_size — while bench is active it MUST abort, not cycle brush.
+	if (bench_blocking or graphics_focus) and _is_keyboard_b(event):
 		if radial_open:
 			_set_radial(false)
-			get_viewport().set_input_as_handled()
+		else:
+			cancel_pressed.emit()
+		_eat(event)
+		return
+	var cancel_hit := false
+	if InputMap.has_action("cancel") and event.is_action_pressed("cancel"):
+		cancel_hit = true
+	elif event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B:
+		cancel_hit = true
+	if cancel_hit:
+		if radial_open:
+			_set_radial(false)
+			_eat(event)
 			return
 		cancel_pressed.emit()
-		get_viewport().set_input_as_handled()
+		_eat(event)
 		return
-	if event.is_action_pressed("pause_advisor"):
+	if event.is_action_pressed("pause_advisor") or (
+			event is InputEventJoypadButton and event.pressed
+			and (event.button_index == JOY_BUTTON_START or event.button_index == JOY_BUTTON_GUIDE)):
 		if radial_open:
 			_set_radial(false)
-			get_viewport().set_input_as_handled()
+			_eat(event)
 			return
+		# Start / Menu / Esc — toggle pause (opens from play, closes from pause).
 		toggle_pause.emit()
-		get_viewport().set_input_as_handled()
+		open_menu.emit()
+		_eat(event)
+		return
+	if event.is_action_pressed("view_resume"):
+		if radial_open:
+			_set_radial(false)
+			_eat(event)
+			return
+		# View resumes (toggle). Steam overlay / QAM still work via FOCUS_OUT.
+		toggle_pause.emit()
+		_eat(event)
 		return
 	if event.is_action_pressed("radial"):
+		if bench_blocking:
+			_eat(event)
+			return
 		if radial_open:
 			_set_radial(false)
 		else:
 			_set_radial(true)
-		get_viewport().set_input_as_handled()
+		_eat(event)
 		return
 
 
@@ -164,54 +211,76 @@ func _unhandled_input(event: InputEvent) -> void:
 	if radial_open:
 		if event.is_action_pressed("paint"):
 			_confirm_radial()
-			get_viewport().set_input_as_handled()
+			_eat(event)
 		elif event.is_action_pressed("pan_left"):
 			radial_index = posmod(radial_index - 1, RADIAL_SLICES)
-			get_viewport().set_input_as_handled()
+			_eat(event)
 		elif event.is_action_pressed("pan_right"):
 			radial_index = posmod(radial_index + 1, RADIAL_SLICES)
-			get_viewport().set_input_as_handled()
+			_eat(event)
 		elif event.is_action_pressed("pan_up"):
 			radial_index = posmod(radial_index - 1, RADIAL_SLICES)
-			get_viewport().set_input_as_handled()
+			_eat(event)
 		elif event.is_action_pressed("pan_down"):
 			radial_index = posmod(radial_index + 1, RADIAL_SLICES)
-			get_viewport().set_input_as_handled()
+			_eat(event)
 		return
 
 	if event.is_action_pressed("paint"):
 		painting = true
 		paint_pressed.emit()
-		get_viewport().set_input_as_handled()
+		_eat(event)
 	elif event.is_action_released("paint"):
 		painting = false
 		paint_released.emit()
-		get_viewport().set_input_as_handled()
+		_eat(event)
 	elif event.is_action_pressed("cycle_tool_next"):
-		# LB/RB: graphics cycle (tools stay on Y radial)
+		if bench_blocking:
+			_eat(event)
+			return
 		gfx_cycle.emit(1)
-		get_viewport().set_input_as_handled()
+		_eat(event)
 	elif event.is_action_pressed("cycle_tool_prev"):
+		if bench_blocking:
+			_eat(event)
+			return
 		gfx_cycle.emit(-1)
-		get_viewport().set_input_as_handled()
+		_eat(event)
+	elif graphics_focus and event.is_action_pressed("pan_up"):
+		menu_row_shift.emit(-1)
+		if has_signal("gfx_row"):
+			gfx_row.emit(-1)
+		_eat(event)
+	elif graphics_focus and event.is_action_pressed("pan_down"):
+		menu_row_shift.emit(1)
+		if has_signal("gfx_row"):
+			gfx_row.emit(1)
+		_eat(event)
 	elif graphics_focus and event.is_action_pressed("pan_left"):
 		gfx_cycle.emit(-1)
-		get_viewport().set_input_as_handled()
+		_eat(event)
 	elif graphics_focus and event.is_action_pressed("pan_right"):
 		gfx_cycle.emit(1)
-		get_viewport().set_input_as_handled()
+		_eat(event)
 	elif event.is_action_pressed("brush_size"):
+		if bench_blocking or graphics_focus:
+			cancel_pressed.emit()
+			_eat(event)
+			return
 		_cycle_brush()
-		get_viewport().set_input_as_handled()
+		_eat(event)
 	elif event.is_action_pressed("toggle_fps"):
 		toggle_fps.emit()
-		get_viewport().set_input_as_handled()
+		_eat(event)
+	elif event.is_action_pressed("toggle_heatmap"):
+		heatmap_toggled.emit()
+		_eat(event)
 	elif event.is_action_pressed("trigger_war"):
 		war_pressed.emit()
-		get_viewport().set_input_as_handled()
+		_eat(event)
 	elif event.is_action_pressed("trigger_disaster"):
 		disaster_pressed.emit()
-		get_viewport().set_input_as_handled()
+		_eat(event)
 
 
 func using_mouse() -> bool:
@@ -229,6 +298,8 @@ func _mark_mouse() -> void:
 
 
 func _cycle_brush() -> void:
+	if bench_blocking:
+		return
 	var idx := BRUSH_STEPS.find(brush_size)
 	if idx < 0:
 		idx = 0
@@ -270,3 +341,19 @@ static func aim_to_index(aim: Vector2, count: int) -> int:
 	if ang < 0.0:
 		ang += TAU
 	return int(floor(ang / TAU * float(count))) % count
+
+
+func handle_brush_action() -> void:
+	## Keyboard B is brush_size in play. Bench: abort (do not cycle 1→3). Pause: Back.
+	if bench_blocking or graphics_focus:
+		cancel_pressed.emit()
+		return
+	_cycle_brush()
+
+
+func handle_gamepad_b() -> void:
+	if radial_open:
+		_set_radial(false)
+		return
+	cancel_pressed.emit()
+

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-; Metro Ops 0.1.4 HUD — side-card advisor, QAM-safe right inset, Xbox glyphs
+; Metro Ops 0.1.6 HUD — SafeArea Root (48,48)-(1184,752), Pause→Graphics, glyphs
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 
@@ -28,6 +28,10 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = 48.0
+offset_right = -96.0
+offset_bottom = -48.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -71,66 +75,53 @@ vertical_alignment = 1
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_left = 24.0
-offset_top = 16.0
-offset_right = -96.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
 offset_bottom = 80.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
-[node name="HBox" type="HBoxContainer" parent="Root/TopBar"]
+[node name="TopVBox" type="VBoxContainer" parent="Root/TopBar"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 2
 mouse_filter = 2
 
-[node name="CashLabel" type="Label" parent="Root/TopBar/HBox"]
+[node name="Row1" type="HBoxContainer" parent="Root/TopBar/TopVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+mouse_filter = 2
+
+[node name="CashLabel" type="Label" parent="Root/TopBar/TopVBox/Row1"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 28
 text = "$40,000"
 
-[node name="FlowLabel" type="Label" parent="Root/TopBar/HBox"]
+[node name="FlowLabel" type="Label" parent="Root/TopBar/TopVBox/Row1"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
 text = "Δ +0"
 
-[node name="RciLabel" type="Label" parent="Root/TopBar/HBox"]
+[node name="GraphicsLabel" type="Label" parent="Root/TopBar/TopVBox/Row1"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
-text = "RCI R — · C — · I —"
+theme_override_colors/font_color = Color(0.85, 0.95, 1, 1)
+text = "GFX Low · 40"
 
-[node name="OccLabel" type="Label" parent="Root/TopBar/HBox"]
-unique_name_in_owner = true
+[node name="Row2" type="HBoxContainer" parent="Root/TopBar/TopVBox"]
 layout_mode = 2
+theme_override_constants/separation = 12
 mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.82, 0.88, 0.78, 1)
-text = "Occupancy —"
 
-[node name="MoodLabel" type="Label" parent="Root/TopBar/HBox"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.95, 0.86, 0.55, 1)
-text = "Mood —"
-
-[node name="EventStatus" type="Label" parent="Root/TopBar/HBox"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(1, 0.6, 0.4, 1)
-text = ""
-
-[node name="ToolLabel" type="Label" parent="Root/TopBar/HBox"]
+[node name="ToolLabel" type="Label" parent="Root/TopBar/TopVBox/Row2"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -138,38 +129,49 @@ mouse_filter = 2
 theme_override_font_sizes/font_size = 18
 text = "Tool: Residential"
 
-[node name="GraphicsLabel" type="Label" parent="Root/TopBar/HBox"]
+[node name="RciLabel" type="Label" parent="Root/TopBar/TopVBox/Row2"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.85, 0.95, 1, 1)
-text = "GFX Low"
+theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
+text = "RCI —"
 
-[node name="WarChip" type="Label" parent="Root/TopBar/HBox"]
+[node name="OccLabel" type="Label" parent="Root/TopBar/TopVBox/Row2"]
+unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(1, 0.55, 0.5, 1)
-text = "War"
+theme_override_colors/font_color = Color(0.82, 0.88, 0.78, 1)
+text = "Occ —"
 
-[node name="DisasterChip" type="Label" parent="Root/TopBar/HBox"]
+[node name="MoodLabel" type="Label" parent="Root/TopBar/TopVBox/Row2"]
+unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(1, 0.82, 0.4, 1)
-text = "Disaster"
+theme_override_colors/font_color = Color(0.95, 0.86, 0.55, 1)
+text = "Mood —"
+
+[node name="EventStatus" type="Label" parent="Root/TopBar/TopVBox/Row2"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.4, 1)
+text = ""
 
 [node name="AdvisorPanel" type="PanelContainer" parent="Root"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchor_right = 0.0
-anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = 92.0
-offset_right = 360.0
-offset_bottom = -72.0
-grow_vertical = 2
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 88.0
+offset_right = 300.0
+offset_bottom = 176.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
@@ -185,20 +187,20 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 20
 text = "Advisor"
 
 [node name="AdvisorText" type="RichTextLabel" parent="Root/AdvisorPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_vertical = 0
 mouse_filter = 2
 focus_mode = 0
 theme_override_font_sizes/normal_font_size = 18
 bbcode_enabled = true
-fit_content = false
-scroll_active = true
-text = "Loading…"
+fit_content = true
+scroll_active = false
+text = ""
 
 [node name="EventToast" type="PanelContainer" parent="Root"]
 unique_name_in_owner = true
@@ -207,10 +209,10 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -240.0
+offset_left = -220.0
 offset_top = 88.0
-offset_right = 240.0
-offset_bottom = 188.0
+offset_right = 220.0
+offset_bottom = 176.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
@@ -223,7 +225,7 @@ mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 22
 text = "Event"
 horizontal_alignment = 1
 
@@ -236,6 +238,48 @@ autowrap_mode = 3
 text = "Details"
 horizontal_alignment = 1
 
+[node name="GoalPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = -156.0
+offset_right = 380.0
+offset_bottom = -48.0
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="GoalVBox" type="VBoxContainer" parent="Root/GoalPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="GoalTitle" type="Label" parent="Root/GoalPanel/GoalVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+text = "Act I — First District"
+
+[node name="GoalBody" type="Label" parent="Root/GoalPanel/GoalVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+autowrap_mode = 3
+text = "Grow the first district."
+
+[node name="HeatLabel" type="Label" parent="Root/GoalPanel/GoalVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.82, 0.88, 1, 1)
+text = "Heatmap Off"
+
 [node name="FpsLabel" type="Label" parent="Root"]
 unique_name_in_owner = true
 visible = false
@@ -243,13 +287,13 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -220.0
-offset_top = 64.0
-offset_right = -12.0
-offset_bottom = 92.0
+offset_left = -200.0
+offset_top = 88.0
+offset_right = 0.0
+offset_bottom = 116.0
 grow_horizontal = 0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 18
 text = "FPS"
 horizontal_alignment = 2
 
@@ -260,33 +304,34 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -100.0
+offset_left = -80.0
 offset_top = 88.0
-offset_right = 100.0
-offset_bottom = 128.0
+offset_right = 80.0
+offset_bottom = 120.0
 grow_horizontal = 2
 mouse_filter = 2
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 22
 text = "PAUSED"
 horizontal_alignment = 1
 
 [node name="HelpLabel" type="Label" parent="Root"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -56.0
-offset_right = -96.0
-offset_bottom = -16.0
+offset_left = 0.0
+offset_top = -36.0
+offset_right = 0.0
+offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
 autowrap_mode = 3
-text = "Controls"
+text = ""
 
 [node name="PauseOverlay" type="Control" parent="Root"]
 unique_name_in_owner = true
@@ -311,49 +356,216 @@ mouse_filter = 2
 color = Color(0.02, 0.03, 0.05, 0.45)
 
 [node name="PauseBox" type="VBoxContainer" parent="Root/PauseOverlay"]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -140.0
-offset_right = 180.0
-offset_bottom = 140.0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+mouse_filter = 2
+
+[node name="ResumeButton" type="Button" parent="Root/PauseOverlay/PauseBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+focus_mode = 0
+mouse_filter = 2
+text = "Resume"
+
+[node name="GraphicsButton" type="Button" parent="Root/PauseOverlay/PauseBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+focus_mode = 0
+mouse_filter = 2
+text = "Graphics"
+
+[node name="AudioButton" type="Button" parent="Root/PauseOverlay/PauseBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+disabled = true
+focus_mode = 0
+mouse_filter = 2
+text = "Audio"
+
+[node name="ControlsButton" type="Button" parent="Root/PauseOverlay/PauseBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+disabled = true
+focus_mode = 0
+mouse_filter = 2
+text = "Controls"
+
+[node name="PauseRoot" type="VBoxContainer" parent="Root/PauseOverlay"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -230.0
+offset_right = 280.0
+offset_bottom = 230.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 10
 
-[node name="PauseTitle" type="Label" parent="Root/PauseOverlay/PauseBox"]
+[node name="PauseRootTitle" type="Label" parent="Root/PauseOverlay/PauseRoot"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 28
 text = "PAUSED"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="Root/PauseOverlay/PauseBox"]
+[node name="Item_resume" type="Button" parent="Root/PauseOverlay/PauseRoot"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+text = "Resume"
+
+[node name="Item_exit" type="Button" parent="Root/PauseOverlay/PauseRoot"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+text = "Exit"
+
+[node name="ExitButton" type="Button" parent="Root/PauseOverlay/PauseRoot"]
 unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 focus_mode = 0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 20
-text = "Resume"
+text = "Exit"
 
-[node name="GraphicsMenu" type="Label" parent="Root/PauseOverlay/PauseBox"]
+[node name="Item_graphics" type="Button" parent="Root/PauseOverlay/PauseRoot"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+text = "Graphics"
+
+[node name="ItemGraphics" type="Label" parent="Root/PauseOverlay/PauseRoot"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "Graphics"
+
+[node name="Item_benchmark" type="Button" parent="Root/PauseOverlay/PauseRoot"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+text = "Benchmark"
+
+[node name="Item_audio" type="Button" parent="Root/PauseOverlay/PauseRoot"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+disabled = true
+focus_mode = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.5, 0.55, 0.6, 1)
+text = "Audio"
+
+[node name="Item_controls" type="Button" parent="Root/PauseOverlay/PauseRoot"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+disabled = true
+focus_mode = 0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.5, 0.55, 0.6, 1)
+text = "Controls"
+
+[node name="RootHint" type="Label" parent="Root/PauseOverlay/PauseRoot"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "Resume · Graphics"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="GraphicsScreen" type="VBoxContainer" parent="Root/PauseOverlay"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -200.0
+offset_right = 280.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="GraphicsHeader" type="Label" parent="Root/PauseOverlay/GraphicsScreen"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+text = "GRAPHICS"
+horizontal_alignment = 1
+
+[node name="RowPreset" type="Label" parent="Root/PauseOverlay/GraphicsScreen"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
-text = "Graphics  < Low >"
+text = "▸ Preset     < Low >"
 horizontal_alignment = 1
 
-[node name="PauseHint" type="Label" parent="Root/PauseOverlay/PauseBox"]
+[node name="RowCap" type="Label" parent="Root/PauseOverlay/GraphicsScreen"]
+unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
-text = "A Benchmark · LB/RB graphics · View resume"
+text = "  FPS cap    < 40 >"
 horizontal_alignment = 1
+
+[node name="RowFsr" type="Label" parent="Root/PauseOverlay/GraphicsScreen"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "  FSR        < On Quality >"
+horizontal_alignment = 1
+
+[node name="RowDlss" type="Label" parent="Root/PauseOverlay/GraphicsScreen"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.55, 0.58, 0.62, 0.75)
+text = "DLSS — 0.1.7"
+horizontal_alignment = 1
+
+[node name="GfxHint" type="Label" parent="Root/PauseOverlay/GraphicsScreen"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "Graphics · Abort · Pause"
+horizontal_alignment = 1
+autowrap_mode = 3

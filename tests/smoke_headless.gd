@@ -14,6 +14,9 @@ const CityView = preload("res://scripts/world/city_view.gd")
 const CityCamera = preload("res://scripts/world/city_camera.gd")
 const WorldRoot = preload("res://scripts/world/world_root.gd")
 const GraphicsPresets = preload("res://scripts/world/graphics_presets.gd")
+const CampaignSystem = preload("res://scripts/systems/campaign_system.gd")
+const GraphicsSettings = preload("res://scripts/ui/graphics_settings.gd")
+const Glyphs = preload("res://scripts/ui/glyphs.gd")
 
 
 func _init() -> void:
@@ -634,7 +637,569 @@ func _init() -> void:
 			ok = false
 			errors.append("main.gd missing A-from-pause Benchmark start")
 
+
+	## 0.1.6 Act I + heatmap + landmarks. Do not invent Acts II–IV or FPS numbers.
+	var camp := CampaignSystem.new()
+	var g0: Dictionary = camp.goal_card()
+	if not g0.has("title") or not g0.has("body") or str(g0["title"]) == "":
+		ok = false
+		errors.append("Act I goal_card missing title/body")
+	if str(g0.get("act_id", "")) != "act_i":
+		ok = false
+		errors.append("campaign act_id is %s not act_i" % str(g0.get("act_id", "")))
+	if camp.next_act_id() == "act_ii" or camp.has_method("start_act_ii"):
+		ok = false
+		errors.append("invented Act II — only Act I is live")
+	for _p in 24:
+		camp.note_paint()
+	var g1: Dictionary = camp.evaluate(1200.0, 0.55, 30000)
+	if not bool(g1.get("complete", false)):
+		ok = false
+		errors.append("Act I did not complete at charter mass + session floor")
+	if camp.next_act_id() != "":
+		ok = false
+		errors.append("next_act_id after Act I should be empty (no fake Act II)")
+	# live idle city should expose a real goal card without auto-completing at boot
+	var live_camp := CampaignSystem.new()
+	var live_card: Dictionary = live_camp.tick(idle_map, idle_budget, idle_sim)
+	if not live_card.has("title") or str(live_card["body"]) == "":
+		ok = false
+		errors.append("live Act I card empty")
+	if bool(live_card.get("complete", false)):
+		ok = false
+		errors.append("Act I completed on idle boot city — charter bar too short")
+
+	var view_ps = load("res://scenes/city_view.tscn")
+	if view_ps == null:
+		ok = false
+		errors.append("city_view.tscn failed to load")
+	# Do not instantiate the packed scene here — SceneTree._init never runs @onready.
+	# Script-only CityView still seeds overlays + landmarks + heatmap.
+	var view_map := MapData.new()
+	var view := CityView.new()
+	view.map = view_map
+	view.catalog = catalog
+	if view.has_method("_seed_park"):
+		view._seed_park()
+	if view.has_method("_seed_waterfront"):
+		view._seed_waterfront()
+	if view.has_method("_seed_midrise_ring"):
+		view._seed_midrise_ring()
+	if view.has_method("_ensure_overlay_roots"):
+		view._ensure_overlay_roots()
+	if view.has_method("_scatter_park"):
+		view._scatter_park()
+	if view.has_method("_scatter_waterfront"):
+		view._scatter_waterfront()
+	if view.has_method("_instance_landmarks"):
+		view._instance_landmarks()
+	if view.has_method("_ensure_midrise_landmark"):
+		view._ensure_midrise_landmark()
+	if view.has_method("_recount_landmarks"):
+		view._recount_landmarks()
+	var parks: int = int(view.get("park_count"))
+	var wfs: int = int(view.get("waterfront_count"))
+	var lms: int = int(view.get("landmark_count"))
+	print("city_view park=%d waterfront=%d landmarks=%d heatmap=%s" % [
+		parks, wfs, lms, view.get("heatmap_mode")
+	])
+	if parks < 1:
+		ok = false
+		errors.append("park not instanced in-scene (park_count=%d)" % parks)
+	if wfs < 1:
+		ok = false
+		errors.append("waterfront not instanced in-scene (waterfront_count=%d)" % wfs)
+	if lms < 2:
+		ok = false
+		errors.append("landmarks missing in-scene (landmark_count=%d)" % lms)
+	if view.has_method("landmark_world"):
+		var pw: Vector3 = view.landmark_world("park")
+		var ww: Vector3 = view.landmark_world("waterfront")
+		var mw: Vector3 = view.landmark_world("midrise")
+		if pw == Vector3.ZERO or ww == Vector3.ZERO or mw == Vector3.ZERO:
+			ok = false
+			errors.append("landmark_world returned ZERO")
+	if view.has_method("cycle_heatmap"):
+		var m1: int = int(view.cycle_heatmap())
+		if m1 != 1:
+			ok = false
+			errors.append("heatmap cycle 1 got %d" % m1)
+		var m2: int = int(view.cycle_heatmap())
+		if m2 != 2:
+			ok = false
+			errors.append("heatmap cycle 2 got %d" % m2)
+		var m0: int = int(view.cycle_heatmap())
+		if m0 != 0:
+			ok = false
+			errors.append("heatmap cycle off got %d" % m0)
+	if view.has_method("set_heatmap_mode"):
+		view.set_heatmap_mode(1)
+		view.set_heatmap_mode(0)
+	var hud_src := FileAccess.get_file_as_string("res://scenes/hud.tscn")
+	if hud_src.find("font_size = 16") >= 0:
+		ok = false
+		errors.append("HUD has font_size 16 — body must be >= 18")
+	if hud_src.find("GoalTitle") < 0 or hud_src.find("GoalBody") < 0:
+		ok = false
+		errors.append("HUD missing Act I GoalTitle/GoalBody")
+	if hud_src.find("offset_right = -96.0") < 0:
+		ok = false
+		errors.append("HUD missing QAM right inset 96")
+	view.free()
+
+	var hud_src2 := FileAccess.get_file_as_string("res://scripts/ui/hud.gd")
+	if hud_src2.find("set_goal") < 0:
+		ok = false
+		errors.append("hud.gd missing set_goal")
+	if main_src.find("CampaignSystem") < 0 or main_src.find("_boot_campaign") < 0:
+		ok = false
+		errors.append("main.gd missing Act I campaign wiring")
+	if main_src.find("cycle_heatmap") < 0 and main_src.find("_on_heatmap_toggled") < 0:
+		ok = false
+		errors.append("main.gd missing heatmap toggle")
+
+
+	## 0.1.6 MUST-FIX — FPS cap persist, 3-row graphics menu, HUD SafeArea.
+	## Do not assert measured FPS values (headless has no GPU).
+	var d_user := DirAccess.open("user://")
+	if d_user and d_user.file_exists("metro_ops_graphics.cfg"):
+		d_user.remove("metro_ops_graphics.cfg")
+	Engine.max_fps = GameConstants.TARGET_FPS
+	if Engine.max_fps != 40:
+		ok = false
+		errors.append("default max_fps %d not 40" % Engine.max_fps)
+	var gs := GraphicsSettings.new()
+	gs.boot()
+	gs.apply_fps()
+	if Engine.max_fps != 40:
+		ok = false
+		errors.append("GraphicsSettings boot default max_fps %d not 40" % Engine.max_fps)
+	gs.set_fps_cap(0)
+	if Engine.max_fps != 0:
+		ok = false
+		errors.append("Uncapped did not set Engine.max_fps = 0 (got %d)" % Engine.max_fps)
+	gs.set_fps_cap(30)
+	if Engine.max_fps != 30:
+		ok = false
+		errors.append("FPS cap 30 did not apply (got %d)" % Engine.max_fps)
+	gs.set_fps_cap(60)
+	if Engine.max_fps != 60:
+		ok = false
+		errors.append("FPS cap 60 did not apply (got %d)" % Engine.max_fps)
+	var gs2 := GraphicsSettings.new()
+	gs2.boot()
+	if int(gs2.fps_cap) != 60:
+		ok = false
+		errors.append("saved FPS 60 was overwritten on boot (got %s)" % str(gs2.fps_cap))
+	gs2.apply_fps()
+	if Engine.max_fps != 60:
+		ok = false
+		errors.append("re-boot after save 60 set max_fps %d" % Engine.max_fps)
+	gs2.set_fps_cap(0)
+	var gs3 := GraphicsSettings.new()
+	gs3.boot()
+	if int(gs3.fps_cap) != 0:
+		ok = false
+		errors.append("saved Uncapped overwritten by Deck detect (got %s)" % str(gs3.fps_cap))
+	gs3.apply_fps()
+	if Engine.max_fps != 0:
+		ok = false
+		errors.append("saved Uncapped apply max_fps %d not 0" % Engine.max_fps)
+	var fps_stub := Node.new()
+	GraphicsPresets.apply(fps_stub, null, GraphicsPresets.Id.LOW)
+	if Engine.max_fps != 0:
+		ok = false
+		errors.append("GraphicsPresets.apply stomped Uncapped (max_fps=%d)" % Engine.max_fps)
+	fps_stub.free()
+	gs3.set_fps_cap(40)
+	Engine.max_fps = GameConstants.TARGET_FPS
+
+	if hud_src2.find("show_graphics_screen") < 0 and hud_src.find("GraphicsMenu") < 0:
+		ok = false
+		errors.append("pause has no Graphics screen (not only a HUD one-liner)")
+	if hud_src2.find("ExitButton") < 0 and hud_src2.find("TitleExit") < 0:
+		ok = false
+		errors.append("pause/title missing Exit")
+	if hud_src.find("RowPreset") < 0 or hud_src.find("RowCap") < 0 or hud_src.find("RowFsr") < 0:
+		ok = false
+		errors.append("HUD missing graphics menu rows RowPreset/RowCap/RowFsr")
+	if hud_src.find("Preset") < 0 or hud_src.find("FPS cap") < 0 or hud_src.find("FSR") < 0:
+		ok = false
+		errors.append("HUD graphics menu missing Preset / FPS cap / FSR labels")
+	if hud_src.find("offset_left = 48.0") < 0 or hud_src.find("offset_top = 48.0") < 0 or hud_src.find("offset_bottom = -48.0") < 0:
+		ok = false
+		errors.append("HUD Root missing 48px safe insets")
+	if hud_src2.find("cycle_graphics_focus") < 0 and hud_src2.find("cycle_gfx_row") < 0:
+		ok = false
+		errors.append("hud.gd missing graphics row cycle")
+	if main_src.find("cycle_fps") < 0 or main_src.find("apply_fps") < 0:
+		ok = false
+		errors.append("main.gd missing FPS cap apply/cycle")
+
+	var hud_ps2 = load("res://scenes/hud.tscn")
+	if hud_ps2 == null:
+		ok = false
+		errors.append("hud.tscn failed to load for SafeArea check")
+	else:
+		var hud_n: CanvasLayer = hud_ps2.instantiate()
+		root.add_child(hud_n)
+		if hud_n.has_method("_ensure_graphics_menu"):
+			hud_n._ensure_graphics_menu()
+		if hud_n.has_method("_ensure_bench_ui"):
+			hud_n._ensure_bench_ui()
+		if hud_n.has_method("set_paused"):
+			hud_n.set_paused(true)
+		if hud_n.has_method("show_graphics_screen"):
+			hud_n.show_graphics_screen()
+			var gscr := hud_n.get_node_or_null("%GraphicsMenu") as Control
+			if gscr == null:
+				gscr = hud_n.find_child("GraphicsMenu", true, false) as Control
+			if gscr == null:
+				gscr = hud_n.find_child("GraphicsScreen", true, false) as Control
+			if hud_n.get("screen") != null and int(hud_n.screen) != 3 and (gscr == null or not gscr.visible):
+				# Screen.GRAPHICS == 3
+				ok = false
+				errors.append("Graphics screen did not show (still a HUD one-liner)")
+			if hud_n.has_method("show_pause"):
+				hud_n.show_pause()
+		if hud_n.has_method("set_goal"):
+			hud_n.set_goal({"title": "Act I — First District", "body": "Grow the first district."})
+		if hud_n.has_method("set_heatmap"):
+			hud_n.set_heatmap("Off")
+		if hud_n.has_method("set_graphics_menu"):
+			hud_n.set_graphics_menu("Low", "40", "On/Quality")
+		if hud_n.has_method("set_bench_live"):
+			hud_n.set_bench_live(true, 0.0, 0.0, 3.0)
+		if hud_n.has_method("show_event"):
+			hud_n.show_event("Event", "Body")
+		if hud_n.has_method("layout_for_deck"):
+			hud_n.layout_for_deck()
+		var safe := GameConstants.HUD_SAFE_RECT
+		var hud_root := hud_n.get_node_or_null("Root") as Control
+		if hud_root == null:
+			hud_root = hud_n.get_node_or_null("SafeArea") as Control
+		if hud_root == null:
+			ok = false
+			errors.append("HUD missing Root/SafeArea")
+		else:
+			var rr: Rect2 = hud_root.get_global_rect()
+			if absf(rr.position.x - 48.0) > 1.0 or absf(rr.position.y - 48.0) > 1.0:
+				ok = false
+				errors.append("HUD Root global pos %s not SafeArea (48,48)" % str(rr.position))
+			if absf(rr.size.x - 1136.0) > 2.0 or absf(rr.size.y - 704.0) > 2.0:
+				ok = false
+				errors.append("HUD Root size %s not 1136x704" % str(rr.size))
+			var rad = load("res://scripts/ui/radial_menu.gd").new()
+			hud_root.add_child(rad)
+			if rad.has_method("set_open"):
+				rad.set_open(true)
+			var row_ok := hud_n.get_node_or_null("%RowPreset") != null
+			row_ok = row_ok and hud_n.get_node_or_null("%RowCap") != null
+			row_ok = row_ok and hud_n.get_node_or_null("%RowFsr") != null
+			if not row_ok:
+				row_ok = hud_root.find_child("RowPreset", true, false) != null
+				row_ok = row_ok and hud_root.find_child("RowCap", true, false) != null
+				row_ok = row_ok and hud_root.find_child("RowFsr", true, false) != null
+			if not row_ok:
+				ok = false
+				errors.append("graphics menu rows not in instantiated HUD")
+			if hud_n.has_method("cycle_graphics_focus") or hud_n.has_method("cycle_gfx_row"):
+				var before := str(hud_n.graphics_focus_id()) if hud_n.has_method("graphics_focus_id") else str(hud_n.get("gfx_row"))
+				if hud_n.has_method("cycle_graphics_focus"):
+					hud_n.cycle_graphics_focus(1)
+				else:
+					hud_n.cycle_gfx_row(1)
+				var mid := str(hud_n.graphics_focus_id()) if hud_n.has_method("graphics_focus_id") else str(hud_n.get("gfx_row"))
+				if mid == before:
+					ok = false
+					errors.append("graphics menu row did not cycle without mouse")
+				if hud_n.has_method("cycle_graphics_focus"):
+					hud_n.cycle_graphics_focus(1)
+					hud_n.cycle_graphics_focus(1)
+				else:
+					hud_n.cycle_gfx_row(1)
+					hud_n.cycle_gfx_row(1)
+			var adv := hud_n.get_node_or_null("%AdvisorPanel") as Control
+			if adv:
+				var ar := adv.get_global_rect()
+				if ar.position.x < 47.5:
+					ok = false
+					errors.append("Advisor global x=%.1f still tighter than 48" % ar.position.x)
+			var nerr := errors.size()
+			_assert_hud_safe(hud_n, safe, errors)
+			if errors.size() > nerr:
+				ok = false
+		if hud_n.get_parent():
+			hud_n.get_parent().remove_child(hud_n)
+		hud_n.free()
+
+	## 0.1.6 B abort: keyboard B + joy B → ABORTED, brush unchanged.
+	var DeckScr = load("res://scripts/input/deck_controller.gd")
+	if DeckScr == null or BenchScr == null:
+		ok = false
+		errors.append("deck/bench scripts failed to load for B-abort")
+	else:
+		var deck_n = DeckScr.new()
+		var brush0: int = int(deck_n.brush_size)
+		var bench3 = BenchScr.new()
+		bench3.setup(null, MapData.new(), null)
+		deck_n.bench_blocking = true
+		deck_n.cancel_pressed.connect(func(): bench3.abort())
+		bench3.start_smoke("low")
+		if not bench3.is_running():
+			ok = false
+			errors.append("start_smoke did not enter RUNNING")
+		var key_b := InputEventKey.new()
+		key_b.pressed = true
+		key_b.physical_keycode = KEY_B
+		key_b.keycode = KEY_B
+		deck_n._input(key_b)
+		if bench3.is_running() or not bench3.is_aborted():
+			ok = false
+			errors.append("keyboard B did not abort (running=%s state=%s)" % [str(bench3.is_running()), str(bench3.state)])
+		if int(deck_n.brush_size) != brush0:
+			ok = false
+			errors.append("keyboard B changed brush %d -> %d" % [brush0, int(deck_n.brush_size)])
+		bench3.start_smoke("low")
+		var joy_b := InputEventJoypadButton.new()
+		joy_b.pressed = true
+		joy_b.button_index = JOY_BUTTON_B
+		deck_n._input(joy_b)
+		if bench3.is_running() or not bench3.is_aborted():
+			ok = false
+			errors.append("joy B did not abort (running=%s state=%s)" % [str(bench3.is_running()), str(bench3.state)])
+		if int(deck_n.brush_size) != brush0:
+			ok = false
+			errors.append("joy B changed brush")
+		bench3.start_smoke("low")
+		var joy_x := InputEventJoypadButton.new()
+		joy_x.pressed = true
+		joy_x.button_index = JOY_BUTTON_X
+		deck_n._unhandled_input(joy_x)
+		if int(deck_n.brush_size) != brush0:
+			ok = false
+			errors.append("X-brush cycled while bench running")
+		if bench3 is Node:
+			bench3.free()
+		if deck_n is Node:
+			deck_n.free()
+
+	var gs_deck := GraphicsSettings.new()
+	gs_deck.index = GraphicsPresets.Id.ULTRA
+	gs_deck.fps_cap = 40
+	if gs_deck.has_method("apply_deck_detect"):
+		gs_deck.apply_deck_detect()
+		if gs_deck.index == GraphicsPresets.Id.ULTRA:
+			ok = false
+			errors.append("Deck-detect path applied Ultra")
+		if str(gs_deck.name()) != "low":
+			ok = false
+			errors.append("Deck-detect path preset %s not low" % gs_deck.name())
+	else:
+		ok = false
+		errors.append("GraphicsSettings missing apply_deck_detect")
+	var gs_low := GraphicsSettings.new()
+	gs_low.index = GraphicsPresets.Id.LOW
+	if gs_low.has_method("apply_deck_detect"):
+		gs_low.apply_deck_detect()
+		if gs_low.index != GraphicsPresets.Id.LOW:
+			ok = false
+			errors.append("Deck-detect auto-up from Low to %s" % gs_low.name())
+
+	## 0.1.6 DLSS hook (disabled only) + FSR two-way + SafeArea constant + hide brush.
+	if GameConstants.HUD_SAFE_RECT != Rect2(48, 48, 1136, 704):
+		ok = false
+		errors.append("HUD_SAFE_RECT %s not Rect2(48,48,1136,704)" % str(GameConstants.HUD_SAFE_RECT))
+	if GraphicsSettings.FSR_NAMES.size() != 2:
+		ok = false
+		errors.append("FSR must be Off vs On/Quality (got %s)" % str(GraphicsSettings.FSR_NAMES))
+	var gs_dlss := GraphicsSettings.new()
+	if not gs_dlss.has_method("dlss_enabled") or gs_dlss.dlss_enabled():
+		ok = false
+		errors.append("DLSS hook missing or enabled")
+	if gs_dlss.has_method("show_dlss_row") and gs_dlss.show_dlss_row() and OS.get_name() == "Linux":
+		ok = false
+		errors.append("DLSS row visible on Linux")
+	if gs_dlss.has_method("apply_dlss"):
+		gs_dlss.apply_dlss(null)
+	if gs_dlss.has_method("apply_deck_defaults"):
+		gs_dlss.apply_deck_defaults()
+		if gs_dlss.index != 0 or int(gs_dlss.fps_cap) != 40 or int(gs_dlss.fsr_index) != 1:
+			ok = false
+			errors.append("apply_deck_defaults not Low/40/FSR (i=%s cap=%s fsr=%s)" % [
+				str(gs_dlss.index), str(gs_dlss.fps_cap), str(gs_dlss.fsr_index)])
+	var gs_src := FileAccess.get_file_as_string("res://scripts/ui/graphics_settings.gd")
+	if gs_src.find("DLSS — 0.1.7") < 0:
+		ok = false
+		errors.append("DLSS label 0.1.7 missing")
+	if gs_src.find("scaling_3d_mode = 3") >= 0 or gs_src.find("scaling_3d_mode = 4") >= 0:
+		ok = false
+		errors.append("fake DLSS scaling_3d_mode written")
+	var apply_fsr_fn := _func_slice(gs_src, "func apply_fsr")
+	if apply_fsr_fn.find("scaling_3d_mode = 1") >= 0:
+		ok = false
+		errors.append("apply_fsr used FSR1 mode as fake DLSS")
+	if hud_src2.find("B abort") < 0:
+		ok = false
+		errors.append("help missing B abort")
+	if hud_src2.find("set_brush_hidden") < 0:
+		ok = false
+		errors.append("hud.gd missing hide-brush")
+	if main_src.find("cursor_hidden") < 0:
+		ok = false
+		errors.append("main.gd missing cursor hide during bench")
+	if hud_src.find("RowDlss") < 0 and hud_src2.find("RowDlss") < 0:
+		ok = false
+		errors.append("DLSS row hook missing from HUD")
+
+	## Deck / handheld Ultra: no SDFGI, VoxelGI, SSIL, SSR, volumetric fog.
+	var deck_world := Node.new()
+	var deck_we := WorldEnvironment.new()
+	deck_we.name = "WorldEnvironment"
+	deck_world.add_child(deck_we)
+	GraphicsPresets.apply(deck_world, null, GraphicsPresets.Id.ULTRA, 1)
+	var denv: Environment = deck_we.environment
+	if denv == null:
+		ok = false
+		errors.append("handheld Ultra apply left no Environment")
+	else:
+		if denv.sdfgi_enabled:
+			ok = false
+			errors.append("Deck/handheld Ultra enabled SDFGI")
+		if denv.ssil_enabled:
+			ok = false
+			errors.append("Deck/handheld Ultra enabled SSIL")
+		if denv.ssr_enabled:
+			ok = false
+			errors.append("Deck/handheld Ultra enabled SSR")
+		if denv.volumetric_fog_enabled:
+			ok = false
+			errors.append("Deck/handheld Ultra enabled volumetric fog")
+		if not denv.ssao_enabled:
+			ok = false
+			errors.append("Deck/handheld Ultra missing SSAO")
+	for ch in deck_world.get_children():
+		if ch is VoxelGI and (ch as VoxelGI).visible:
+			ok = false
+			errors.append("Deck/handheld Ultra left VoxelGI visible")
+	deck_world.free()
+
+	## 0.1.6 glyphs: textures exist; help/pause/bench strings have no standalone LB/RB or View.
+	var glyph_need: PackedStringArray = PackedStringArray([
+		"res://assets/ui/glyphs/face_south.png",
+		"res://assets/ui/glyphs/face_east.png",
+		"res://assets/ui/glyphs/face_west.png",
+		"res://assets/ui/glyphs/face_north.png",
+		"res://assets/ui/glyphs/shoulder_l.png",
+		"res://assets/ui/glyphs/shoulder_r.png",
+		"res://assets/ui/glyphs/menu.png",
+		"res://assets/ui/glyphs/stick_l.png",
+		"res://assets/ui/glyphs/stick_r.png",
+	])
+	for gp in glyph_need:
+		if not FileAccess.file_exists(gp):
+			ok = false
+			errors.append("missing glyph %s" % gp)
+	var ui_blob := FileAccess.get_file_as_string("res://scripts/ui/hud.gd") + "\n" + FileAccess.get_file_as_string("res://scenes/hud.tscn") + "\n" + FileAccess.get_file_as_string("res://scripts/ui/glyphs.gd")
+	# Scan assigned UI copy, not comments: quoted strings only.
+	var ui_copy := ""
+	var qi := 0
+	while true:
+		var a := ui_blob.find("\"", qi)
+		if a < 0:
+			break
+		var b := ui_blob.find("\"", a + 1)
+		if b < 0:
+			break
+		ui_copy += ui_blob.substr(a, b - a + 1) + "\n"
+		qi = b + 1
+	for bad in ["LB/RB", " LB ", " RB ", "View resume", "L3", "B abort", "A paint", "A Benchmark", "View pause"]:
+		if ui_copy.find(bad) >= 0:
+			ok = false
+			errors.append("UI string still has console token %s" % bad.strip_edges())
+	var GlyphsScr = load("res://scripts/ui/glyphs.gd")
+	if GlyphsScr:
+		for hf2 in ["help_play", "help_pause", "help_title", "help_bench", "help_graphics"]:
+			if GlyphsScr.has_method(hf2):
+				var ht := str(GlyphsScr.call(hf2))
+				for tok in [" A ", " B ", "View", "LB", "RB", "L3", "L1", "R1"]:
+					if ht.find(tok) >= 0:
+						ok = false
+						errors.append("HUD help %s has player-facing %s" % [hf2, tok.strip_edges()])
+
+	## P0 Exit — title + pause must request_quit without killing this smoke process.
+	if not InputMap.has_action("cancel"):
+		ok = false
+		errors.append("InputMap missing cancel action")
+	else:
+		var cancel_b := false
+		for ev in InputMap.action_get_events("cancel"):
+			if ev is InputEventJoypadButton and int(ev.button_index) == JOY_BUTTON_B:
+				cancel_b = true
+		if not cancel_b:
+			ok = false
+			errors.append("cancel is not bound to JOY_BUTTON_B")
+	var hud_ps_exit = load("res://scenes/hud.tscn")
+	if hud_ps_exit == null:
+		ok = false
+		errors.append("hud.tscn failed to load for Exit check")
+	else:
+		var hx: CanvasLayer = hud_ps_exit.instantiate()
+		root.add_child(hx)
+		if hx.has_method("show_title"):
+			hx.show_title()
+		if not (hx.has_method("is_title_open") and hx.is_title_open()):
+			ok = false
+			errors.append("title screen did not open")
+		if hx.has_method("focused_action") and str(hx.focused_action()) != "play":
+			ok = false
+			errors.append("title default focus is %s not play" % str(hx.focused_action()))
+		if hx.has_method("highlight_exit"):
+			hx.highlight_exit()
+		if hx.has_method("focused_action") and str(hx.focused_action()) != "exit":
+			ok = false
+			errors.append("title Exit highlight failed (got %s)" % str(hx.focused_action() if hx.has_method("focused_action") else "?"))
+		if hx.has_method("activate_focused"):
+			hx.activate_focused()
+		if not bool(hx.get("quit_requested")):
+			ok = false
+			errors.append("title Exit did not set quit_requested")
+		if hx.get_script():
+			hx.set("quit_requested", false)
+		if hx.has_method("hide_title"):
+			hx.hide_title()
+		if hx.has_method("show_pause"):
+			hx.show_pause()
+		if hx.has_method("focused_action") and str(hx.focused_action()) != "resume":
+			ok = false
+			errors.append("pause default focus is %s not resume" % str(hx.focused_action()))
+		if hx.has_method("move_menu"):
+			hx.move_menu(1)
+		if hx.has_method("focused_action") and str(hx.focused_action()) != "exit":
+			ok = false
+			errors.append("pause Exit is not one flick from Resume (got %s)" % str(hx.focused_action() if hx.has_method("focused_action") else "?"))
+		if hx.has_method("activate_focused"):
+			hx.activate_focused()
+		if not bool(hx.get("quit_requested")):
+			ok = false
+			errors.append("pause Exit did not set quit_requested")
+		if hx.has_method("get_exit_control"):
+			var ex = hx.get_exit_control()
+			if ex == null:
+				ok = false
+				errors.append("pause Exit control missing")
+		hx.free()
+	for gn in ["pause", "confirm", "cancel", "paint", "radial", "brush", "orbit", "zoom", "pan", "heatmap"]:
+		if not FileAccess.file_exists("res://assets/ui/glyphs/deck/%s.png" % gn):
+			ok = false
+			errors.append("missing action-named deck glyph %s.png" % gn)
+	if main_src.find("show_title") < 0 or main_src.find("_on_title_play") < 0:
+		ok = false
+		errors.append("main.gd does not boot title / wire Play")
+
 	print("=== Metro Ops 3D smoke ===")
+
+
 	print("map=%dx%d chunks=%dx%d lot_m=%.1f kenney=%d" % [
 		GameConstants.MAP_SIZE, GameConstants.MAP_SIZE,
 		GameConstants.CHUNKS_PER_SIDE, GameConstants.CHUNKS_PER_SIDE,
@@ -676,3 +1241,22 @@ func _first_mesh_class(n: Node) -> String:
 		if k != "":
 			return k
 	return ""
+
+
+func _assert_hud_safe(n: Node, safe: Rect2, errors: PackedStringArray) -> void:
+	if n is Control:
+		var c := n as Control
+		if not c.visible:
+			return
+		if c.visible:
+			var r := c.get_global_rect()
+			if r.size.x >= 1.0 and r.size.y >= 1.0:
+				if r.position.x < safe.position.x - 0.6 or r.position.y < safe.position.y - 0.6 \
+						or r.end.x > safe.end.x + 0.6 or r.end.y > safe.end.y + 0.6:
+					var pname := str(c.name)
+					if c.is_inside_tree():
+						pname = str(c.get_path())
+					errors.append("HUD %s rect %s outside safe %s" % [pname, str(r), str(safe)])
+	for ch in n.get_children():
+		_assert_hud_safe(ch, safe, errors)
+

@@ -13,6 +13,7 @@ var catalog: BuildingCatalog
 var cursor_lot: Vector2i = Vector2i.ZERO
 var cursor_brush: int = 1
 var cursor_tint: Color = Color(1.0, 0.92, 0.18, 0.72)
+var cursor_hidden: bool = false
 var park_count: int = 0
 var waterfront_count: int = 0
 var card_count: int = 0
@@ -21,6 +22,11 @@ var _wf_water: Dictionary = {}
 var _wf_shore: Dictionary = {}
 var park_root: Node3D
 var waterfront_root: Node3D
+var landmark_root: Node3D
+var heatmap_root: Node3D
+var landmark_count: int = 0
+var heatmap_mode: int = 0  # 0 off, 1 land-value, 2 occupancy
+var _heatmap_chunk_mis: Dictionary = {}
 
 @onready var terrain_mi: MeshInstance3D = $Terrain
 @onready var water_mi: MeshInstance3D = $Water
@@ -176,6 +182,7 @@ func rebuild_all() -> void:
 	_scatter_trees()
 	_scatter_park()
 	_scatter_waterfront()
+	_instance_landmarks()
 
 
 func _ensure_ground_mesh(node_name: String) -> MeshInstance3D:
@@ -367,6 +374,11 @@ func flash_paint(lot: Vector2i, ok: bool) -> void:
 
 func _update_cursor() -> void:
 	if cursor_mi == null:
+		return
+	if cursor_hidden or cursor_brush <= 0:
+		cursor_mi.visible = false
+		if _flash_mi:
+			_flash_mi.visible = false
 		return
 	if map == null or not map.in_bounds(cursor_lot.x, cursor_lot.y):
 		cursor_mi.visible = false
@@ -630,6 +642,12 @@ func _rebuild_lots_and_buildings() -> void:
 		if is_instance_valid(_lot_nodes[i]):
 			(_lot_nodes[i] as Node).queue_free()
 		_lot_nodes.erase(i)
+	_ensure_midrise_landmark()
+	_recount_landmarks()
+	if heatmap_mode == 2:
+		_recolor_lots_occupancy()
+	elif heatmap_mode == 1:
+		_rebuild_chunk_land_heatmap()
 
 
 func _ensure_lot_decal(x: int, y: int, z: int, occ: float, damaged: bool) -> void:
@@ -958,6 +976,18 @@ func _ensure_overlay_roots() -> void:
 			waterfront_root = Node3D.new()
 			waterfront_root.name = "Waterfront"
 			add_child(waterfront_root)
+	if landmark_root == null or not is_instance_valid(landmark_root):
+		landmark_root = get_node_or_null("Landmarks") as Node3D
+		if landmark_root == null:
+			landmark_root = Node3D.new()
+			landmark_root.name = "Landmarks"
+			add_child(landmark_root)
+	if heatmap_root == null or not is_instance_valid(heatmap_root):
+		heatmap_root = get_node_or_null("Heatmap") as Node3D
+		if heatmap_root == null:
+			heatmap_root = Node3D.new()
+			heatmap_root.name = "Heatmap"
+			add_child(heatmap_root)
 
 
 func _scatter_park() -> void:
@@ -976,6 +1006,7 @@ func _scatter_park() -> void:
 	var mid: Vector2i = lots[lots.size() / 2]
 	var statue = catalog.park.pick_statue(0)
 	if statue:
+		statue.name = "LandmarkPark"
 		statue.position = map.lot_to_world(mid.x, mid.y)
 		park_root.add_child(statue)
 		park_count += 1
@@ -1037,6 +1068,8 @@ func _scatter_waterfront() -> void:
 		var hp := map.lot_to_world(hxy.x, hxy.y)
 		var hero_palm = catalog.waterfront.pick_palm(hxy.x + hxy.y)
 		if hero_palm and waterfront_count < 40:
+			if waterfront_root.get_node_or_null("LandmarkWaterfront") == null:
+				hero_palm.name = "LandmarkWaterfront"
 			hero_palm.position = hp
 			waterfront_root.add_child(hero_palm)
 			waterfront_count += 1
@@ -1082,3 +1115,211 @@ func _scatter_waterfront() -> void:
 		waterfront_root.add_child(lily)
 		waterfront_count += 1
 	print("[CityView] waterfront instances=", waterfront_count)
+
+
+
+func cycle_heatmap() -> int:
+	## 0 off · 1 land-value (chunk aggregate) · 2 occupancy (lot decals). Gamepad toggle.
+	heatmap_mode = (heatmap_mode + 1) % 3
+	_refresh_heatmap()
+	return heatmap_mode
+
+
+func set_heatmap_mode(mode: int) -> int:
+	heatmap_mode = posmod(mode, 3)
+	_refresh_heatmap()
+	return heatmap_mode
+
+
+func heatmap_label() -> String:
+	match heatmap_mode:
+		1:
+			return "Land value"
+		2:
+			return "Occupancy"
+		_:
+			return "Off"
+
+
+func _refresh_heatmap() -> void:
+	_ensure_overlay_roots()
+	if heatmap_mode == 0:
+		_hide_heatmap_chunks()
+		_restore_lot_colors()
+		return
+	if heatmap_mode == 1:
+		_restore_lot_colors()
+		_rebuild_chunk_land_heatmap()
+	else:
+		_hide_heatmap_chunks()
+		_recolor_lots_occupancy()
+
+
+func _hide_heatmap_chunks() -> void:
+	if heatmap_root == null:
+		return
+	heatmap_root.visible = false
+	for n in _heatmap_chunk_mis.values():
+		if is_instance_valid(n):
+			(n as Node).visible = false
+
+
+func _restore_lot_colors() -> void:
+	if map == null:
+		return
+	for i in _lot_nodes.keys():
+		if not is_instance_valid(_lot_nodes[i]):
+			continue
+		var mi: MeshInstance3D = _lot_nodes[i]
+		var mat := mi.material_override as StandardMaterial3D
+		if mat == null:
+			continue
+		var x: int = int(i) % map.size
+		var y: int = int(i) / map.size
+		var z: int = map.zone[i]
+		var occ: float = map.occupancy[i]
+		var damaged: bool = map.damaged_tile[i] == 1 or map.chunk_at(x, y).damaged
+		mat.albedo_color = TileTypes.zone_color(z, occ, damaged)
+
+
+func _recolor_lots_occupancy() -> void:
+	if map == null:
+		return
+	for i in _lot_nodes.keys():
+		if not is_instance_valid(_lot_nodes[i]):
+			continue
+		var mi: MeshInstance3D = _lot_nodes[i]
+		var mat := mi.material_override as StandardMaterial3D
+		if mat == null:
+			continue
+		var occ: float = clampf(map.occupancy[i], 0.0, 1.0)
+		mat.albedo_color = Color(0.12, 0.10, 0.10, 0.28).lerp(Color(0.98, 0.82, 0.18, 0.62), occ)
+
+
+func _rebuild_chunk_land_heatmap() -> void:
+	_ensure_overlay_roots()
+	if heatmap_root == null or map == null:
+		return
+	heatmap_root.visible = true
+	var s := GameConstants.LOT_METERS * float(map.chunk_size)
+	var keep: Dictionary = {}
+	for c in map.chunks:
+		var chunk: ChunkData = c
+		if not chunk.active:
+			continue
+		var key := "%d_%d" % [chunk.cx, chunk.cy]
+		keep[key] = true
+		var mi: MeshInstance3D = _heatmap_chunk_mis.get(key, null)
+		if mi == null or not is_instance_valid(mi):
+			mi = MeshInstance3D.new()
+			mi.name = "hm_%s" % key
+			var plane := PlaneMesh.new()
+			plane.size = Vector2(s * 0.96, s * 0.96)
+			plane.orientation = PlaneMesh.FACE_Y
+			mi.mesh = plane
+			var mat := StandardMaterial3D.new()
+			mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+			mat.no_depth_test = false
+			mi.material_override = mat
+			mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			var cx := (float(chunk.cx) + 0.5) * s
+			var cz := (float(chunk.cy) + 0.5) * s
+			mi.position = Vector3(cx, 0.16, cz)
+			heatmap_root.add_child(mi)
+			_heatmap_chunk_mis[key] = mi
+		mi.visible = true
+		var mat2 := mi.material_override as StandardMaterial3D
+		if mat2:
+			var v: float = clampf(chunk.land_value, 0.0, 1.0)
+			mat2.albedo_color = Color(0.12, 0.42, 0.95, 0.42).lerp(Color(0.95, 0.28, 0.10, 0.50), v)
+
+
+func _recount_landmarks() -> void:
+	landmark_count = 0
+	if park_root and park_root.get_node_or_null("LandmarkPark"):
+		landmark_count += 1
+	if waterfront_root and waterfront_root.get_node_or_null("LandmarkWaterfront"):
+		landmark_count += 1
+	if landmark_root and landmark_root.get_node_or_null("LandmarkMidrise"):
+		landmark_count += 1
+	else:
+		for n in _building_nodes.values():
+			if is_instance_valid(n) and str(n.name) == "LandmarkMidrise":
+				landmark_count += 1
+				break
+
+
+func _instance_landmarks() -> void:
+	## Named heroes at landmark_world lots. Existing kits only — no invented meshes.
+	_ensure_overlay_roots()
+	_ensure_park_landmark()
+	_ensure_waterfront_landmark()
+	_ensure_midrise_landmark()
+	_recount_landmarks()
+	print("[CityView] landmarks=", landmark_count, " park=", park_count, " waterfront=", waterfront_count)
+
+
+func _ensure_park_landmark() -> bool:
+	if park_root:
+		var existing := park_root.get_node_or_null("LandmarkPark")
+		if existing:
+			return true
+	if catalog == null or catalog.park == null or not catalog.park.ready or map == null:
+		return false
+	var statue = catalog.park.pick_statue(1)
+	if statue == null:
+		return false
+	statue.name = "LandmarkPark"
+	statue.position = landmark_world("park")
+	park_root.add_child(statue)
+	park_count += 1
+	return true
+
+
+func _ensure_waterfront_landmark() -> bool:
+	if waterfront_root:
+		var existing := waterfront_root.get_node_or_null("LandmarkWaterfront")
+		if existing:
+			return true
+	if catalog == null or catalog.waterfront == null or not catalog.waterfront.ready or map == null:
+		return false
+	var palm = catalog.waterfront.pick_palm(7)
+	if palm == null:
+		return false
+	palm.name = "LandmarkWaterfront"
+	palm.position = landmark_world("waterfront")
+	waterfront_root.add_child(palm)
+	waterfront_count += 1
+	return true
+
+
+func _ensure_midrise_landmark() -> bool:
+	if map == null or catalog == null or not catalog.has_meshes():
+		return false
+	if landmark_root:
+		var existing := landmark_root.get_node_or_null("LandmarkMidrise")
+		if existing:
+			return true
+	var lot := Vector2i(map.hq.x + 8, map.hq.y - 8)
+	if not map.in_bounds(lot.x, lot.y):
+		return false
+	var i := map.idx(lot.x, lot.y)
+	if _building_nodes.has(i) and is_instance_valid(_building_nodes[i]):
+		var n: Node3D = _building_nodes[i]
+		n.name = "LandmarkMidrise"
+		return true
+	## Lot empty / road — spawn a Kenney mid COM (existing catalog, not MidriseKit exteriors).
+	var b: Node3D = catalog.pick_zone_building(TileTypes.Zone.COMMERCIAL, 0.45, i)
+	if b == null:
+		b = catalog.pick_zone_building(TileTypes.Zone.RESIDENTIAL, 0.45, i)
+	if b == null:
+		return false
+	b.name = "LandmarkMidrise"
+	b.position = landmark_world("midrise")
+	if catalog.midrise_cards and catalog.midrise_cards.has_method("attach"):
+		catalog.midrise_cards.attach(b, i)
+		card_count += 1
+	landmark_root.add_child(b)
+	return true

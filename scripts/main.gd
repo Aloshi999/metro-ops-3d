@@ -16,6 +16,7 @@ const GraphicsPresets = preload("res://scripts/world/graphics_presets.gd")
 const GraphicsSettings = preload("res://scripts/ui/graphics_settings.gd")
 const AudioBed = preload("res://scripts/systems/audio_bed.gd")
 const BenchmarkMode = preload("res://scripts/systems/benchmark.gd")
+const CampaignSystem = preload("res://scripts/systems/campaign_system.gd")
 
 @onready var deck: Node = $DeckController
 @onready var hud: CanvasLayer = $HUD
@@ -37,8 +38,10 @@ var gfx: GraphicsSettings
 
 var audio_bed: AudioBed
 var bench: BenchmarkMode
+var campaign: CampaignSystem
 
 var paused: bool = false
+var quit_requested: bool = false
 var sim_accum: float = 0.0
 var cursor: Vector2i = Vector2i(64, 64)
 
@@ -130,6 +133,8 @@ func _ready() -> void:
 	deck.cycle_next.connect(func(): tools.cycle(1); _refresh_advisor())
 	deck.cycle_prev.connect(func(): tools.cycle(-1); _refresh_advisor())
 	deck.toggle_pause.connect(_toggle_pause)
+	if deck.has_signal("open_menu"):
+		deck.open_menu.connect(_open_pause_from_start)
 	deck.toggle_fps.connect(hud.toggle_fps_overlay)
 	deck.war_pressed.connect(_trigger_war)
 	deck.disaster_pressed.connect(_trigger_disaster)
@@ -138,6 +143,14 @@ func _ready() -> void:
 	deck.brush_cycled.connect(_on_brush_cycled)
 	if deck.has_signal("gfx_cycle"):
 		deck.gfx_cycle.connect(_on_gfx_cycle)
+	if deck.has_signal("gfx_row"):
+		deck.gfx_row.connect(_on_gfx_row)
+	if deck.has_signal("gfx_row_move"):
+		deck.gfx_row_move.connect(_on_gfx_row)
+	if deck.has_signal("menu_row_shift"):
+		deck.menu_row_shift.connect(_on_gfx_row)
+	if deck.has_signal("heatmap_toggled"):
+		deck.heatmap_toggled.connect(_on_heatmap_toggled)
 
 	hud.war_clicked.connect(_trigger_war)
 	hud.disaster_clicked.connect(_trigger_disaster)
@@ -147,6 +160,10 @@ func _ready() -> void:
 		hud.overlay_focus_out.connect(_on_overlay_focus_out)
 	if hud.has_signal("overlay_focus_in"):
 		hud.overlay_focus_in.connect(_on_overlay_focus_in)
+	if hud.has_signal("resume_clicked"):
+		hud.resume_clicked.connect(_resume_from_menu)
+	if hud.has_signal("exit_clicked"):
+		hud.exit_clicked.connect(_on_hud_exit)
 
 	tools.tool_changed.connect(func(_id, label): hud.set_tool(label, tools.brush))
 	budget.cash_changed.connect(hud.set_cash)
@@ -167,7 +184,15 @@ func _ready() -> void:
 	_boot_graphics()
 	_boot_audio()
 	_boot_benchmark()
+	_boot_campaign()
 	_update_cursor_visual()
+	if hud.has_signal("play_pressed") and not hud.play_pressed.is_connected(_on_title_play):
+		hud.play_pressed.connect(_on_title_play)
+	if hud.has_method("show_title"):
+		hud.show_title()
+		paused = true
+		if deck:
+			deck.graphics_focus = true
 
 
 func _setup_environment() -> void:
@@ -202,9 +227,15 @@ func _process(dt: float) -> void:
 
 	_update_cursor_from_input()
 	_update_cursor_visual()
+	_sync_bench_block()
 	if city_view != null:
 		city_view.cursor_lot = cursor
-		city_view.cursor_brush = tools.brush
+		var blocking := bench != null and bench.is_blocking()
+		city_view.cursor_hidden = blocking
+		city_view.cursor_brush = 0 if blocking else tools.brush
+		if deck:
+			deck.bench_blocking = blocking
+		city_view.cursor_hidden = bench != null and bench.is_blocking()
 
 	if deck.radial_open and radial:
 		radial.set_aim(deck.radial_aim)
@@ -229,6 +260,8 @@ func _process(dt: float) -> void:
 				hud.set_happiness(sim.happiness)
 			if hud.has_method("set_event_status"):
 				hud.set_event_status(sim.war_timer, sim.disaster_timer)
+			if campaign != null:
+				campaign.tick(map, budget, sim)
 			_refresh_advisor()
 
 
@@ -290,8 +323,9 @@ func _cursor_tint() -> Color:
 
 func _update_cursor_visual() -> void:
 	if city_view != null:
+		city_view.cursor_hidden = bench != null and bench.is_blocking()
 		city_view.cursor_lot = cursor
-		city_view.cursor_brush = tools.brush
+		city_view.cursor_brush = 0 if (bench != null and bench.is_blocking()) else tools.brush
 		city_view.cursor_tint = _cursor_tint()
 
 
@@ -307,7 +341,19 @@ func _resume_play() -> void:
 	pass
 
 
+func _on_title_play() -> void:
+	if hud != null and hud.has_method("hide_title"):
+		hud.hide_title()
+	paused = false
+	hud.set_paused(false)
+	deck.graphics_focus = false
+
+
 func _on_paint() -> void:
+	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
+		if hud.has_method("activate_focused"):
+			hud.activate_focused()
+		return
 	if deck.radial_open:
 		return
 	if bench != null and bench.is_blocking():
@@ -315,10 +361,28 @@ func _on_paint() -> void:
 			_dismiss_benchmark()
 		return
 	if paused:
-		# Stay paused until View. A starts Benchmark, never unpauses play.
-		_start_benchmark_from_pause()
+		# Stay paused until View. A confirms the focused item, never unpauses play.
+		_on_pause_confirm()
 		return
 	_try_paint_at(cursor)
+
+
+func _on_pause_confirm() -> void:
+	if hud == null:
+		return
+	if hud.has_method("is_graphics_screen") and hud.is_graphics_screen():
+		return
+	var id := ""
+	if hud.has_method("confirm_pause_item"):
+		id = str(hud.confirm_pause_item())
+	elif hud.has_method("activate_pause_item"):
+		id = str(hud.activate_pause_item())
+	if id == "benchmark" or id == "resume":
+		_start_benchmark_from_pause()
+	elif id == "resume":
+		pass  # A never unpauses free play. View resumes.
+	elif id == "" and hud.has_method("activate_focused"):
+		hud.activate_focused()
 
 
 func _try_paint_at(tile: Vector2i) -> void:
@@ -392,6 +456,8 @@ func _paint_one(tile: Vector2i) -> bool:
 			ok = map.place_service(tile.x, tile.y, TileTypes.Service.WATER_TOWER)
 	if ok:
 		budget.spend(cost)
+		if campaign != null:
+			campaign.note_paint()
 	return ok
 
 
@@ -413,10 +479,11 @@ func _on_radial_select(index: int) -> void:
 func _boot_graphics() -> void:
 	gfx = GraphicsSettings.new()
 	gfx.boot()
-	if world != null and world.get("graphics_preset") != null:
-		gfx.index = int(world.graphics_preset)
-	if hud.has_method("set_graphics"):
-		hud.set_graphics(gfx.label())
+	## Saved preset/fps/fsr win. Do not copy world.graphics_preset over a player pick.
+	gfx.apply(get_viewport(), world)
+	_refresh_graphics_hud()
+	if hud.has_method("set_dlss_row"):
+		hud.set_dlss_row(bool(gfx.show_dlss_row()) if gfx.has_method("show_dlss_row") else false)
 
 
 func _boot_audio() -> void:
@@ -433,27 +500,136 @@ func set_district(district: String) -> void:
 		audio_bed.set_district(district)
 
 
+func _on_gfx_row(dir: int) -> void:
+	if bench != null and bench.is_running():
+		return
+	if hud == null:
+		return
+	if hud.has_method("is_title_open") and hud.is_title_open():
+		if hud.has_method("move_menu"):
+			hud.move_menu(dir)
+		return
+	if not paused:
+		return
+	if hud.has_method("is_graphics_screen") and hud.is_graphics_screen():
+		if hud.has_method("cycle_graphics_focus"):
+			hud.cycle_graphics_focus(dir)
+		elif hud.has_method("cycle_gfx_row"):
+			hud.cycle_gfx_row(dir)
+	elif hud.has_method("cycle_pause_item"):
+		hud.cycle_pause_item(dir)
+
+
 func _on_gfx_cycle(dir: int) -> void:
 	if bench != null and bench.is_running():
 		return
+	if not paused:
+		return
+	if hud == null or not (hud.has_method("is_graphics_screen") and hud.is_graphics_screen()):
+		return
 	if gfx == null:
 		_boot_graphics()
-	gfx.cycle(dir)
-	if world != null and world.has_method("apply_graphics_preset"):
-		world.apply_graphics_preset(gfx.index)
+	var row := 0
+	if hud != null:
+		row = int(hud.get("gfx_row"))
+	var toast := "Graphics"
+	var body := gfx.label()
+	if row == 1:
+		gfx.cycle_fps(dir)
+		toast = "FPS cap"
+		body = gfx.fps_label()
+	elif row == 2:
+		gfx.cycle_fsr(dir)
+		gfx.apply_fsr(get_viewport())
+		toast = "FSR"
+		body = gfx.fsr_label()
 	else:
-		gfx.apply(get_viewport(), world)
-	if hud.has_method("set_graphics"):
+		gfx.cycle_preset(dir)
+		if world != null and world.has_method("apply_graphics_preset"):
+			world.apply_graphics_preset(gfx.index)
+		else:
+			gfx.apply(get_viewport(), world)
+		## Preset apply must not keep a stomp on player FPS/FSR.
+		gfx.apply_fps()
+		gfx.apply_fsr(get_viewport())
+		body = gfx.label()
+	_refresh_graphics_hud()
+	hud.show_event(toast, body)
+
+
+func _refresh_graphics_hud() -> void:
+	if gfx == null or hud == null:
+		return
+	if hud.has_method("set_graphics_menu"):
+		hud.set_graphics_menu(gfx.label(), gfx.fps_label() if gfx.has_method("fps_label") else gfx.cap_label(), gfx.fsr_label())
+	elif hud.has_method("set_graphics_state"):
+		hud.set_graphics_state(gfx.label(), gfx.fps_label(), gfx.fsr_label())
+	elif hud.has_method("set_graphics"):
 		hud.set_graphics(gfx.label())
-	hud.show_event("Graphics", gfx.label())
 
 
 func _on_brush_cycled(size: int) -> void:
+	if bench != null and bench.is_blocking():
+		return
 	tools.brush = size
 	hud.set_tool(tools.label(), tools.brush)
 
 
+func request_quit() -> void:
+	## Confirm on Exit. Flag first so headless smoke can intercept. Process must die on Deck.
+	quit_requested = true
+	OS.set_restart_on_exit(false)
+	var skip := Engine.is_editor_hint() or OS.has_feature("headless")
+	for a in OS.get_cmdline_args():
+		if a == "--quit-smoke":
+			skip = true
+	for a in OS.get_cmdline_user_args():
+		if a == "--quit-smoke":
+			skip = true
+	if hud != null:
+		hud.quit_requested = true
+	if skip:
+		return
+	if get_tree():
+		get_tree().quit()
+
+
+func _on_hud_exit() -> void:
+	request_quit()
+
+
+func _resume_from_menu() -> void:
+	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
+		return
+	paused = false
+	hud.set_paused(false)
+	if deck:
+		deck.graphics_focus = false
+	_refresh_advisor()
+
+
+func _open_pause_from_start() -> void:
+	## Start / Menu — open pause if it is not already open. Do not quit.
+	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
+		return
+	if deck.radial_open:
+		return
+	if bench != null and bench.is_running():
+		bench.abort()
+		return
+	if bench != null and bench.is_results():
+		_dismiss_benchmark()
+		return
+	if not paused:
+		paused = true
+		hud.set_paused(true)
+		deck.graphics_focus = true
+		_refresh_advisor()
+
+
 func _toggle_pause() -> void:
+	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
+		return
 	if deck.radial_open:
 		return
 	if bench != null and bench.is_running():
@@ -533,8 +709,7 @@ func _start_benchmark(lock_low: bool, p_smoke: bool) -> void:
 		return
 	if bench.is_running():
 		return
-	if lock_low:
-		_lock_bench_low()
+	_lock_bench_low()
 	if hud.has_method("set_bench_results"):
 		hud.set_bench_results(false, {})
 	paused = false
@@ -547,30 +722,61 @@ func _start_benchmark(lock_low: bool, p_smoke: bool) -> void:
 		preset = GraphicsPresets.name_of(int(world.graphics_preset))
 	if lock_low:
 		preset = "low"
+	## Bench always caps at Deck 40. Restore player pick when the run ends.
+	Engine.max_fps = GameConstants.TARGET_FPS
 	if p_smoke:
 		bench.start_smoke(preset)
 	else:
 		bench.start(preset)
+	_sync_bench_block()
 	if hud.has_method("set_bench_live"):
 		hud.set_bench_live(true, 0.0, 0.0, bench.duration)
 
 
 func _lock_bench_low() -> void:
-	if world != null and world.has_method("apply_graphics_preset"):
-		world.apply_graphics_preset(GraphicsPresets.Id.LOW)
-	if gfx != null:
-		gfx.index = GraphicsPresets.Id.LOW
+	## Bench defaults: Low / 40 / FSR2 0.67. Do not persist over the player's cap.
+	if gfx != null and gfx.has_method("apply_bench_lock"):
+		gfx.apply_bench_lock(get_viewport(), world)
+	else:
+		if world != null and world.has_method("apply_graphics_preset"):
+			world.apply_graphics_preset(GraphicsPresets.Id.LOW)
+		Engine.max_fps = GameConstants.TARGET_FPS
+		var vp := get_viewport()
+		if vp:
+			vp.scaling_3d_mode = GameConstants.FSR_MODE
+			vp.scaling_3d_scale = GameConstants.FSR_SCALE
+			vp.fsr_sharpness = GameConstants.FSR_SHARPNESS
 	if hud.has_method("set_graphics"):
-		hud.set_graphics(gfx.label() if gfx else "Low")
+		hud.set_graphics("Low")
 
 
 func _on_cancel_pressed() -> void:
-	if bench == null:
+	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
+		if hud.has_method("highlight_exit"):
+			hud.highlight_exit()
 		return
-	if bench.is_running():
+	if bench != null and bench.is_running():
 		bench.abort()
-	elif bench.is_results():
+		return
+	if bench != null and bench.is_results():
 		_dismiss_benchmark()
+		return
+	if paused and hud != null and hud.has_method("is_graphics_screen") and hud.is_graphics_screen():
+		if hud.has_method("back_to_pause_root"):
+			hud.back_to_pause_root()
+		elif hud.has_method("show_pause"):
+			hud.show_pause()
+		return
+	if paused:
+		# B on pause root stays paused. View resumes play.
+		if hud.has_method("back_from_menu"):
+			hud.back_from_menu()
+		return
+	# B opens pause if it is not already open.
+	paused = true
+	hud.set_paused(true)
+	deck.graphics_focus = true
+	_refresh_advisor()
 
 
 func _on_bench_live(fps: float, elapsed: float, duration: float) -> void:
@@ -579,6 +785,8 @@ func _on_bench_live(fps: float, elapsed: float, duration: float) -> void:
 
 
 func _on_bench_finished(results: Dictionary) -> void:
+	_clear_bench_input()
+	_restore_player_fps()
 	if hud.has_method("set_bench_live"):
 		hud.set_bench_live(false, 0.0, 0.0, 0.0)
 	if hud.has_method("set_bench_results"):
@@ -589,6 +797,8 @@ func _on_bench_finished(results: Dictionary) -> void:
 
 
 func _on_bench_aborted() -> void:
+	_clear_bench_input()
+	_restore_player_fps()
 	if hud.has_method("set_bench_live"):
 		hud.set_bench_live(false, 0.0, 0.0, 0.0)
 	if hud.has_method("set_bench_results"):
@@ -605,6 +815,70 @@ func _dismiss_benchmark() -> void:
 		hud.set_bench_results(false, {})
 	if hud.has_method("set_bench_live"):
 		hud.set_bench_live(false, 0.0, 0.0, 0.0)
+	_sync_bench_block()
+
+
+func _clear_bench_input() -> void:
+	if deck:
+		deck.bench_blocking = false
+	if city_view:
+		city_view.cursor_hidden = false
+
+
+func _restore_player_fps() -> void:
+	if gfx != null:
+		gfx.apply_fps()
+		gfx.apply_fsr(get_viewport())
+		_refresh_graphics_hud()
+	else:
+		Engine.max_fps = GameConstants.TARGET_FPS
+	_sync_bench_block()
+
+
+func _sync_bench_block() -> void:
+	if deck:
+		deck.bench_blocking = bench != null and bench.is_blocking()
+
+
+func _boot_campaign() -> void:
+	campaign = CampaignSystem.new()
+	if campaign.has_signal("card_fired"):
+		campaign.card_fired.connect(_on_campaign_card)
+	if campaign.has_signal("goal_changed"):
+		campaign.goal_changed.connect(_on_campaign_goal)
+	campaign.tick(map, budget, sim)
+	if hud.has_method("set_goal"):
+		hud.set_goal(campaign.goal_card())
+
+
+func _on_campaign_card(title: String, body: String) -> void:
+	# Existing one-card toast. Do not unpause.
+	hud.show_event(title, body)
+
+
+func _on_campaign_goal(card: Dictionary) -> void:
+	if hud.has_method("set_goal"):
+		hud.set_goal(card)
+
+
+func _on_heatmap_toggled() -> void:
+	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
+		return
+	if bench != null and bench.is_blocking():
+		return
+	if city_view == null or not city_view.has_method("cycle_heatmap"):
+		return
+	var mode: int = int(city_view.cycle_heatmap())
+	var label := "Off"
+	if city_view.has_method("heatmap_label"):
+		label = str(city_view.heatmap_label())
+	elif mode == 1:
+		label = "Land value"
+	elif mode == 2:
+		label = "Occupancy"
+	if hud.has_method("set_heatmap"):
+		hud.set_heatmap(label)
+	hud.show_event("Heatmap", label)
 
 
 func _on_demand_changed(_r: float, _c: float, _i: float) -> void:
@@ -612,7 +886,7 @@ func _on_demand_changed(_r: float, _c: float, _i: float) -> void:
 
 
 func _refresh_advisor() -> void:
-	var msgs: Array = advisor.evaluate(map, budget, tools.id_name(), sim)
+	var msgs: Array = advisor.evaluate(map, budget, tools.id_name(), sim, campaign)
 	hud.set_advisor(msgs)
 
 

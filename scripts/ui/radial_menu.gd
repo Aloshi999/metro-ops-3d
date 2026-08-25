@@ -124,6 +124,26 @@ func _draw() -> void:
 	var cfs := 18
 	var csz := ThemeDB.fallback_font.get_string_size(caption, HORIZONTAL_ALIGNMENT_LEFT, -1, cfs)
 	draw_string(ThemeDB.fallback_font, c - csz * 0.5, caption, HORIZONTAL_ALIGNMENT_LEFT, -1, cfs, Color(1, 1, 1, 0.9))
-	var hint := "A confirm  ·  B / View close"
-	var hsz := ThemeDB.fallback_font.get_string_size(hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 18)
-	draw_string(ThemeDB.fallback_font, c + Vector2(-hsz.x * 0.5, radius + 44.0), hint, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color(1, 1, 1, 0.85))
+	_draw_radial_hint(c)
+
+func _draw_radial_hint(c: Vector2) -> void:
+	var confirm_tex: Texture2D = load("res://assets/ui/glyphs/deck/confirm.png")
+	var cancel_tex: Texture2D = load("res://assets/ui/glyphs/deck/cancel.png")
+	var font := ThemeDB.fallback_font
+	var fs := 18
+	var v1 := "Tools"
+	var v2 := "Back"
+	var w1 := font.get_string_size(v1, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	var w2 := font.get_string_size(v2, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	var icon := 28.0
+	var gap := 8.0
+	var total := icon + gap + w1 + 22.0 + icon + gap + w2
+	var x := c.x - total * 0.5
+	var y := c.y + radius + 28.0
+	if confirm_tex:
+		draw_texture_rect(confirm_tex, Rect2(x, y, icon, icon), false)
+	draw_string(font, Vector2(x + icon + gap, y + 22.0), v1, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(1, 1, 1, 0.9))
+	x += icon + gap + w1 + 22.0
+	if cancel_tex:
+		draw_texture_rect(cancel_tex, Rect2(x, y, icon, icon), false)
+	draw_string(font, Vector2(x + icon + gap, y + 22.0), v2, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color(1, 1, 1, 0.9))

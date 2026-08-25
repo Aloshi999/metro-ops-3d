@@ -16,8 +16,12 @@ enum Severity { INFO, WARN, BLOCK }
 var messages: Array = []
 
 
-func evaluate(map: MapData, budget: BudgetSystem, tool_name: String, sim: SimSystem = null) -> Array:
+func evaluate(map: MapData, budget: BudgetSystem, tool_name: String, sim: SimSystem = null, campaign = null) -> Array:
 	messages.clear()
+	if campaign != null and campaign.has_method("advisor_line"):
+		var line: String = str(campaign.advisor_line())
+		if line != "":
+			_add(Severity.INFO, line)
 	var has_power: bool = map.power_plants.size() > 0
 	var has_water: bool = map.water_towers.size() > 0
 	var zone_count := _count_zones(map)
