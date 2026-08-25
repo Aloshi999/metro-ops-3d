@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/world_root.gd" id="1_world"]
+[ext_resource type="PackedScene" path="res://scenes/city_view.tscn" id="2_view"]
+[ext_resource type="PackedScene" path="res://scenes/city_camera.tscn" id="3_cam"]
+
+[node name="WorldRoot" type="Node3D"]
+script = ExtResource("1_world")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.766044, -0.492404, 0.413176, 0, 0.642788, 0.766044, -0.642788, -0.586824, 0.492404, 0, 80, 0)
+light_energy = 1.2
+light_color = Color(1, 0.91, 0.76, 1)
+shadow_enabled = true
+directional_shadow_max_distance = 320.0
+
+[node name="CityView" parent="." instance=ExtResource("2_view")]
+
+[node name="CityCamera" parent="." instance=ExtResource("3_cam")]

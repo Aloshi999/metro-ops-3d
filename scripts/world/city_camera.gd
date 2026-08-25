@@ -2,7 +2,10 @@ class_name CityCamera
 extends Node3D
 ## Orbit/pan 3D camera. Gamepad-first; mouse look only after the pointer actually moves.
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+
 @onready var cam: Camera3D = $Camera3D
+@onready var camera: Camera3D = $Camera3D
 
 var target: Vector3 = Vector3.ZERO
 var yaw: float = deg_to_rad(42.0)
@@ -16,10 +19,28 @@ func _ready() -> void:
 	_apply()
 
 
-func setup(world_target: Vector3) -> void:
+func setup(world_target: Vector3, _extent: float = 0.0) -> void:
 	target = world_target
 	_smooth_target = world_target
 	_apply()
+
+
+func apply_input(pan_vec: Vector2, orbit_vec: Vector2, zoom: float, dt: float) -> void:
+	pan(pan_vec, dt)
+	orbit(orbit_vec.x, zoom + orbit_vec.y, 0.0, dt)
+
+
+func apply_mouse_orbit(relative: Vector2) -> void:
+	yaw += relative.x * 0.005
+	pitch = clampf(pitch - relative.y * 0.004, deg_to_rad(GameConstants.CAM_PITCH_MIN), deg_to_rad(GameConstants.CAM_PITCH_MAX))
+
+
+func apply_wheel(sign: float) -> void:
+	distance = clampf(distance + sign * 8.0, GameConstants.CAM_DIST_MIN, GameConstants.CAM_DIST_MAX)
+
+
+func look_point() -> Vector3:
+	return ground_point_center()
 
 
 func pan(delta_xz: Vector2, dt: float) -> void:

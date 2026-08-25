@@ -2,6 +2,12 @@ class_name AdvisorSystem
 extends RefCounted
 ## Blocks / warns bad first moves + RCI imbalance / event feedback.
 
+const TileTypes = preload("res://scripts/core/tile_types.gd")
+const ChunkData = preload("res://scripts/core/chunk_data.gd")
+const MapData = preload("res://scripts/systems/map_data.gd")
+const BudgetSystem = preload("res://scripts/systems/budget_system.gd")
+const SimSystem = preload("res://scripts/systems/sim_system.gd")
+
 signal advice_changed(messages: Array)
 
 enum Severity { INFO, WARN, BLOCK }

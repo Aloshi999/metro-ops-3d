@@ -2,6 +2,10 @@ class_name MapData
 extends RefCounted
 ## Flat 128×128 lot map + 16×16 chunk grid. Fog-of-build + aggregate fields.
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+const TileTypes = preload("res://scripts/core/tile_types.gd")
+const ChunkData = preload("res://scripts/core/chunk_data.gd")
+
 signal map_changed
 signal fog_changed
 signal services_changed

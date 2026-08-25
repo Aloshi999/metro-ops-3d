@@ -5,3 +5,6 @@ builds/
 *.apk
 *.aab
 export_credentials.cfg
+
+*.import
+.import/

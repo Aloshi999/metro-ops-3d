@@ -2,6 +2,8 @@ class_name ChunkData
 extends RefCounted
 ## Aggregate stats for one 16×16 lot chunk. No per-citizen agents.
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+
 var cx: int = 0
 var cy: int = 0
 var active: bool = false

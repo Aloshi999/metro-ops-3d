@@ -1,0 +1,199 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="FlashRect" type="ColorRect" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 0.2, 0.1, 0.3)
+
+[node name="TopBar" type="PanelContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 60.0
+grow_horizontal = 2
+
+[node name="HBox" type="HBoxContainer" parent="Root/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="CashLabel" type="Label" parent="Root/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "$25,000"
+
+[node name="FlowLabel" type="Label" parent="Root/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "Δ +0"
+
+[node name="RciLabel" type="Label" parent="Root/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
+text = "RCI R — · C — · I —"
+
+[node name="EventStatus" type="Label" parent="Root/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(1, 0.6, 0.4, 1)
+text = ""
+
+[node name="ToolLabel" type="Label" parent="Root/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "Tool: Road"
+
+[node name="WarButton" type="Button" parent="Root/TopBar/HBox"]
+layout_mode = 2
+text = "War"
+
+[node name="DisasterButton" type="Button" parent="Root/TopBar/HBox"]
+layout_mode = 2
+text = "Disaster"
+
+[node name="AdvisorPanel" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -210.0
+offset_right = 430.0
+offset_bottom = -56.0
+grow_vertical = 0
+
+[node name="VBox" type="VBoxContainer" parent="Root/AdvisorPanel"]
+layout_mode = 2
+
+[node name="AdvisorHeader" type="HBoxContainer" parent="Root/AdvisorPanel/VBox"]
+layout_mode = 2
+
+[node name="AdvisorTitle" type="Label" parent="Root/AdvisorPanel/VBox/AdvisorHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "Advisor"
+
+[node name="AdvisorClose" type="Button" parent="Root/AdvisorPanel/VBox/AdvisorHeader"]
+layout_mode = 2
+text = "Resume"
+
+[node name="AdvisorText" type="RichTextLabel" parent="Root/AdvisorPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = true
+text = "Loading…"
+
+[node name="EventToast" type="PanelContainer" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -240.0
+offset_top = 68.0
+offset_right = 240.0
+offset_bottom = 158.0
+grow_horizontal = 2
+
+[node name="EventVBox" type="VBoxContainer" parent="Root/EventToast"]
+layout_mode = 2
+
+[node name="EventTitle" type="Label" parent="Root/EventToast/EventVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Event"
+horizontal_alignment = 1
+
+[node name="EventBody" type="Label" parent="Root/EventToast/EventVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "Details"
+horizontal_alignment = 1
+
+[node name="FpsLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 64.0
+offset_right = -12.0
+offset_bottom = 92.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 16
+text = "FPS"
+horizontal_alignment = 2
+
+[node name="PausedLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = 56.0
+offset_right = 80.0
+offset_bottom = 88.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 22
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="HelpLabel" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = -50.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 3
+text = "Controls"
+
+[connection signal="pressed" from="Root/TopBar/HBox/WarButton" to="." method="_on_war_button_pressed"]
+[connection signal="pressed" from="Root/TopBar/HBox/DisasterButton" to="." method="_on_disaster_button_pressed"]
+[connection signal="pressed" from="Root/AdvisorPanel/VBox/AdvisorHeader/AdvisorClose" to="." method="_on_advisor_close_pressed"]

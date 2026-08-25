@@ -2,6 +2,10 @@ class_name BudgetSystem
 extends RefCounted
 ## Cash ledger: per-zone tax from aggregate occupancy, upkeep for services.
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+const ChunkData = preload("res://scripts/core/chunk_data.gd")
+const MapData = preload("res://scripts/systems/map_data.gd")
+
 signal cash_changed(cash: int, income: int, upkeep: int)
 
 var cash: int = GameConstants.STARTING_CASH

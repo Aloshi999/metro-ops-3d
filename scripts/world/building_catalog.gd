@@ -3,6 +3,9 @@ extends RefCounted
 ## Loads Kenney City Kit GLBs (real meshes) and returns scaled instances.
 ## Occupancy tiers swap house → midrise → skyscraper / factory.
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+const TileTypes = preload("res://scripts/core/tile_types.gd")
+
 const SUB := "res://assets/city/kenney_suburban/"
 const COM := "res://assets/city/kenney_commercial/"
 const IND := "res://assets/city/kenney_industrial/"

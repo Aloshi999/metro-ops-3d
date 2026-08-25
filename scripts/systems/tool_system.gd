@@ -1,6 +1,8 @@
 class_name ToolSystem
 extends RefCounted
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+
 signal tool_changed(tool_id: String, label: String)
 
 enum Tool {

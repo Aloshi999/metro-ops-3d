@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/world.tscn" id="2_world"]
+[ext_resource type="Script" path="res://scripts/input/deck_controller.gd" id="3_deck"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="4_hud"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="World" parent="." instance=ExtResource("2_world")]
+
+[node name="DeckController" type="Node" parent="."]
+script = ExtResource("3_deck")
+
+[node name="HUD" parent="." instance=ExtResource("4_hud")]

@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/city_view.gd" id="1_view"]
+
+[node name="CityView" type="Node3D"]
+script = ExtResource("1_view")
+
+[node name="Terrain" type="MeshInstance3D" parent="."]
+
+[node name="Water" type="MeshInstance3D" parent="."]
+
+[node name="Roads" type="Node3D" parent="."]
+
+[node name="Buildings" type="Node3D" parent="."]
+
+[node name="Services" type="Node3D" parent="."]
+
+[node name="Lots" type="Node3D" parent="."]
+
+[node name="Props" type="Node3D" parent="."]
+
+[node name="Cursor" type="MeshInstance3D" parent="."]

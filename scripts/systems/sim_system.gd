@@ -2,6 +2,12 @@ class_name SimSystem
 extends RefCounted
 ## Active-chunk aggregate sim only. No per-citizen agents, no traffic pathfinding.
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+const TileTypes = preload("res://scripts/core/tile_types.gd")
+const ChunkData = preload("res://scripts/core/chunk_data.gd")
+const MapData = preload("res://scripts/systems/map_data.gd")
+const BudgetSystem = preload("res://scripts/systems/budget_system.gd")
+
 signal tick_done
 signal demand_changed(res_d: float, com_d: float, ind_d: float)
 
