@@ -8,3 +8,11 @@ export_credentials.cfg
 
 *.import
 .import/
+
+# Fat city bulk (Releases / LFS), not main
+assets/optional/bulk/
+
+# Downtown MegaKit bulk (GitHub Release / LFS)
+assets/city/district_downtown/**
+!assets/city/district_downtown/PACK.md
+!assets/city/district_downtown/LICENSES.md
