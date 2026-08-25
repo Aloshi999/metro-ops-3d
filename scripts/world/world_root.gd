@@ -41,7 +41,7 @@ func setup(p_map: MapData, p_catalog: BuildingCatalog) -> void:
 	if city_view:
 		city_view.setup(map, catalog)
 	if city_camera and map:
-		city_camera.setup(map.lot_to_world(map.hq.x, map.hq.y + 5))
+		city_camera.setup(map.lot_to_world(map.hq.x, map.hq.y), map.world_size())
 
 
 func _process(_dt: float) -> void:

@@ -271,10 +271,31 @@ func _ray_lot(screen: Vector2) -> Vector2i:
 	return lot
 
 
+func _cursor_tint() -> Color:
+	if tools == null:
+		return Color(1.0, 0.92, 0.18, 0.72)
+	match tools.current:
+		ToolSystem.Tool.ROAD:
+			return Color(0.88, 0.88, 0.90, 0.75)
+		ToolSystem.Tool.ZONE_R:
+			return Color(0.28, 0.95, 0.42, 0.78)
+		ToolSystem.Tool.ZONE_C:
+			return Color(0.28, 0.55, 1.0, 0.78)
+		ToolSystem.Tool.ZONE_I:
+			return Color(1.0, 0.86, 0.16, 0.78)
+		ToolSystem.Tool.POWER:
+			return Color(1.0, 0.92, 0.28, 0.78)
+		ToolSystem.Tool.WATER:
+			return Color(0.28, 0.82, 1.0, 0.78)
+		_:
+			return Color(1.0, 0.92, 0.18, 0.72)
+
+
 func _update_cursor_visual() -> void:
 	if city_view != null:
 		city_view.cursor_lot = cursor
 		city_view.cursor_brush = tools.brush
+		city_view.cursor_tint = _cursor_tint()
 
 
 func _apply_deck_window() -> void:

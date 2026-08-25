@@ -61,9 +61,17 @@ const DISASTER_DEMAND_C: float = 0.70
 const DISASTER_DEMAND_I: float = 0.75
 
 const CAM_YAW_SPEED: float = 1.8
-const CAM_ZOOM_SPEED: float = 55.0
+const CAM_ZOOM_SPEED: float = 64.0
+const CAM_ZOOM_SMOOTH: float = 10.0
+const CAM_WHEEL_STEP: float = 16.0
 const CAM_PAN_SPEED: float = 48.0
-const CAM_DIST_MIN: float = 28.0
-const CAM_DIST_MAX: float = 220.0
-const CAM_PITCH_MIN: float = -78.0
-const CAM_PITCH_MAX: float = -22.0
+## Pulled back above Kenney downtown so the skyline fills the frame (not jammed in AABBs).
+const CAM_DIST_MIN: float = 120.0
+const CAM_DIST_MAX: float = 620.0
+const CAM_DIST_DEFAULT: float = 390.0
+const CAM_PITCH_MIN: float = -68.0
+const CAM_PITCH_MAX: float = -42.0
+const CAM_PITCH_DEFAULT: float = -56.0
+const CAM_YAW_DEFAULT: float = 42.0
+## HQ skyscraper-d (6.47u × 14.5 × 1.15) ~91 m plus pad — camera Y never under roofs.
+const CAM_ROOF_CLEARANCE: float = 108.0

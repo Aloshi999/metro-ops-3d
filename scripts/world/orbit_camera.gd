@@ -6,9 +6,9 @@ const GameConstants = preload("res://scripts/core/game_constants.gd")
 @onready var pitch_pivot: Node3D = $PitchPivot
 @onready var camera: Camera3D = $PitchPivot/Camera3D
 
-var yaw: float = 0.72
-var pitch: float = deg_to_rad(-50.0)
-var distance: float = 88.0
+var yaw: float = deg_to_rad(GameConstants.CAM_YAW_DEFAULT)
+var pitch: float = deg_to_rad(GameConstants.CAM_PITCH_DEFAULT)
+var distance: float = GameConstants.CAM_DIST_DEFAULT
 var map_extent: float = 2048.0
 var _mouse_orbiting: bool = false
 
@@ -58,7 +58,7 @@ func apply_mouse_orbit(relative: Vector2) -> void:
 
 
 func apply_wheel(dir: float) -> void:
-	distance = clampf(distance + dir * 10.0, GameConstants.CAM_DIST_MIN, GameConstants.CAM_DIST_MAX)
+	distance = clampf(distance + dir * GameConstants.CAM_WHEEL_STEP, GameConstants.CAM_DIST_MIN, GameConstants.CAM_DIST_MAX)
 	_apply_transform()
 
 

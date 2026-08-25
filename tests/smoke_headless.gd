@@ -3,11 +3,16 @@ extends SceneTree
 ## Run: godot --headless --path /workspace/metro-ops-3d -s res://tests/smoke_headless.gd
 const GameConstants = preload("res://scripts/core/game_constants.gd")
 const TileTypes = preload("res://scripts/core/tile_types.gd")
+const ChunkData = preload("res://scripts/core/chunk_data.gd")
 const MapData = preload("res://scripts/systems/map_data.gd")
 const BudgetSystem = preload("res://scripts/systems/budget_system.gd")
 const SimSystem = preload("res://scripts/systems/sim_system.gd")
 const AdvisorSystem = preload("res://scripts/systems/advisor_system.gd")
+const ToolSystem = preload("res://scripts/systems/tool_system.gd")
 const BuildingCatalog = preload("res://scripts/world/building_catalog.gd")
+const CityView = preload("res://scripts/world/city_view.gd")
+const CityCamera = preload("res://scripts/world/city_camera.gd")
+const WorldRoot = preload("res://scripts/world/world_root.gd")
 
 
 func _init() -> void:
@@ -34,6 +39,21 @@ func _init() -> void:
 	if GameConstants.LOT_METERS != 16.0:
 		ok = false
 		errors.append("LOT_METERS != 16")
+	if GameConstants.CAM_DIST_MIN < 100.0:
+		ok = false
+		errors.append("CAM_DIST_MIN too close (%.1f) — would spawn inside Kenney roofs" % GameConstants.CAM_DIST_MIN)
+	if GameConstants.CAM_DIST_DEFAULT > GameConstants.CAM_DIST_MAX:
+		ok = false
+		errors.append("CAM_DIST_DEFAULT > MAX")
+	if GameConstants.CAM_PITCH_MAX > -35.0:
+		ok = false
+		errors.append("CAM_PITCH_MAX %.1f too flat (yeets into sky)" % GameConstants.CAM_PITCH_MAX)
+	if GameConstants.CAM_PITCH_DEFAULT > -48.0 or GameConstants.CAM_PITCH_DEFAULT < GameConstants.CAM_PITCH_MIN:
+		ok = false
+		errors.append("CAM_PITCH_DEFAULT %.1f not a skyline orbit" % GameConstants.CAM_PITCH_DEFAULT)
+	if GameConstants.CAM_ROOF_CLEARANCE < 90.0:
+		ok = false
+		errors.append("CAM_ROOF_CLEARANCE %.1f below HQ tower" % GameConstants.CAM_ROOF_CLEARANCE)
 
 	var map := MapData.new()
 	if map.size != 128 or map.chunks.size() != 64:
@@ -212,6 +232,66 @@ func _init() -> void:
 	if main_ps == null:
 		ok = false
 		errors.append("main.tscn failed to load")
+
+	var cam_ps = load("res://scenes/city_camera.tscn")
+	if cam_ps == null:
+		ok = false
+		errors.append("city_camera.tscn failed to load")
+	else:
+		var rig: Node3D = cam_ps.instantiate()
+		if rig.get_node_or_null("Camera3D") == null:
+			ok = false
+			errors.append("CityCamera missing Camera3D")
+		var hq_w := Vector3(64.5 * GameConstants.LOT_METERS, 0.0, 64.5 * GameConstants.LOT_METERS)
+		rig.setup(hq_w, 2048.0)
+		rig._process(1.0)
+		var dist: float = float(rig.get("distance"))
+		var pitch: float = float(rig.get("pitch"))
+		var boot_y: float = -sin(pitch) * dist
+		var boot_h: float = absf(cos(pitch)) * dist
+		var tgt: Vector3 = rig.get("target")
+		## City Mesh lock: 190m / -56° / 6 lots south (+96 Z). Not GameConstants 390/620.
+		if absf(dist - 190.0) > 1.0:
+			ok = false
+			errors.append("boot distance %.1f not Mesh lock 190" % dist)
+		if absf(rad_to_deg(pitch) - (-56.0)) > 1.0:
+			ok = false
+			errors.append("boot pitch %.1f deg not Mesh lock -56" % rad_to_deg(pitch))
+		if absf(tgt.z - (hq_w.z + 96.0)) > 1.0:
+			ok = false
+			errors.append("boot target.z=%.1f not HQ+96 (offset %.1f)" % [tgt.z, tgt.z - hq_w.z])
+		if boot_y < GameConstants.CAM_ROOF_CLEARANCE - 0.5:
+			ok = false
+			errors.append("boot camera Y=%.1f under roofs (clearance %.1f)" % [boot_y, GameConstants.CAM_ROOF_CLEARANCE])
+		print("boot camera Y=%.1f horiz=%.1f dist=%.1f pitch=%.1f target.z=%.1f" % [
+			boot_y, boot_h, dist, rad_to_deg(pitch), tgt.z
+		])
+		rig.apply_wheel(1.0)
+		rig._process(1.0)
+		var dist_notch: float = float(rig.get("distance"))
+		if absf(dist_notch - dist - 12.0) > 1.0:
+			ok = false
+			errors.append("one wheel notch moved %.1f m (want ~12, not yeet)" % (dist_notch - dist))
+		for _w in 48:
+			rig.apply_wheel(1.0)
+		rig._process(1.0)
+		var dmaxed: float = float(rig.get("distance"))
+		if absf(dmaxed - 215.0) > 0.2:
+			ok = false
+			errors.append("wheel zoom-out clamp %.1f not Mesh lock 215" % dmaxed)
+		for _w2 in 80:
+			rig.apply_wheel(-1.0)
+		rig._process(1.0)
+		var dmin: float = float(rig.get("distance"))
+		if absf(dmin - 155.0) > 0.2:
+			ok = false
+			errors.append("wheel zoom-in clamp %.1f not Mesh lock 155" % dmin)
+		var min_y: float = -sin(float(rig.get("pitch"))) * dmin
+		if min_y < GameConstants.CAM_ROOF_CLEARANCE - 1.0:
+			ok = false
+			errors.append("min zoom camera Y=%.1f inside roofs" % min_y)
+		print("zoom clamps dist=%.1f..%.1f minY=%.1f notch=%.1f" % [dmin, dmaxed, min_y, dist_notch])
+		rig.free()
 
 	print("=== Metro Ops 3D smoke ===")
 	print("map=%dx%d chunks=%dx%d lot_m=%.1f kenney=%d" % [

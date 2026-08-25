@@ -12,6 +12,7 @@ var map: MapData
 var catalog: BuildingCatalog
 var cursor_lot: Vector2i = Vector2i.ZERO
 var cursor_brush: int = 1
+var cursor_tint: Color = Color(1.0, 0.92, 0.18, 0.72)
 
 @onready var terrain_mi: MeshInstance3D = $Terrain
 @onready var water_mi: MeshInstance3D = $Water
@@ -35,6 +36,8 @@ var _paint_flash_t: float = 0.0
 var _paint_flash_ok: bool = true
 var _paint_flash_lot: Vector2i = Vector2i.ZERO
 var _flash_mi: MeshInstance3D
+var _cursor_mat: StandardMaterial3D
+var _cursor_rim: Node3D
 
 
 func setup(p_map: MapData, p_catalog: BuildingCatalog, _env: WorldEnvironment = null) -> void:
@@ -214,31 +217,67 @@ func _quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, col:
 	st.set_normal(nrm); st.set_color(col); st.set_uv(Vector2(d.x, d.z) * 0.05); st.add_vertex(d)
 
 
-func _build_cursor() -> void:
-	var box := BoxMesh.new()
-	box.size = Vector3(GameConstants.LOT_METERS * 0.96, 0.55, GameConstants.LOT_METERS * 0.96)
+func _make_cursor_mat(col: Color, emission_mul: float = 2.4) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(1.0, 0.92, 0.18, 0.72)
+	mat.albedo_color = col
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	mat.emission_enabled = true
-	mat.emission = Color(1.0, 0.85, 0.2)
-	mat.emission_energy_multiplier = 1.4
-	cursor_mi.mesh = box
-	cursor_mi.material_override = mat
+	mat.emission = Color(col.r, col.g, col.b)
+	mat.emission_energy_multiplier = emission_mul
+	mat.no_depth_test = true
+	mat.render_priority = 16
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	return mat
+
+
+func _build_cursor() -> void:
+	## Obvious tinted lot quad under the paint cursor (no_depth so towers cannot hide it).
+	var s := GameConstants.LOT_METERS
+	var plane := PlaneMesh.new()
+	plane.size = Vector2(s * 0.98, s * 0.98)
+	plane.orientation = PlaneMesh.FACE_Y
+	_cursor_mat = _make_cursor_mat(cursor_tint)
+	cursor_mi.mesh = plane
+	cursor_mi.material_override = _cursor_mat
 	cursor_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	cursor_mi.visible = true
+
+	_cursor_rim = Node3D.new()
+	_cursor_rim.name = "CursorRim"
+	cursor_mi.add_child(_cursor_rim)
+	var thick := 0.55
+	var tall := 2.8
+	var rim_mat := _make_cursor_mat(Color(1.0, 0.95, 0.35, 0.95), 3.0)
+	for i in 4:
+		var edge := MeshInstance3D.new()
+		var box := BoxMesh.new()
+		if i < 2:
+			box.size = Vector3(s * 0.99, tall, thick)
+		else:
+			box.size = Vector3(thick, tall, s * 0.99)
+		edge.mesh = box
+		edge.material_override = rim_mat
+		edge.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var half := s * 0.49
+		match i:
+			0:
+				edge.position = Vector3(0.0, tall * 0.5, -half)
+			1:
+				edge.position = Vector3(0.0, tall * 0.5, half)
+			2:
+				edge.position = Vector3(-half, tall * 0.5, 0.0)
+			3:
+				edge.position = Vector3(half, tall * 0.5, 0.0)
+		_cursor_rim.add_child(edge)
+
 	_flash_mi = MeshInstance3D.new()
 	_flash_mi.name = "PaintFlash"
-	var fbox := BoxMesh.new()
-	fbox.size = Vector3(GameConstants.LOT_METERS * 0.98, 1.2, GameConstants.LOT_METERS * 0.98)
-	_flash_mi.mesh = fbox
-	var fmat := StandardMaterial3D.new()
-	fmat.albedo_color = Color(1.0, 0.9, 0.2, 0.0)
-	fmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	fmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	fmat.emission_enabled = true
-	fmat.emission = Color(1.0, 0.85, 0.2)
+	var fplane := PlaneMesh.new()
+	fplane.size = Vector2(s * 1.05, s * 1.05)
+	fplane.orientation = PlaneMesh.FACE_Y
+	_flash_mi.mesh = fplane
+	var fmat := _make_cursor_mat(Color(1.0, 0.9, 0.2, 0.0), 2.6)
 	_flash_mi.material_override = fmat
 	_flash_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_flash_mi.visible = false
@@ -256,32 +295,35 @@ func flash_paint(lot: Vector2i, ok: bool) -> void:
 func _update_cursor() -> void:
 	if cursor_mi == null:
 		return
-	if not map.in_bounds(cursor_lot.x, cursor_lot.y):
+	if map == null or not map.in_bounds(cursor_lot.x, cursor_lot.y):
 		cursor_mi.visible = false
 		return
 	cursor_mi.visible = true
 	var p := map.lot_to_world(cursor_lot.x, cursor_lot.y)
-	cursor_mi.global_position = Vector3(p.x, 0.35, p.z)
+	cursor_mi.global_position = Vector3(p.x, 0.22, p.z)
 	var sc := float(maxi(1, cursor_brush))
-	var pulse := 1.0 + 0.08 * sin(Time.get_ticks_msec() * 0.008)
-	cursor_mi.scale = Vector3(sc * pulse, 1.15, sc * pulse)
-	var cmat := cursor_mi.material_override as StandardMaterial3D
-	if cmat:
-		cmat.albedo_color = Color(1.0, 0.92, 0.18, 0.72)
+	var pulse := 1.0 + 0.06 * sin(Time.get_ticks_msec() * 0.008)
+	cursor_mi.scale = Vector3(sc * pulse, 1.0, sc * pulse)
+	if _cursor_mat:
+		var a := 0.42 + 0.28 * (0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.009))
+		var col := cursor_tint
+		col.a = a
+		_cursor_mat.albedo_color = col
+		_cursor_mat.emission = Color(col.r, col.g, col.b)
 	if _flash_mi:
 		if _paint_flash_t > 0.0:
 			_paint_flash_t = maxf(0.0, _paint_flash_t - get_process_delta_time())
 			var fp := map.lot_to_world(_paint_flash_lot.x, _paint_flash_lot.y)
-			_flash_mi.global_position = Vector3(fp.x, 0.7, fp.z)
-			_flash_mi.scale = Vector3(sc, 1.0, sc)
+			_flash_mi.global_position = Vector3(fp.x, 0.28, fp.z)
+			_flash_mi.scale = Vector3(sc * 1.08, 1.0, sc * 1.08)
 			var fm := _flash_mi.material_override as StandardMaterial3D
 			if fm:
-				var a := clampf(_paint_flash_t / 0.45, 0.0, 1.0) * 0.55
+				var fa := clampf(_paint_flash_t / 0.45, 0.0, 1.0) * 0.7
 				if _paint_flash_ok:
-					fm.albedo_color = Color(1.0, 0.92, 0.2, a)
+					fm.albedo_color = Color(1.0, 0.92, 0.2, fa)
 					fm.emission = Color(1.0, 0.85, 0.15)
 				else:
-					fm.albedo_color = Color(1.0, 0.2, 0.12, a)
+					fm.albedo_color = Color(1.0, 0.2, 0.12, fa)
 					fm.emission = Color(1.0, 0.15, 0.08)
 			_flash_mi.visible = _paint_flash_t > 0.0
 		else:
