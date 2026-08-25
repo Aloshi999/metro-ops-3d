@@ -9,8 +9,8 @@ const GameConstants = preload("res://scripts/core/game_constants.gd")
 
 var target: Vector3 = Vector3.ZERO
 var yaw: float = deg_to_rad(42.0)
-var pitch: float = deg_to_rad(-48.0)
-var distance: float = 92.0
+var pitch: float = deg_to_rad(-52.0)
+var distance: float = 148.0
 var _smooth_target: Vector3 = Vector3.ZERO
 
 

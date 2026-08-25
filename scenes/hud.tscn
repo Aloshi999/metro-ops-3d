@@ -26,22 +26,47 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 0.2, 0.1, 0.3)
 
+[node name="Reticle" type="Label" parent="Root"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -16.0
+offset_right = 14.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.45, 0.85)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.7)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 22
+text = "+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="TopBar" type="PanelContainer" parent="Root"]
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 60.0
 grow_horizontal = 2
+mouse_filter = 2
 
 [node name="HBox" type="HBoxContainer" parent="Root/TopBar"]
 layout_mode = 2
 theme_override_constants/separation = 14
+mouse_filter = 2
 
 [node name="CashLabel" type="Label" parent="Root/TopBar/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "$25,000"
+text = "$40,000"
 
 [node name="FlowLabel" type="Label" parent="Root/TopBar/HBox"]
 unique_name_in_owner = true
@@ -68,14 +93,16 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 17
-text = "Tool: Road"
+text = "Tool: Residential"
 
 [node name="WarButton" type="Button" parent="Root/TopBar/HBox"]
 layout_mode = 2
+focus_mode = 0
 text = "War"
 
 [node name="DisasterButton" type="Button" parent="Root/TopBar/HBox"]
 layout_mode = 2
+focus_mode = 0
 text = "Disaster"
 
 [node name="AdvisorPanel" type="PanelContainer" parent="Root"]
@@ -85,16 +112,19 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 12.0
-offset_top = -210.0
+offset_top = -228.0
 offset_right = 430.0
-offset_bottom = -56.0
+offset_bottom = -52.0
 grow_vertical = 0
+mouse_filter = 2
 
 [node name="VBox" type="VBoxContainer" parent="Root/AdvisorPanel"]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="AdvisorHeader" type="HBoxContainer" parent="Root/AdvisorPanel/VBox"]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="AdvisorTitle" type="Label" parent="Root/AdvisorPanel/VBox/AdvisorHeader"]
 layout_mode = 2
@@ -102,14 +132,12 @@ size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 text = "Advisor"
 
-[node name="AdvisorClose" type="Button" parent="Root/AdvisorPanel/VBox/AdvisorHeader"]
-layout_mode = 2
-text = "Resume"
-
 [node name="AdvisorText" type="RichTextLabel" parent="Root/AdvisorPanel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
+focus_mode = 0
 bbcode_enabled = true
 fit_content = true
 scroll_active = true
@@ -127,9 +155,11 @@ offset_top = 68.0
 offset_right = 240.0
 offset_bottom = 158.0
 grow_horizontal = 2
+mouse_filter = 2
 
 [node name="EventVBox" type="VBoxContainer" parent="Root/EventToast"]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="EventTitle" type="Label" parent="Root/EventToast/EventVBox"]
 unique_name_in_owner = true
@@ -157,6 +187,7 @@ offset_top = 64.0
 offset_right = -12.0
 offset_bottom = 92.0
 grow_horizontal = 0
+mouse_filter = 2
 theme_override_font_sizes/font_size = 16
 text = "FPS"
 horizontal_alignment = 2
@@ -173,6 +204,7 @@ offset_top = 56.0
 offset_right = 80.0
 offset_bottom = 88.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_font_sizes/font_size = 22
 text = "PAUSED"
 horizontal_alignment = 1
@@ -184,16 +216,74 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = -50.0
-offset_right = -8.0
-offset_bottom = -8.0
+offset_left = 12.0
+offset_top = -44.0
+offset_right = -12.0
+offset_bottom = -6.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_font_sizes/font_size = 12
+mouse_filter = 2
+theme_override_font_sizes/font_size = 17
 autowrap_mode = 3
-text = "Controls"
+text = "A paint · Y tools · X brush · L1/R1 cycle · Start pause · sticks pan/orbit"
+
+[node name="PauseOverlay" type="Control" parent="Root"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+z_index = 50
+
+[node name="PauseDim" type="ColorRect" parent="Root/PauseOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+color = Color(0.02, 0.03, 0.05, 0.55)
+
+[node name="PauseBox" type="VBoxContainer" parent="Root/PauseOverlay"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -70.0
+offset_right = 160.0
+offset_bottom = 70.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 14
+
+[node name="PauseTitle" type="Label" parent="Root/PauseOverlay/PauseBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="Root/PauseOverlay/PauseBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Resume"
+
+[node name="PauseHint" type="Label" parent="Root/PauseOverlay/PauseBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "A / Start / Esc to resume"
+horizontal_alignment = 1
 
 [connection signal="pressed" from="Root/TopBar/HBox/WarButton" to="." method="_on_war_button_pressed"]
 [connection signal="pressed" from="Root/TopBar/HBox/DisasterButton" to="." method="_on_disaster_button_pressed"]
-[connection signal="pressed" from="Root/AdvisorPanel/VBox/AdvisorHeader/AdvisorClose" to="." method="_on_advisor_close_pressed"]
+[connection signal="pressed" from="Root/PauseOverlay/PauseBox/ResumeButton" to="." method="_on_resume_pressed"]

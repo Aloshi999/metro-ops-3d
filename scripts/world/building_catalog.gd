@@ -43,6 +43,9 @@ const RES_HIGH: Array[String] = [
 	SUB + "building-type-u.glb",
 	COM + "low-detail-building-a.glb",
 	COM + "low-detail-building-wide-a.glb",
+	COM + "building-k.glb",
+	COM + "building-l.glb",
+	COM + "building-skyscraper-a.glb",
 ]
 
 const COM_LOW: Array[String] = [
@@ -60,16 +63,19 @@ const COM_MID: Array[String] = [
 	COM + "building-h.glb",
 	COM + "building-i.glb",
 	COM + "building-j.glb",
+	COM + "building-k.glb",
+	COM + "building-skyscraper-a.glb",
+	COM + "building-skyscraper-e.glb",
 ]
 const COM_HIGH: Array[String] = [
-	COM + "building-k.glb",
-	COM + "building-l.glb",
-	COM + "building-m.glb",
-	COM + "building-n.glb",
+	COM + "building-skyscraper-a.glb",
 	COM + "building-skyscraper-a.glb",
 	COM + "building-skyscraper-b.glb",
+	COM + "building-skyscraper-b.glb",
+	COM + "building-skyscraper-c.glb",
 	COM + "building-skyscraper-c.glb",
 	COM + "building-skyscraper-d.glb",
+	COM + "building-skyscraper-e.glb",
 	COM + "building-skyscraper-e.glb",
 ]
 
@@ -170,11 +176,11 @@ func instantiate_path(path: String, scale: float = GameConstants.BUILDING_SCALE)
 
 func pick_zone_building(z: int, occupancy: float, lot_index: int) -> Node3D:
 	var tier: Array[String]
-	if occupancy < 0.18:
+	if occupancy < 0.08:
 		return null
-	elif occupancy < 0.45:
+	elif occupancy < 0.32:
 		tier = _low(z)
-	elif occupancy < 0.75:
+	elif occupancy < 0.58:
 		tier = _mid(z)
 	else:
 		tier = _high(z)

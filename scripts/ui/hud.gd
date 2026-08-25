@@ -7,6 +7,7 @@ const AdvisorSystem = preload("res://scripts/systems/advisor_system.gd")
 signal war_clicked
 signal disaster_clicked
 signal advisor_dismissed
+signal resume_clicked
 
 @onready var cash_label: Label = %CashLabel
 @onready var flow_label: Label = %FlowLabel
@@ -22,6 +23,8 @@ signal advisor_dismissed
 @onready var help_label: Label = %HelpLabel
 @onready var paused_label: Label = %PausedLabel
 @onready var flash: ColorRect = %FlashRect
+@onready var pause_overlay: Control = %PauseOverlay
+@onready var resume_button: Button = %ResumeButton
 
 var show_fps: bool = false
 var _toast_timer: float = 0.0
@@ -32,9 +35,35 @@ func _ready() -> void:
 	event_toast.visible = false
 	paused_label.visible = false
 	fps_label.visible = false
+	if pause_overlay:
+		pause_overlay.visible = false
+		pause_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	if flash:
 		flash.visible = false
-	help_label.text = "Deck: L-stick pan · R-stick orbit/zoom · A paint · L1/R1 cycle · Y radial · X brush · Start advisor · Select FPS  |  Keys: WASD pan · RMB orbit · Wheel zoom · Space/LMB paint · Q/E tools · R radial · B brush · Esc · F3 · 1 War / 2 Disaster"
+	help_label.text = "A paint · Y tools · X brush · L1/R1 cycle · Start pause · sticks pan/orbit"
+	help_label.add_theme_font_size_override("font_size", 17)
+	_set_no_focus(get_node_or_null("Root/TopBar/HBox/WarButton") as Control)
+	_set_no_focus(get_node_or_null("Root/TopBar/HBox/DisasterButton") as Control)
+	_set_no_focus(advisor_panel)
+	_set_no_focus(advisor_text)
+	_set_no_focus(help_label)
+	if resume_button:
+		resume_button.focus_mode = Control.FOCUS_ALL
+		var p := resume_button.get_path()
+		resume_button.focus_neighbor_top = p
+		resume_button.focus_neighbor_bottom = p
+		resume_button.focus_neighbor_left = p
+		resume_button.focus_neighbor_right = p
+		resume_button.focus_next = p
+		resume_button.focus_previous = p
+
+
+func _set_no_focus(c: Control) -> void:
+	if c == null:
+		return
+	c.focus_mode = Control.FOCUS_NONE
+	if c is RichTextLabel:
+		(c as RichTextLabel).selection_enabled = false
 
 
 func _process(dt: float) -> void:
@@ -100,7 +129,20 @@ func set_advisor(messages: Array) -> void:
 
 func set_paused(p: bool) -> void:
 	paused_label.visible = p
-	advisor_panel.modulate.a = 1.0 if p else 0.85
+	if advisor_panel:
+		advisor_panel.modulate.a = 1.0 if p else 0.85
+	if pause_overlay:
+		pause_overlay.visible = p
+		pause_overlay.mouse_filter = Control.MOUSE_FILTER_STOP if p else Control.MOUSE_FILTER_IGNORE
+	if resume_button:
+		if p:
+			resume_button.focus_mode = Control.FOCUS_ALL
+			resume_button.grab_focus()
+		else:
+			resume_button.focus_mode = Control.FOCUS_NONE
+			var vp := get_viewport()
+			if vp:
+				vp.gui_release_focus()
 
 
 func toggle_fps_overlay() -> void:
@@ -142,4 +184,9 @@ func _on_disaster_button_pressed() -> void:
 
 
 func _on_advisor_close_pressed() -> void:
+	## Advisor is non-modal; dismiss must never pause the sim.
 	advisor_dismissed.emit()
+
+
+func _on_resume_pressed() -> void:
+	resume_clicked.emit()

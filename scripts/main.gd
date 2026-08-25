@@ -13,13 +13,14 @@ const BuildingCatalog = preload("res://scripts/world/building_catalog.gd")
 const CityView = preload("res://scripts/world/city_view.gd")
 const WorldRoot = preload("res://scripts/world/world_root.gd")
 
-@onready var world: Node3D = $World
-@onready var camera_rig: Node3D = $World/CityCamera
-@onready var city_view: Node3D = $World/CityView
 @onready var deck: Node = $DeckController
 @onready var hud: CanvasLayer = $HUD
-@onready var world_env: WorldEnvironment = $World/WorldEnvironment
-@onready var sun: DirectionalLight3D = $World/DirectionalLight3D
+
+var world: Node3D
+var camera_rig: Node3D
+var city_view: Node3D
+var world_env: WorldEnvironment
+var sun: DirectionalLight3D
 
 var map: MapData
 var budget: BudgetSystem
@@ -34,11 +35,42 @@ var sim_accum: float = 0.0
 var cursor: Vector2i = Vector2i(64, 64)
 
 
+func _bind_world_nodes() -> void:
+	world = get_node_or_null("World") as Node3D
+	if world == null:
+		world = get_node_or_null("WorldRoot") as Node3D
+	city_view = get_node_or_null("World/CityView") as Node3D
+	if city_view == null and world:
+		city_view = world.get_node_or_null("CityView") as Node3D
+	if city_view == null:
+		city_view = get_node_or_null("CityView") as Node3D
+	camera_rig = get_node_or_null("World/CityCamera") as Node3D
+	if camera_rig == null and world:
+		camera_rig = world.get_node_or_null("CityCamera") as Node3D
+	if camera_rig == null:
+		camera_rig = get_node_or_null("CameraRig") as Node3D
+	if camera_rig == null:
+		camera_rig = get_node_or_null("CityCamera") as Node3D
+	world_env = get_node_or_null("World/WorldEnvironment") as WorldEnvironment
+	if world_env == null and world:
+		world_env = world.get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if world_env == null:
+		world_env = get_node_or_null("WorldEnvironment") as WorldEnvironment
+	sun = get_node_or_null("World/DirectionalLight3D") as DirectionalLight3D
+	if sun == null and world:
+		sun = world.get_node_or_null("DirectionalLight3D") as DirectionalLight3D
+	if sun == null:
+		sun = get_node_or_null("Sun") as DirectionalLight3D
+
+
 func _ready() -> void:
+	_bind_world_nodes()
 	Engine.max_fps = GameConstants.TARGET_FPS
 	get_viewport().scaling_3d_mode = GameConstants.FSR_MODE
 	get_viewport().scaling_3d_scale = GameConstants.FSR_SCALE
 	get_viewport().fsr_sharpness = GameConstants.FSR_SHARPNESS
+	_apply_deck_window()
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 	_setup_environment()
 
@@ -69,7 +101,12 @@ func _ready() -> void:
 	cursor = map.hq
 
 	radial = preload("res://scripts/ui/radial_menu.gd").new()
-	hud.add_child(radial)
+	var hud_root := hud.get_node_or_null("Root") as Control
+	if hud_root:
+		hud_root.add_child(radial)
+	else:
+		hud.add_child(radial)
+	radial.set_open(false)
 
 	deck.paint_pressed.connect(_on_paint)
 	deck.cycle_next.connect(func(): tools.cycle(1); _refresh_advisor())
@@ -84,7 +121,9 @@ func _ready() -> void:
 
 	hud.war_clicked.connect(_trigger_war)
 	hud.disaster_clicked.connect(_trigger_disaster)
-	hud.advisor_dismissed.connect(func(): paused = false; hud.set_paused(false))
+	hud.advisor_dismissed.connect(func(): pass)
+	if hud.has_signal("resume_clicked"):
+		hud.resume_clicked.connect(_resume_play)
 
 	tools.tool_changed.connect(func(_id, label): hud.set_tool(label, tools.brush))
 	budget.cash_changed.connect(hud.set_cash)
@@ -96,8 +135,8 @@ func _ready() -> void:
 	hud.set_rci(sim.demand_label())
 	hud.set_event_status(0, 0)
 	_refresh_advisor()
-	paused = true
-	hud.set_paused(true)
+	paused = false
+	hud.set_paused(false)
 	_update_cursor_visual()
 
 
@@ -168,12 +207,14 @@ func _process(dt: float) -> void:
 
 	_update_cursor_from_input()
 	_update_cursor_visual()
-	if city_view != null and "cursor_lot" in city_view:
+	if city_view != null:
 		city_view.cursor_lot = cursor
 		city_view.cursor_brush = tools.brush
 
-	if deck.radial_open:
+	if deck.radial_open and radial:
 		radial.set_aim(deck.radial_aim)
+		if radial.get("sticky_index") != deck.radial_index:
+			radial.set_index(deck.radial_index)
 
 	if deck.painting and not paused and not deck.radial_open:
 		_try_paint_at(cursor)
@@ -231,13 +272,31 @@ func _ray_lot(screen: Vector2) -> Vector2i:
 
 
 func _update_cursor_visual() -> void:
-	if city_view != null and "cursor_lot" in city_view:
+	if city_view != null:
 		city_view.cursor_lot = cursor
 		city_view.cursor_brush = tools.brush
 
 
+func _apply_deck_window() -> void:
+	if DisplayServer.get_name() == "headless":
+		return
+	DisplayServer.window_set_size(Vector2i(GameConstants.VIEWPORT_W, GameConstants.VIEWPORT_H))
+	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+
+
+func _resume_play() -> void:
+	paused = false
+	hud.set_paused(false)
+	var vp := get_viewport()
+	if vp:
+		vp.gui_release_focus()
+
+
 func _on_paint() -> void:
-	if paused or deck.radial_open:
+	if deck.radial_open:
+		return
+	if paused:
+		_resume_play()
 		return
 	_try_paint_at(cursor)
 
@@ -247,6 +306,25 @@ func _try_paint_at(tile: Vector2i) -> void:
 		hud.show_event("Advisor Block", "Build power before mass zoning.")
 		_refresh_advisor()
 		return
+	if _paint_brush(tile):
+		_on_paint_success(tile)
+		return
+	# HQ / road / water under the reticle — find a nearby buildable lot so A is never a dead click.
+	for rad in range(1, 3):
+		for oy in range(-rad, rad + 1):
+			for ox in range(-rad, rad + 1):
+				if ox == 0 and oy == 0:
+					continue
+				var n := Vector2i(tile.x + ox, tile.y + oy)
+				if _paint_brush(n):
+					_on_paint_success(n)
+					return
+	hud.show_event("Can't paint", "No buildable lot under cursor.")
+	if city_view != null and city_view.has_method("flash_paint"):
+		city_view.flash_paint(tile, false)
+
+
+func _paint_brush(tile: Vector2i) -> bool:
 	var half: int = tools.brush / 2
 	var any := false
 	for oy in range(-half, half + 1):
@@ -256,8 +334,19 @@ func _try_paint_at(tile: Vector2i) -> void:
 			var t := Vector2i(tile.x + ox, tile.y + oy)
 			if _paint_one(t):
 				any = true
-	if any:
-		_refresh_advisor()
+	return any
+
+
+func _on_paint_success(tile: Vector2i) -> void:
+	_refresh_advisor()
+	hud.flash_color(Color(0.95, 0.85, 0.25))
+	if city_view != null:
+		if city_view.has_method("flash_paint"):
+			city_view.flash_paint(tile, true)
+		if city_view.has_method("notify_occupancy"):
+			city_view.notify_occupancy()
+		elif city_view.has_method("_mark_dirty"):
+			city_view._mark_dirty()
 
 
 func _paint_one(tile: Vector2i) -> bool:
@@ -289,6 +378,7 @@ func _paint_one(tile: Vector2i) -> bool:
 func _on_radial_toggled(open: bool) -> void:
 	radial.set_open(open)
 	if open:
+		radial.set_index(deck.radial_index)
 		radial.set_aim(deck.radial_aim)
 
 
@@ -305,8 +395,14 @@ func _on_brush_cycled(size: int) -> void:
 
 
 func _toggle_pause() -> void:
+	if deck.radial_open:
+		return
 	paused = not paused
 	hud.set_paused(paused)
+	if not paused:
+		var vp := get_viewport()
+		if vp:
+			vp.gui_release_focus()
 	_refresh_advisor()
 
 

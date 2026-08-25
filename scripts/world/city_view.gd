@@ -31,6 +31,10 @@ var _dirty_occ: bool = true
 var grass_tex: Texture2D
 var dirt_tex: Texture2D
 var asphalt_tex: Texture2D
+var _paint_flash_t: float = 0.0
+var _paint_flash_ok: bool = true
+var _paint_flash_lot: Vector2i = Vector2i.ZERO
+var _flash_mi: MeshInstance3D
 
 
 func setup(p_map: MapData, p_catalog: BuildingCatalog, _env: WorldEnvironment = null) -> void:
@@ -39,11 +43,82 @@ func setup(p_map: MapData, p_catalog: BuildingCatalog, _env: WorldEnvironment = 
 	grass_tex = load("res://assets/env/grass_diff.jpg")
 	dirt_tex = load("res://assets/env/dirt_diff.jpg")
 	asphalt_tex = load("res://assets/env/asphalt_diff.jpg")
+	_densify_downtown()
 	_build_terrain()
 	_build_cursor()
 	map.map_changed.connect(_on_map_changed)
 	map.fog_changed.connect(_on_map_changed)
 	rebuild_all()
+
+
+
+func _densify_downtown() -> void:
+	## World-layer seed overlay: more occupied lots + taller core. Does not edit systems/*.
+	if map == null:
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 424201
+	var hq: Vector2i = map.hq
+	for y in range(hq.y - 12, hq.y + 13):
+		for x in range(hq.x - 12, hq.x + 13):
+			if not map.in_bounds(x, y):
+				continue
+			var i := map.idx(x, y)
+			if map.terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if (x - hq.x) % 3 == 0 or (y - hq.y) % 3 == 0:
+				if map.service[i] == TileTypes.Service.NONE:
+					map.road[i] = 1
+					map.zone[i] = TileTypes.Zone.NONE
+			map.revealed[i] = 1
+			map.chunk_at(x, y).active = true
+	for y in range(hq.y - 11, hq.y + 12):
+		for x in range(hq.x - 11, hq.x + 12):
+			if not map.in_bounds(x, y):
+				continue
+			var i := map.idx(x, y)
+			if map.terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if map.road[i] == 1 or map.service[i] != TileTypes.Service.NONE:
+				continue
+			var dx := absi(x - hq.x)
+			var dy := absi(y - hq.y)
+			var cheb := dx if dx > dy else dy
+			if cheb <= 5:
+				# Core is a Kenney tower cluster (skyline), even if it was houses.
+				map.zone[i] = TileTypes.Zone.COMMERCIAL
+				map.occupancy[i] = rng.randf_range(0.86, 0.99)
+			elif map.zone[i] == TileTypes.Zone.NONE:
+				if cheb <= 7:
+					var roll := rng.randf()
+					if roll < 0.48:
+						map.zone[i] = TileTypes.Zone.COMMERCIAL
+						map.occupancy[i] = rng.randf_range(0.62, 0.97)
+					elif roll < 0.82:
+						map.zone[i] = TileTypes.Zone.RESIDENTIAL
+						map.occupancy[i] = rng.randf_range(0.55, 0.95)
+					else:
+						map.zone[i] = TileTypes.Zone.INDUSTRIAL
+						map.occupancy[i] = rng.randf_range(0.50, 0.90)
+				else:
+					var roll2 := rng.randf()
+					if roll2 < 0.58:
+						map.zone[i] = TileTypes.Zone.RESIDENTIAL
+						map.occupancy[i] = rng.randf_range(0.45, 0.92)
+					elif roll2 < 0.82:
+						map.zone[i] = TileTypes.Zone.COMMERCIAL
+						map.occupancy[i] = rng.randf_range(0.50, 0.90)
+					else:
+						map.zone[i] = TileTypes.Zone.INDUSTRIAL
+						map.occupancy[i] = rng.randf_range(0.40, 0.85)
+			else:
+				# Boost already-zoned lots so more hit mid/high Kenney tiers.
+				if map.occupancy[i] < 0.50:
+					map.occupancy[i] = rng.randf_range(0.55, 0.90)
+	if map.has_method("recompute_services"):
+		map.recompute_services()
+	if map.has_method("_reveal_around"):
+		map._reveal_around(hq.x, hq.y, 16)
 
 
 func _on_map_changed() -> void:
@@ -141,25 +216,76 @@ func _quad(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, col:
 
 func _build_cursor() -> void:
 	var box := BoxMesh.new()
-	box.size = Vector3(GameConstants.LOT_METERS * 0.96, 0.35, GameConstants.LOT_METERS * 0.96)
+	box.size = Vector3(GameConstants.LOT_METERS * 0.96, 0.55, GameConstants.LOT_METERS * 0.96)
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(1.0, 0.95, 0.35, 0.45)
+	mat.albedo_color = Color(1.0, 0.92, 0.18, 0.72)
 	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.emission_enabled = true
+	mat.emission = Color(1.0, 0.85, 0.2)
+	mat.emission_energy_multiplier = 1.4
 	cursor_mi.mesh = box
 	cursor_mi.material_override = mat
 	cursor_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	cursor_mi.visible = true
+	_flash_mi = MeshInstance3D.new()
+	_flash_mi.name = "PaintFlash"
+	var fbox := BoxMesh.new()
+	fbox.size = Vector3(GameConstants.LOT_METERS * 0.98, 1.2, GameConstants.LOT_METERS * 0.98)
+	_flash_mi.mesh = fbox
+	var fmat := StandardMaterial3D.new()
+	fmat.albedo_color = Color(1.0, 0.9, 0.2, 0.0)
+	fmat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	fmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	fmat.emission_enabled = true
+	fmat.emission = Color(1.0, 0.85, 0.2)
+	_flash_mi.material_override = fmat
+	_flash_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_flash_mi.visible = false
+	add_child(_flash_mi)
+
+
+func flash_paint(lot: Vector2i, ok: bool) -> void:
+	_paint_flash_t = 0.45
+	_paint_flash_ok = ok
+	_paint_flash_lot = lot
+	if _flash_mi:
+		_flash_mi.visible = true
 
 
 func _update_cursor() -> void:
+	if cursor_mi == null:
+		return
 	if not map.in_bounds(cursor_lot.x, cursor_lot.y):
 		cursor_mi.visible = false
 		return
 	cursor_mi.visible = true
 	var p := map.lot_to_world(cursor_lot.x, cursor_lot.y)
-	cursor_mi.global_position = Vector3(p.x, 0.22, p.z)
+	cursor_mi.global_position = Vector3(p.x, 0.35, p.z)
 	var sc := float(maxi(1, cursor_brush))
-	cursor_mi.scale = Vector3(sc, 1.0, sc)
+	var pulse := 1.0 + 0.08 * sin(Time.get_ticks_msec() * 0.008)
+	cursor_mi.scale = Vector3(sc * pulse, 1.15, sc * pulse)
+	var cmat := cursor_mi.material_override as StandardMaterial3D
+	if cmat:
+		cmat.albedo_color = Color(1.0, 0.92, 0.18, 0.72)
+	if _flash_mi:
+		if _paint_flash_t > 0.0:
+			_paint_flash_t = maxf(0.0, _paint_flash_t - get_process_delta_time())
+			var fp := map.lot_to_world(_paint_flash_lot.x, _paint_flash_lot.y)
+			_flash_mi.global_position = Vector3(fp.x, 0.7, fp.z)
+			_flash_mi.scale = Vector3(sc, 1.0, sc)
+			var fm := _flash_mi.material_override as StandardMaterial3D
+			if fm:
+				var a := clampf(_paint_flash_t / 0.45, 0.0, 1.0) * 0.55
+				if _paint_flash_ok:
+					fm.albedo_color = Color(1.0, 0.92, 0.2, a)
+					fm.emission = Color(1.0, 0.85, 0.15)
+				else:
+					fm.albedo_color = Color(1.0, 0.2, 0.12, a)
+					fm.emission = Color(1.0, 0.15, 0.08)
+			_flash_mi.visible = _paint_flash_t > 0.0
+		else:
+			_flash_mi.visible = false
 
 
 func _clear_children(n: Node) -> void:
@@ -221,11 +347,11 @@ var _building_key: Dictionary = {}  # idx -> "z:tier:dmg"
 
 
 func _occ_tier(occ: float, damaged: bool) -> int:
-	if damaged or occ < 0.18:
+	if damaged or occ < 0.08:
 		return 0
-	if occ < 0.45:
+	if occ < 0.32:
 		return 1
-	if occ < 0.75:
+	if occ < 0.58:
 		return 2
 	return 3
 
@@ -329,7 +455,7 @@ func _scatter_trees() -> void:
 	var placed := 0
 	for y in map.size:
 		for x in map.size:
-			if placed > 220:
+			if placed > 380:
 				return
 			var i := map.idx(x, y)
 			if map.revealed[i] != 1:
@@ -338,7 +464,7 @@ func _scatter_trees() -> void:
 				continue
 			if map.terrain[i] != TileTypes.Terrain.GRASS:
 				continue
-			if rng.randf() > 0.07:
+			if rng.randf() > 0.12:
 				continue
 			var t := catalog.instantiate_tree(rng.randf() > 0.45)
 			if t == null:
@@ -350,9 +476,9 @@ func _scatter_trees() -> void:
 			placed += 1
 	# lamps along starter roads near HQ
 	var lamps := 0
-	for y in range(map.hq.y - 8, map.hq.y + 9):
-		for x in range(map.hq.x - 8, map.hq.x + 9):
-			if lamps > 28:
+	for y in range(map.hq.y - 12, map.hq.y + 13):
+		for x in range(map.hq.x - 12, map.hq.x + 13):
+			if lamps > 48:
 				return
 			if not map.in_bounds(x, y):
 				continue

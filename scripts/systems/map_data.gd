@@ -29,6 +29,8 @@ var hq: Vector2i = Vector2i(64, 64)
 
 var power_plants: Array[Vector2i] = []
 var water_towers: Array[Vector2i] = []
+var starter_power_count: int = 0
+var starter_water_count: int = 0
 
 
 func _init() -> void:
@@ -144,6 +146,8 @@ func _seed_downtown() -> void:
 	# Power + water so occupancy can grow immediately
 	_force_service(hq.x + 3, hq.y + 3, TileTypes.Service.POWER_PLANT)
 	_force_service(hq.x - 3, hq.y + 3, TileTypes.Service.WATER_TOWER)
+	starter_power_count = power_plants.size()
+	starter_water_count = water_towers.size()
 	# Fill interior lots with mixed RCI + occupancy
 	for y in range(hq.y - 7, hq.y + 8):
 		for x in range(hq.x - 7, hq.x + 8):
@@ -236,7 +240,7 @@ func paint_zone(x: int, y: int, z: int) -> bool:
 	if zone[i] == z:
 		return false
 	zone[i] = z
-	occupancy[i] = 0.0
+	occupancy[i] = GameConstants.PAINT_ZONE_OCCUPANCY
 	damaged_tile[i] = 0
 	_mark_chunk_active(x, y)
 	map_changed.emit()

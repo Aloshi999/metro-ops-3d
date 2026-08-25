@@ -90,6 +90,61 @@ func _init() -> void:
 	var budget := BudgetSystem.new()
 	var start_cash := budget.cash
 
+	# Idle city must not bleed cash in the first 5s (10 ticks) with no extra paints.
+	var idle_map := MapData.new()
+	var idle_budget := BudgetSystem.new()
+	var idle_sim := SimSystem.new()
+	var idle_start := idle_budget.cash
+	for _idle in 10:
+		idle_sim.tick(idle_map, idle_budget)
+	if idle_budget.cash < idle_start:
+		ok = false
+		errors.append("idle cash collapsed %d -> %d upkeep=%d (starter city must not bleed)" % [
+			idle_start, idle_budget.cash, idle_budget.last_upkeep
+		])
+	if idle_budget.last_upkeep != 0:
+		ok = false
+		errors.append("starter services billed upkeep=%d with no player-placed plants" % idle_budget.last_upkeep)
+	if idle_budget.cash <= 0:
+		ok = false
+		errors.append("idle cash bankrupt")
+
+	var lot_changed := false
+	var occ_ready := false
+	for yy in range(map.hq.y - 14, map.hq.y + 15):
+		for xx in range(map.hq.x - 14, map.hq.x + 15):
+			if not map.in_bounds(xx, yy):
+				continue
+			var ii := map.idx(xx, yy)
+			if map.revealed[ii] != 1:
+				continue
+			if map.terrain[ii] == TileTypes.Terrain.WATER:
+				continue
+			if map.service[ii] != TileTypes.Service.NONE:
+				continue
+			if map.road[ii] == 1:
+				continue
+			var before_z: int = map.zone[ii]
+			var target_z: int = TileTypes.Zone.INDUSTRIAL
+			if before_z == target_z:
+				target_z = TileTypes.Zone.RESIDENTIAL
+			if map.paint_zone(xx, yy, target_z):
+				if map.zone[ii] != before_z and map.zone[ii] == target_z:
+					lot_changed = true
+					if map.occupancy[ii] >= 0.08:
+						occ_ready = true
+					budget.spend(GameConstants.ZONE_COST)
+			if lot_changed:
+				break
+		if lot_changed:
+			break
+	if not lot_changed:
+		ok = false
+		errors.append("paint did not change a lot")
+	if not occ_ready:
+		ok = false
+		errors.append("painted lot occupancy too low to spawn a Kenney building")
+
 	var painted_road := false
 	for d in range(9, 16):
 		if map.paint_road(map.hq.x + d, map.hq.y):

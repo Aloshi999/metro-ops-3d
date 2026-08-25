@@ -3,6 +3,12 @@ extends Node3D
 ## Standalone 3D city: Kenney GLBs, orbit cam, late-afternoon sun.
 ## Self-bootstraps so world.tscn looks like a city even without main.tscn.
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
+const MapData = preload("res://scripts/systems/map_data.gd")
+const BuildingCatalog = preload("res://scripts/world/building_catalog.gd")
+const CityView = preload("res://scripts/world/city_view.gd")
+const CityCamera = preload("res://scripts/world/city_camera.gd")
+
 var map: MapData
 var catalog: BuildingCatalog
 
@@ -35,7 +41,7 @@ func setup(p_map: MapData, p_catalog: BuildingCatalog) -> void:
 	if city_view:
 		city_view.setup(map, catalog)
 	if city_camera and map:
-		city_camera.setup(map.lot_to_world(map.hq.x, map.hq.y))
+		city_camera.setup(map.lot_to_world(map.hq.x, map.hq.y + 5))
 
 
 func _process(_dt: float) -> void:

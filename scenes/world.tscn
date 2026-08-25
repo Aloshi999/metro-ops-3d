@@ -1,8 +1,18 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/world_root.gd" id="1_world"]
 [ext_resource type="PackedScene" path="res://scenes/city_view.tscn" id="2_view"]
 [ext_resource type="PackedScene" path="res://scenes/city_camera.tscn" id="3_cam"]
+[ext_resource type="Texture2D" path="res://assets/env/grass_diff.jpg" id="4_grass"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ground"]
+size = Vector2(2048, 2048)
+
+[sub_resource type="StandardMaterial3D" id="Mat_ground"]
+albedo_color = Color(0.30, 0.52, 0.24, 1)
+albedo_texture = ExtResource("4_grass")
+uv1_scale = Vector3(96, 96, 96)
+roughness = 0.92
 
 [node name="WorldRoot" type="Node3D"]
 script = ExtResource("1_world")
@@ -15,6 +25,12 @@ light_energy = 1.2
 light_color = Color(1, 0.91, 0.76, 1)
 shadow_enabled = true
 directional_shadow_max_distance = 320.0
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1024, -0.08, 1024)
+mesh = SubResource("PlaneMesh_ground")
+surface_material_override/0 = SubResource("Mat_ground")
+cast_shadow = 0
 
 [node name="CityView" parent="." instance=ExtResource("2_view")]
 

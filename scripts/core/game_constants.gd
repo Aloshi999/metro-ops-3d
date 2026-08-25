@@ -24,7 +24,7 @@ const WATER_RADIUS: int = 15
 const FOG_REVEAL_RADIUS: int = 10
 const HQ_SERVICE_RADIUS: int = 8
 
-const STARTING_CASH: int = 25000
+const STARTING_CASH: int = 40000
 const ROAD_COST: int = 10
 const ZONE_COST: int = 25
 const POWER_PLANT_COST: int = 2500
@@ -32,6 +32,9 @@ const WATER_TOWER_COST: int = 1500
 const POWER_UPKEEP: int = 40
 const WATER_UPKEEP: int = 25
 const TAX_PER_OCCUPANCY: float = 0.35
+## Seed HQ power/water do not charge upkeep; only player-placed services do.
+const UPKEEP_GRACE_TICKS: int = 24  # 12s at 0.5s ticks
+const PAINT_ZONE_OCCUPANCY: float = 0.45
 
 const WAR_EMBARGO_TAX_MULT: float = 0.45
 const WAR_LEVY_HIT: int = 4000

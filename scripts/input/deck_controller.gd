@@ -26,12 +26,14 @@ var zoom_delta: float = 0.0
 var painting: bool = false
 var radial_open: bool = false
 var radial_aim: Vector2 = Vector2.ZERO
+var radial_index: int = 0
 var brush_size: int = 1
 var prefer_gamepad: bool = true
 var mouse_active_until: float = 0.0
 var rmb_orbit: bool = false
 
 const BRUSH_STEPS: Array[int] = [1, 3, 5]
+const RADIAL_SLICES: int = 6
 
 
 func _process(dt: float) -> void:
@@ -107,17 +109,34 @@ func _update_radial_aim() -> void:
 	if stick.length() > stick_deadzone:
 		radial_aim = stick.normalized()
 		_mark_gamepad()
-	else:
-		if Input.is_action_pressed("pan_up"):
-			radial_aim.y -= 1
-		if Input.is_action_pressed("pan_down"):
-			radial_aim.y += 1
-		if Input.is_action_pressed("pan_left"):
-			radial_aim.x -= 1
-		if Input.is_action_pressed("pan_right"):
-			radial_aim.x += 1
-		if radial_aim != Vector2.ZERO:
-			radial_aim = radial_aim.normalized()
+		var idx := aim_to_index(radial_aim, RADIAL_SLICES)
+		if idx >= 0:
+			radial_index = idx
+	# D-pad / WASD cycle the sticky index in _unhandled_input (no analog fight).
+
+
+func _input(event: InputEvent) -> void:
+	## High-priority: radial cancel and pause so GUI focus can never trap Start/Esc/B.
+	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_B:
+		if radial_open:
+			_set_radial(false)
+			get_viewport().set_input_as_handled()
+			return
+	if event.is_action_pressed("pause_advisor"):
+		if radial_open:
+			_set_radial(false)
+			get_viewport().set_input_as_handled()
+			return
+		toggle_pause.emit()
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("radial"):
+		if radial_open:
+			_set_radial(false)
+		else:
+			_set_radial(true)
+		get_viewport().set_input_as_handled()
+		return
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -132,27 +151,21 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and not event.pressed and event.button_index == MOUSE_BUTTON_RIGHT:
 		rmb_orbit = false
 
-	if event.is_action_pressed("radial"):
-		if event is InputEventJoypadButton:
-			_set_radial(true)
-		else:
-			if radial_open:
-				_confirm_radial()
-			else:
-				_set_radial(true)
-		get_viewport().set_input_as_handled()
-		return
-	if event.is_action_released("radial") and radial_open and event is InputEventJoypadButton:
-		_confirm_radial()
-		get_viewport().set_input_as_handled()
-		return
-
 	if radial_open:
 		if event.is_action_pressed("paint"):
 			_confirm_radial()
 			get_viewport().set_input_as_handled()
-		elif event.is_action_pressed("pause_advisor"):
-			_set_radial(false)
+		elif event.is_action_pressed("pan_left"):
+			radial_index = posmod(radial_index - 1, RADIAL_SLICES)
+			get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("pan_right"):
+			radial_index = posmod(radial_index + 1, RADIAL_SLICES)
+			get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("pan_up"):
+			radial_index = posmod(radial_index - 1, RADIAL_SLICES)
+			get_viewport().set_input_as_handled()
+		elif event.is_action_pressed("pan_down"):
+			radial_index = posmod(radial_index + 1, RADIAL_SLICES)
 			get_viewport().set_input_as_handled()
 		return
 
@@ -172,9 +185,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("brush_size"):
 		_cycle_brush()
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("pause_advisor"):
-		toggle_pause.emit()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("toggle_fps"):
 		toggle_fps.emit()
@@ -215,13 +225,21 @@ func _set_radial(open: bool) -> void:
 	radial_open = open
 	if open:
 		painting = false
+		radial_aim = Vector2.ZERO
+		var vp := get_viewport()
+		if vp:
+			vp.gui_release_focus()
 	radial_toggled.emit(open)
 
 
 func _confirm_radial() -> void:
 	if not radial_open:
 		return
-	var idx := aim_to_index(radial_aim, 6)
+	var idx := radial_index
+	if radial_aim.length() >= 0.35:
+		var aimed := aim_to_index(radial_aim, RADIAL_SLICES)
+		if aimed >= 0:
+			idx = aimed
 	_set_radial(false)
 	if idx >= 0:
 		radial_select.emit(idx)

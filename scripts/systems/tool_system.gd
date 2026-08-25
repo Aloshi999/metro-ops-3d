@@ -15,7 +15,7 @@ enum Tool {
 	BULLDOZE
 }
 
-var current: int = Tool.ROAD
+var current: int = Tool.ZONE_R
 var brush: int = 1
 
 const ORDER: Array[int] = [
