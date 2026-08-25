@@ -1,0 +1,1814 @@
+{
+  "id": "district_night_market",
+  "instance": true,
+  "unique_per_lot": false,
+  "shared_materials": true,
+  "scale": 14.5,
+  "kenney_scale": 14.5,
+  "lot_m": 16,
+  "model_unit": 1.0,
+  "lot_contract": "~1 Kenney model unit, 16m lots, kenney_scale 14.5. Shared colormap per kit. Do not unique materials per lot.",
+  "district": "night_market",
+  "note": "Kenney Food Kit 2.0 + Holiday Kit 2.0 (plaza) used as night-market stall / festive props. Copied so downtown/props/food and district_park/plaza stay intact. No extra official stall kit downloaded (Mini Market is supermarket aisles; Fantasy Props MegaKit is 143MB medieval). Fat extras: GitHub Releases/LFS. Does not change FSR/HUD/camera or Kenney 4-pack / downtown MegaKit.",
+  "counts": {
+    "food": 200,
+    "plaza": 99,
+    "slots": 299
+  },
+  "slots": [
+    {
+      "id": "advocado-half",
+      "path": "food/advocado-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "apple-half",
+      "path": "food/apple-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "apple",
+      "path": "food/apple.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "avocado",
+      "path": "food/avocado.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bacon-raw",
+      "path": "food/bacon-raw.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bacon",
+      "path": "food/bacon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bag-flat",
+      "path": "food/bag-flat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bag",
+      "path": "food/bag.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "banana",
+      "path": "food/banana.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "barrel",
+      "path": "food/barrel.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "beet",
+      "path": "food/beet.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bottle-ketchup",
+      "path": "food/bottle-ketchup.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bottle-musterd",
+      "path": "food/bottle-musterd.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bottle-oil",
+      "path": "food/bottle-oil.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bowl-broth",
+      "path": "food/bowl-broth.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bowl-cereal",
+      "path": "food/bowl-cereal.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bowl-soup",
+      "path": "food/bowl-soup.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bowl",
+      "path": "food/bowl.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bread",
+      "path": "food/bread.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "broccoli",
+      "path": "food/broccoli.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "burger-cheese-double",
+      "path": "food/burger-cheese-double.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "burger-cheese",
+      "path": "food/burger-cheese.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "burger-double",
+      "path": "food/burger-double.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "burger",
+      "path": "food/burger.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabbage",
+      "path": "food/cabbage.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cake-birthday",
+      "path": "food/cake-birthday.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cake-slicer",
+      "path": "food/cake-slicer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cake",
+      "path": "food/cake.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "can-open",
+      "path": "food/can-open.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "can-small",
+      "path": "food/can-small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "can",
+      "path": "food/can.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "candy-bar-wrapper",
+      "path": "food/candy-bar-wrapper.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "candy-bar",
+      "path": "food/candy-bar.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "carrot",
+      "path": "food/carrot.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "carton-small",
+      "path": "food/carton-small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "carton",
+      "path": "food/carton.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cauliflower",
+      "path": "food/cauliflower.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "celery-stick",
+      "path": "food/celery-stick.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cheese-cut",
+      "path": "food/cheese-cut.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cheese-slicer",
+      "path": "food/cheese-slicer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cheese",
+      "path": "food/cheese.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cherries",
+      "path": "food/cherries.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chinese",
+      "path": "food/chinese.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chocolate-wrapper",
+      "path": "food/chocolate-wrapper.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chocolate",
+      "path": "food/chocolate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chopstic-decorative",
+      "path": "food/chopstic-decorative.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chopstick",
+      "path": "food/chopstick.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cocktail",
+      "path": "food/cocktail.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "coconut-half",
+      "path": "food/coconut-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "coconut",
+      "path": "food/coconut.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cookie-chocolate",
+      "path": "food/cookie-chocolate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cookie",
+      "path": "food/cookie.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cooking-fork",
+      "path": "food/cooking-fork.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cooking-knife-chopping",
+      "path": "food/cooking-knife-chopping.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cooking-knife",
+      "path": "food/cooking-knife.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cooking-spatula",
+      "path": "food/cooking-spatula.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cooking-spoon",
+      "path": "food/cooking-spoon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "corn-dog",
+      "path": "food/corn-dog.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "corn",
+      "path": "food/corn.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "croissant",
+      "path": "food/croissant.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cup-coffee",
+      "path": "food/cup-coffee.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cup-saucer",
+      "path": "food/cup-saucer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cup-tea",
+      "path": "food/cup-tea.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cup",
+      "path": "food/cup.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cupcake",
+      "path": "food/cupcake.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cutting-board-japanese",
+      "path": "food/cutting-board-japanese.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cutting-board-round",
+      "path": "food/cutting-board-round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cutting-board",
+      "path": "food/cutting-board.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "dim-sum",
+      "path": "food/dim-sum.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "donut-chocolate",
+      "path": "food/donut-chocolate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "donut-sprinkles",
+      "path": "food/donut-sprinkles.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "donut",
+      "path": "food/donut.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "egg-cooked",
+      "path": "food/egg-cooked.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "egg-cup",
+      "path": "food/egg-cup.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "egg-half",
+      "path": "food/egg-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "egg",
+      "path": "food/egg.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "eggplant",
+      "path": "food/eggplant.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fish-bones",
+      "path": "food/fish-bones.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fish",
+      "path": "food/fish.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "frappe",
+      "path": "food/frappe.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fries-empty",
+      "path": "food/fries-empty.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fries",
+      "path": "food/fries.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "frikandel-speciaal",
+      "path": "food/frikandel-speciaal.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "frying-pan-lid",
+      "path": "food/frying-pan-lid.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "frying-pan",
+      "path": "food/frying-pan.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ginger-bread-cutter",
+      "path": "food/ginger-bread-cutter.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ginger-bread",
+      "path": "food/ginger-bread.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "glass-wine",
+      "path": "food/glass-wine.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "glass",
+      "path": "food/glass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "grapes",
+      "path": "food/grapes.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "honey",
+      "path": "food/honey.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hot-dog-raw",
+      "path": "food/hot-dog-raw.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hot-dog",
+      "path": "food/hot-dog.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ice-cream-cne",
+      "path": "food/ice-cream-cne.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ice-cream-cup",
+      "path": "food/ice-cream-cup.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ice-cream-scoop-chocolate",
+      "path": "food/ice-cream-scoop-chocolate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ice-cream-scoop-mint",
+      "path": "food/ice-cream-scoop-mint.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ice-cream",
+      "path": "food/ice-cream.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "knife-block",
+      "path": "food/knife-block.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "leek",
+      "path": "food/leek.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lemon-half",
+      "path": "food/lemon-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lemon",
+      "path": "food/lemon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loaf-baguette",
+      "path": "food/loaf-baguette.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loaf-round",
+      "path": "food/loaf-round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loaf",
+      "path": "food/loaf.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lollypop",
+      "path": "food/lollypop.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "maki-roe",
+      "path": "food/maki-roe.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "maki-salmon",
+      "path": "food/maki-salmon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "maki-vegetable",
+      "path": "food/maki-vegetable.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "meat-cooked",
+      "path": "food/meat-cooked.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "meat-patty",
+      "path": "food/meat-patty.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "meat-raw",
+      "path": "food/meat-raw.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "meat-ribs",
+      "path": "food/meat-ribs.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "meat-sausage",
+      "path": "food/meat-sausage.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "meat-tenderizer",
+      "path": "food/meat-tenderizer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mincemeat-pie",
+      "path": "food/mincemeat-pie.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mortar-pestle",
+      "path": "food/mortar-pestle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mortar",
+      "path": "food/mortar.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "muffin",
+      "path": "food/muffin.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mug",
+      "path": "food/mug.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mushroom-half",
+      "path": "food/mushroom-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mushroom",
+      "path": "food/mushroom.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mussel-open",
+      "path": "food/mussel-open.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mussel",
+      "path": "food/mussel.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "onion-half",
+      "path": "food/onion-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "onion",
+      "path": "food/onion.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "orange",
+      "path": "food/orange.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pan-stew",
+      "path": "food/pan-stew.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pan",
+      "path": "food/pan.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pancakes",
+      "path": "food/pancakes.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "paprika-slice",
+      "path": "food/paprika-slice.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "paprika",
+      "path": "food/paprika.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "peanut-butter",
+      "path": "food/peanut-butter.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pear-half",
+      "path": "food/pear-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pear",
+      "path": "food/pear.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pepper-mill",
+      "path": "food/pepper-mill.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pepper",
+      "path": "food/pepper.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pie",
+      "path": "food/pie.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pineapple",
+      "path": "food/pineapple.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pizza-box",
+      "path": "food/pizza-box.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pizza-cutter",
+      "path": "food/pizza-cutter.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pizza",
+      "path": "food/pizza.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plate-broken",
+      "path": "food/plate-broken.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plate-deep",
+      "path": "food/plate-deep.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plate-dinner",
+      "path": "food/plate-dinner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plate-rectangle",
+      "path": "food/plate-rectangle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plate-sauerkraut",
+      "path": "food/plate-sauerkraut.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plate",
+      "path": "food/plate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "popsicle-chocolate",
+      "path": "food/popsicle-chocolate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "popsicle-stick",
+      "path": "food/popsicle-stick.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "popsicle",
+      "path": "food/popsicle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pot-lid",
+      "path": "food/pot-lid.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pot-stew-lid",
+      "path": "food/pot-stew-lid.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pot-stew",
+      "path": "food/pot-stew.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pot",
+      "path": "food/pot.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pudding",
+      "path": "food/pudding.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pumpkin-basic",
+      "path": "food/pumpkin-basic.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pumpkin",
+      "path": "food/pumpkin.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "radish",
+      "path": "food/radish.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rice-ball",
+      "path": "food/rice-ball.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rollingPin",
+      "path": "food/rollingPin.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "salad",
+      "path": "food/salad.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sandwich",
+      "path": "food/sandwich.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sausage-half",
+      "path": "food/sausage-half.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sausage",
+      "path": "food/sausage.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "shaker-pepper",
+      "path": "food/shaker-pepper.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "shaker-salt",
+      "path": "food/shaker-salt.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "skewer-vegetables",
+      "path": "food/skewer-vegetables.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "skewer",
+      "path": "food/skewer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "soda-bottle",
+      "path": "food/soda-bottle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "soda-can-crushed",
+      "path": "food/soda-can-crushed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "soda-can",
+      "path": "food/soda-can.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "soda-glass",
+      "path": "food/soda-glass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "soda",
+      "path": "food/soda.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "soy",
+      "path": "food/soy.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "steamer",
+      "path": "food/steamer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "strawberry",
+      "path": "food/strawberry.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "styrofoam-dinner",
+      "path": "food/styrofoam-dinner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "styrofoam",
+      "path": "food/styrofoam.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sub",
+      "path": "food/sub.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sundae",
+      "path": "food/sundae.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sushi-egg",
+      "path": "food/sushi-egg.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sushi-salmon",
+      "path": "food/sushi-salmon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "taco",
+      "path": "food/taco.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tajine-lid",
+      "path": "food/tajine-lid.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tajine",
+      "path": "food/tajine.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tomato-slice",
+      "path": "food/tomato-slice.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tomato",
+      "path": "food/tomato.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "turkey",
+      "path": "food/turkey.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "utensil-fork",
+      "path": "food/utensil-fork.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "utensil-knife",
+      "path": "food/utensil-knife.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "utensil-spoon",
+      "path": "food/utensil-spoon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "waffle",
+      "path": "food/waffle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "watermelon",
+      "path": "food/watermelon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "whipped-cream",
+      "path": "food/whipped-cream.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "whisk",
+      "path": "food/whisk.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "whole-ham",
+      "path": "food/whole-ham.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wholer-ham",
+      "path": "food/wholer-ham.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wine-red",
+      "path": "food/wine-red.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wine-white",
+      "path": "food/wine-white.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bench-short",
+      "path": "plaza/bench-short.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bench",
+      "path": "plaza/bench.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-corner-bottom",
+      "path": "plaza/cabin-corner-bottom.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-corner-logs",
+      "path": "plaza/cabin-corner-logs.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-corner",
+      "path": "plaza/cabin-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-door-rotate",
+      "path": "plaza/cabin-door-rotate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-doorway-center",
+      "path": "plaza/cabin-doorway-center.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-doorway-left",
+      "path": "plaza/cabin-doorway-left.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-doorway-right",
+      "path": "plaza/cabin-doorway-right.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-doorway",
+      "path": "plaza/cabin-doorway.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-fence",
+      "path": "plaza/cabin-fence.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-overhang-door-rotate",
+      "path": "plaza/cabin-overhang-door-rotate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-overhang-doorway",
+      "path": "plaza/cabin-overhang-doorway.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-chimney",
+      "path": "plaza/cabin-roof-chimney.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-corner",
+      "path": "plaza/cabin-roof-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-dormer",
+      "path": "plaza/cabin-roof-dormer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-point",
+      "path": "plaza/cabin-roof-point.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow-chimney",
+      "path": "plaza/cabin-roof-snow-chimney.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow-corner",
+      "path": "plaza/cabin-roof-snow-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow-dormer",
+      "path": "plaza/cabin-roof-snow-dormer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow-point",
+      "path": "plaza/cabin-roof-snow-point.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow",
+      "path": "plaza/cabin-roof-snow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-top",
+      "path": "plaza/cabin-roof-top.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof",
+      "path": "plaza/cabin-roof.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall-low",
+      "path": "plaza/cabin-wall-low.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall-roof-center",
+      "path": "plaza/cabin-wall-roof-center.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall-roof",
+      "path": "plaza/cabin-wall-roof.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall-wreath",
+      "path": "plaza/cabin-wall-wreath.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall",
+      "path": "plaza/cabin-wall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-window-a",
+      "path": "plaza/cabin-window-a.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-window-b",
+      "path": "plaza/cabin-window-b.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-window-c",
+      "path": "plaza/cabin-window-c.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-window-large",
+      "path": "plaza/cabin-window-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "candy-cane-green",
+      "path": "plaza/candy-cane-green.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "candy-cane-red",
+      "path": "plaza/candy-cane-red.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "festivus-pole",
+      "path": "plaza/festivus-pole.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floor-stone",
+      "path": "plaza/floor-stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floor-wood-snow",
+      "path": "plaza/floor-wood-snow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floor-wood",
+      "path": "plaza/floor-wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gingerbread-man",
+      "path": "plaza/gingerbread-man.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gingerbread-woman",
+      "path": "plaza/gingerbread-woman.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hanukkah-dreidel",
+      "path": "plaza/hanukkah-dreidel.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hanukkah-menorah-candles",
+      "path": "plaza/hanukkah-menorah-candles.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hanukkah-menorah",
+      "path": "plaza/hanukkah-menorah.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kwanzaa-kikombe",
+      "path": "plaza/kwanzaa-kikombe.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kwanzaa-kinara-alternative",
+      "path": "plaza/kwanzaa-kinara-alternative.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kwanzaa-kinara",
+      "path": "plaza/kwanzaa-kinara.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lantern-hanging",
+      "path": "plaza/lantern-hanging.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lantern",
+      "path": "plaza/lantern.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lights-colored",
+      "path": "plaza/lights-colored.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lights-green",
+      "path": "plaza/lights-green.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lights-red",
+      "path": "plaza/lights-red.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "nutcracker",
+      "path": "plaza/nutcracker.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-a-cube",
+      "path": "plaza/present-a-cube.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-a-rectangle",
+      "path": "plaza/present-a-rectangle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-a-round",
+      "path": "plaza/present-a-round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-b-cube",
+      "path": "plaza/present-b-cube.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-b-rectangle",
+      "path": "plaza/present-b-rectangle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-b-round",
+      "path": "plaza/present-b-round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "reindeer",
+      "path": "plaza/reindeer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-large",
+      "path": "plaza/rocks-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-medium",
+      "path": "plaza/rocks-medium.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-small",
+      "path": "plaza/rocks-small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sled-long",
+      "path": "plaza/sled-long.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sled",
+      "path": "plaza/sled.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snow-bunker",
+      "path": "plaza/snow-bunker.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snow-flat-large",
+      "path": "plaza/snow-flat-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snow-flat",
+      "path": "plaza/snow-flat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snow-pile",
+      "path": "plaza/snow-pile.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowflake-a",
+      "path": "plaza/snowflake-a.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowflake-b",
+      "path": "plaza/snowflake-b.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowflake-c",
+      "path": "plaza/snowflake-c.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowman-hat",
+      "path": "plaza/snowman-hat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowman",
+      "path": "plaza/snowman.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sock-green-cane",
+      "path": "plaza/sock-green-cane.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sock-green",
+      "path": "plaza/sock-green.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sock-red-cane",
+      "path": "plaza/sock-red-cane.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sock-red",
+      "path": "plaza/sock-red.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-locomotive",
+      "path": "plaza/train-locomotive.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-tender",
+      "path": "plaza/train-tender.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon-flat-short",
+      "path": "plaza/train-wagon-flat-short.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon-flat",
+      "path": "plaza/train-wagon-flat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon-logs",
+      "path": "plaza/train-wagon-logs.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon-short",
+      "path": "plaza/train-wagon-short.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon",
+      "path": "plaza/train-wagon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-bend",
+      "path": "plaza/trainset-rail-bend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-corner",
+      "path": "plaza/trainset-rail-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-detailed-bend",
+      "path": "plaza/trainset-rail-detailed-bend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-detailed-corner",
+      "path": "plaza/trainset-rail-detailed-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-detailed-straight",
+      "path": "plaza/trainset-rail-detailed-straight.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-straight",
+      "path": "plaza/trainset-rail-straight.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-decorated-snow",
+      "path": "plaza/tree-decorated-snow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-decorated",
+      "path": "plaza/tree-decorated.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-snow-a",
+      "path": "plaza/tree-snow-a.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-snow-b",
+      "path": "plaza/tree-snow-b.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-snow-c",
+      "path": "plaza/tree-snow-c.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree",
+      "path": "plaza/tree.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wreath-decorated",
+      "path": "plaza/wreath-decorated.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wreath",
+      "path": "plaza/wreath.glb",
+      "exists": true,
+      "kind": "glb"
+    }
+  ]
+}

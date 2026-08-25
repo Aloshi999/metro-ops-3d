@@ -1,0 +1,3269 @@
+{
+  "instance": true,
+  "unique_per_lot": false,
+  "shared_materials": true,
+  "scale": 14.5,
+  "lot_m": 16,
+  "model_unit": 1.0,
+  "lot_contract": "~1 model unit, 16m lots, instance scale 14.5",
+  "camera_read": "190m High camera \u2014 interiors are window/cutaway cards, not first-person rooms",
+  "district": "park",
+  "slots": [
+    {
+      "id": "bed",
+      "path": "nature/bed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bed_floor",
+      "path": "nature/bed_floor.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_center_stone",
+      "path": "nature/bridge_center_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_center_stoneRound",
+      "path": "nature/bridge_center_stoneRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_center_wood",
+      "path": "nature/bridge_center_wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_center_woodRound",
+      "path": "nature/bridge_center_woodRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_side_stone",
+      "path": "nature/bridge_side_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_side_stoneRound",
+      "path": "nature/bridge_side_stoneRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_side_wood",
+      "path": "nature/bridge_side_wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_side_woodRound",
+      "path": "nature/bridge_side_woodRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_stone",
+      "path": "nature/bridge_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_stoneNarrow",
+      "path": "nature/bridge_stoneNarrow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_stoneRound",
+      "path": "nature/bridge_stoneRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_stoneRoundNarrow",
+      "path": "nature/bridge_stoneRoundNarrow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_wood",
+      "path": "nature/bridge_wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_woodNarrow",
+      "path": "nature/bridge_woodNarrow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_woodRound",
+      "path": "nature/bridge_woodRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_woodRoundNarrow",
+      "path": "nature/bridge_woodRoundNarrow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cactus_short",
+      "path": "nature/cactus_short.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cactus_tall",
+      "path": "nature/cactus_tall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "campfire_bricks",
+      "path": "nature/campfire_bricks.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "campfire_logs",
+      "path": "nature/campfire_logs.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "campfire_planks",
+      "path": "nature/campfire_planks.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "campfire_stones",
+      "path": "nature/campfire_stones.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "canoe",
+      "path": "nature/canoe.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "canoe_paddle",
+      "path": "nature/canoe_paddle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockCave_rock",
+      "path": "nature/cliff_blockCave_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockCave_stone",
+      "path": "nature/cliff_blockCave_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockDiagonal_rock",
+      "path": "nature/cliff_blockDiagonal_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockDiagonal_stone",
+      "path": "nature/cliff_blockDiagonal_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockHalf_rock",
+      "path": "nature/cliff_blockHalf_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockHalf_stone",
+      "path": "nature/cliff_blockHalf_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockQuarter_rock",
+      "path": "nature/cliff_blockQuarter_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockQuarter_stone",
+      "path": "nature/cliff_blockQuarter_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockSlopeHalfWalls_rock",
+      "path": "nature/cliff_blockSlopeHalfWalls_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockSlopeHalfWalls_stone",
+      "path": "nature/cliff_blockSlopeHalfWalls_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockSlopeWalls_rock",
+      "path": "nature/cliff_blockSlopeWalls_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockSlopeWalls_stone",
+      "path": "nature/cliff_blockSlopeWalls_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockSlope_rock",
+      "path": "nature/cliff_blockSlope_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_blockSlope_stone",
+      "path": "nature/cliff_blockSlope_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_block_rock",
+      "path": "nature/cliff_block_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_block_stone",
+      "path": "nature/cliff_block_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cave_rock",
+      "path": "nature/cliff_cave_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cave_stone",
+      "path": "nature/cliff_cave_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerInnerLarge_rock",
+      "path": "nature/cliff_cornerInnerLarge_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerInnerLarge_stone",
+      "path": "nature/cliff_cornerInnerLarge_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerInnerTop_rock",
+      "path": "nature/cliff_cornerInnerTop_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerInnerTop_stone",
+      "path": "nature/cliff_cornerInnerTop_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerInner_rock",
+      "path": "nature/cliff_cornerInner_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerInner_stone",
+      "path": "nature/cliff_cornerInner_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerLarge_rock",
+      "path": "nature/cliff_cornerLarge_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerLarge_stone",
+      "path": "nature/cliff_cornerLarge_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerTop_rock",
+      "path": "nature/cliff_cornerTop_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_cornerTop_stone",
+      "path": "nature/cliff_cornerTop_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_corner_rock",
+      "path": "nature/cliff_corner_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_corner_stone",
+      "path": "nature/cliff_corner_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_diagonal_rock",
+      "path": "nature/cliff_diagonal_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_diagonal_stone",
+      "path": "nature/cliff_diagonal_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_halfCornerInner_rock",
+      "path": "nature/cliff_halfCornerInner_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_halfCornerInner_stone",
+      "path": "nature/cliff_halfCornerInner_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_halfCorner_rock",
+      "path": "nature/cliff_halfCorner_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_halfCorner_stone",
+      "path": "nature/cliff_halfCorner_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_half_rock",
+      "path": "nature/cliff_half_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_half_stone",
+      "path": "nature/cliff_half_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_large_rock",
+      "path": "nature/cliff_large_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_large_stone",
+      "path": "nature/cliff_large_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_rock",
+      "path": "nature/cliff_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_stepsCornerInner_rock",
+      "path": "nature/cliff_stepsCornerInner_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_stepsCornerInner_stone",
+      "path": "nature/cliff_stepsCornerInner_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_stepsCorner_rock",
+      "path": "nature/cliff_stepsCorner_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_stepsCorner_stone",
+      "path": "nature/cliff_stepsCorner_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_steps_rock",
+      "path": "nature/cliff_steps_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_steps_stone",
+      "path": "nature/cliff_steps_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_stone",
+      "path": "nature/cliff_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_topDiagonal_rock",
+      "path": "nature/cliff_topDiagonal_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_topDiagonal_stone",
+      "path": "nature/cliff_topDiagonal_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_top_rock",
+      "path": "nature/cliff_top_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_top_stone",
+      "path": "nature/cliff_top_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_waterfallTop_rock",
+      "path": "nature/cliff_waterfallTop_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_waterfallTop_stone",
+      "path": "nature/cliff_waterfallTop_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_waterfall_rock",
+      "path": "nature/cliff_waterfall_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_waterfall_stone",
+      "path": "nature/cliff_waterfall_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crop_carrot",
+      "path": "nature/crop_carrot.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crop_melon",
+      "path": "nature/crop_melon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crop_pumpkin",
+      "path": "nature/crop_pumpkin.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crop_turnip",
+      "path": "nature/crop_turnip.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_bambooStageA",
+      "path": "nature/crops_bambooStageA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_bambooStageB",
+      "path": "nature/crops_bambooStageB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_cornStageA",
+      "path": "nature/crops_cornStageA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_cornStageB",
+      "path": "nature/crops_cornStageB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_cornStageC",
+      "path": "nature/crops_cornStageC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_cornStageD",
+      "path": "nature/crops_cornStageD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_dirtDoubleRow",
+      "path": "nature/crops_dirtDoubleRow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_dirtDoubleRowCorner",
+      "path": "nature/crops_dirtDoubleRowCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_dirtDoubleRowEnd",
+      "path": "nature/crops_dirtDoubleRowEnd.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_dirtRow",
+      "path": "nature/crops_dirtRow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_dirtRowCorner",
+      "path": "nature/crops_dirtRowCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_dirtRowEnd",
+      "path": "nature/crops_dirtRowEnd.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_dirtSingle",
+      "path": "nature/crops_dirtSingle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_leafsStageA",
+      "path": "nature/crops_leafsStageA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_leafsStageB",
+      "path": "nature/crops_leafsStageB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_wheatStageA",
+      "path": "nature/crops_wheatStageA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crops_wheatStageB",
+      "path": "nature/crops_wheatStageB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_bend",
+      "path": "nature/fence_bend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_bendCenter",
+      "path": "nature/fence_bendCenter.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_corner",
+      "path": "nature/fence_corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_gate",
+      "path": "nature/fence_gate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_planks",
+      "path": "nature/fence_planks.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_planksDouble",
+      "path": "nature/fence_planksDouble.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_simple",
+      "path": "nature/fence_simple.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_simpleCenter",
+      "path": "nature/fence_simpleCenter.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_simpleDiagonal",
+      "path": "nature/fence_simpleDiagonal.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_simpleDiagonalCenter",
+      "path": "nature/fence_simpleDiagonalCenter.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_simpleHigh",
+      "path": "nature/fence_simpleHigh.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence_simpleLow",
+      "path": "nature/fence_simpleLow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_purpleA",
+      "path": "nature/flower_purpleA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_purpleB",
+      "path": "nature/flower_purpleB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_purpleC",
+      "path": "nature/flower_purpleC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_redA",
+      "path": "nature/flower_redA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_redB",
+      "path": "nature/flower_redB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_redC",
+      "path": "nature/flower_redC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_yellowA",
+      "path": "nature/flower_yellowA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_yellowB",
+      "path": "nature/flower_yellowB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flower_yellowC",
+      "path": "nature/flower_yellowC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "grass",
+      "path": "nature/grass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "grass_large",
+      "path": "nature/grass_large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "grass_leafs",
+      "path": "nature/grass_leafs.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "grass_leafsLarge",
+      "path": "nature/grass_leafsLarge.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_grass",
+      "path": "nature/ground_grass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathBend",
+      "path": "nature/ground_pathBend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathBendBank",
+      "path": "nature/ground_pathBendBank.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathCorner",
+      "path": "nature/ground_pathCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathCornerSmall",
+      "path": "nature/ground_pathCornerSmall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathCross",
+      "path": "nature/ground_pathCross.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathEnd",
+      "path": "nature/ground_pathEnd.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathEndClosed",
+      "path": "nature/ground_pathEndClosed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathOpen",
+      "path": "nature/ground_pathOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathRocks",
+      "path": "nature/ground_pathRocks.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathSide",
+      "path": "nature/ground_pathSide.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathSideOpen",
+      "path": "nature/ground_pathSideOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathSplit",
+      "path": "nature/ground_pathSplit.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathStraight",
+      "path": "nature/ground_pathStraight.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_pathTile",
+      "path": "nature/ground_pathTile.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverBend",
+      "path": "nature/ground_riverBend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverBendBank",
+      "path": "nature/ground_riverBendBank.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverCorner",
+      "path": "nature/ground_riverCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverCornerSmall",
+      "path": "nature/ground_riverCornerSmall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverCross",
+      "path": "nature/ground_riverCross.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverEnd",
+      "path": "nature/ground_riverEnd.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverEndClosed",
+      "path": "nature/ground_riverEndClosed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverOpen",
+      "path": "nature/ground_riverOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverRocks",
+      "path": "nature/ground_riverRocks.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverSide",
+      "path": "nature/ground_riverSide.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverSideOpen",
+      "path": "nature/ground_riverSideOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverSplit",
+      "path": "nature/ground_riverSplit.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverStraight",
+      "path": "nature/ground_riverStraight.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverTile",
+      "path": "nature/ground_riverTile.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hanging_moss",
+      "path": "nature/hanging_moss.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lily_large",
+      "path": "nature/lily_large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lily_small",
+      "path": "nature/lily_small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "log",
+      "path": "nature/log.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "log_large",
+      "path": "nature/log_large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "log_stack",
+      "path": "nature/log_stack.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "log_stackLarge",
+      "path": "nature/log_stackLarge.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mushroom_red",
+      "path": "nature/mushroom_red.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mushroom_redGroup",
+      "path": "nature/mushroom_redGroup.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mushroom_redTall",
+      "path": "nature/mushroom_redTall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mushroom_tan",
+      "path": "nature/mushroom_tan.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mushroom_tanGroup",
+      "path": "nature/mushroom_tanGroup.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "mushroom_tanTall",
+      "path": "nature/mushroom_tanTall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "path_stone",
+      "path": "nature/path_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "path_stoneCircle",
+      "path": "nature/path_stoneCircle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "path_stoneCorner",
+      "path": "nature/path_stoneCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "path_stoneEnd",
+      "path": "nature/path_stoneEnd.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "path_wood",
+      "path": "nature/path_wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "path_woodCorner",
+      "path": "nature/path_woodCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "path_woodEnd",
+      "path": "nature/path_woodEnd.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_bush",
+      "path": "nature/plant_bush.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_bushDetailed",
+      "path": "nature/plant_bushDetailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_bushLarge",
+      "path": "nature/plant_bushLarge.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_bushLargeTriangle",
+      "path": "nature/plant_bushLargeTriangle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_bushSmall",
+      "path": "nature/plant_bushSmall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_bushTriangle",
+      "path": "nature/plant_bushTriangle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_flatShort",
+      "path": "nature/plant_flatShort.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_flatTall",
+      "path": "nature/plant_flatTall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "platform_beach",
+      "path": "nature/platform_beach.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "platform_grass",
+      "path": "nature/platform_grass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "platform_stone",
+      "path": "nature/platform_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pot_large",
+      "path": "nature/pot_large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pot_small",
+      "path": "nature/pot_small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_largeA",
+      "path": "nature/rock_largeA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_largeB",
+      "path": "nature/rock_largeB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_largeC",
+      "path": "nature/rock_largeC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_largeD",
+      "path": "nature/rock_largeD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_largeE",
+      "path": "nature/rock_largeE.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_largeF",
+      "path": "nature/rock_largeF.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallA",
+      "path": "nature/rock_smallA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallB",
+      "path": "nature/rock_smallB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallC",
+      "path": "nature/rock_smallC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallD",
+      "path": "nature/rock_smallD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallE",
+      "path": "nature/rock_smallE.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallF",
+      "path": "nature/rock_smallF.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallFlatA",
+      "path": "nature/rock_smallFlatA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallFlatB",
+      "path": "nature/rock_smallFlatB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallFlatC",
+      "path": "nature/rock_smallFlatC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallG",
+      "path": "nature/rock_smallG.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallH",
+      "path": "nature/rock_smallH.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallI",
+      "path": "nature/rock_smallI.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallTopA",
+      "path": "nature/rock_smallTopA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_smallTopB",
+      "path": "nature/rock_smallTopB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallA",
+      "path": "nature/rock_tallA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallB",
+      "path": "nature/rock_tallB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallC",
+      "path": "nature/rock_tallC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallD",
+      "path": "nature/rock_tallD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallE",
+      "path": "nature/rock_tallE.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallF",
+      "path": "nature/rock_tallF.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallG",
+      "path": "nature/rock_tallG.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallH",
+      "path": "nature/rock_tallH.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallI",
+      "path": "nature/rock_tallI.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rock_tallJ",
+      "path": "nature/rock_tallJ.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sign",
+      "path": "nature/sign.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "statue_block",
+      "path": "nature/statue_block.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "statue_column",
+      "path": "nature/statue_column.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "statue_columnDamaged",
+      "path": "nature/statue_columnDamaged.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "statue_head",
+      "path": "nature/statue_head.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "statue_obelisk",
+      "path": "nature/statue_obelisk.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "statue_ring",
+      "path": "nature/statue_ring.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_largeA",
+      "path": "nature/stone_largeA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_largeB",
+      "path": "nature/stone_largeB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_largeC",
+      "path": "nature/stone_largeC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_largeD",
+      "path": "nature/stone_largeD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_largeE",
+      "path": "nature/stone_largeE.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_largeF",
+      "path": "nature/stone_largeF.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallA",
+      "path": "nature/stone_smallA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallB",
+      "path": "nature/stone_smallB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallC",
+      "path": "nature/stone_smallC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallD",
+      "path": "nature/stone_smallD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallE",
+      "path": "nature/stone_smallE.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallF",
+      "path": "nature/stone_smallF.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallFlatA",
+      "path": "nature/stone_smallFlatA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallFlatB",
+      "path": "nature/stone_smallFlatB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallFlatC",
+      "path": "nature/stone_smallFlatC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallG",
+      "path": "nature/stone_smallG.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallH",
+      "path": "nature/stone_smallH.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallI",
+      "path": "nature/stone_smallI.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallTopA",
+      "path": "nature/stone_smallTopA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_smallTopB",
+      "path": "nature/stone_smallTopB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallA",
+      "path": "nature/stone_tallA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallB",
+      "path": "nature/stone_tallB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallC",
+      "path": "nature/stone_tallC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallD",
+      "path": "nature/stone_tallD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallE",
+      "path": "nature/stone_tallE.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallF",
+      "path": "nature/stone_tallF.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallG",
+      "path": "nature/stone_tallG.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallH",
+      "path": "nature/stone_tallH.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallI",
+      "path": "nature/stone_tallI.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone_tallJ",
+      "path": "nature/stone_tallJ.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stump_old",
+      "path": "nature/stump_old.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stump_oldTall",
+      "path": "nature/stump_oldTall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stump_round",
+      "path": "nature/stump_round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stump_roundDetailed",
+      "path": "nature/stump_roundDetailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stump_square",
+      "path": "nature/stump_square.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stump_squareDetailed",
+      "path": "nature/stump_squareDetailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stump_squareDetailedWide",
+      "path": "nature/stump_squareDetailedWide.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tent_detailedClosed",
+      "path": "nature/tent_detailedClosed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tent_detailedOpen",
+      "path": "nature/tent_detailedOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tent_smallClosed",
+      "path": "nature/tent_smallClosed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tent_smallOpen",
+      "path": "nature/tent_smallOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_blocks",
+      "path": "nature/tree_blocks.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_blocks_dark",
+      "path": "nature/tree_blocks_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_blocks_fall",
+      "path": "nature/tree_blocks_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_cone",
+      "path": "nature/tree_cone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_cone_dark",
+      "path": "nature/tree_cone_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_cone_fall",
+      "path": "nature/tree_cone_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_default",
+      "path": "nature/tree_default.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_default_dark",
+      "path": "nature/tree_default_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_default_fall",
+      "path": "nature/tree_default_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_detailed",
+      "path": "nature/tree_detailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_detailed_dark",
+      "path": "nature/tree_detailed_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_detailed_fall",
+      "path": "nature/tree_detailed_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_fat",
+      "path": "nature/tree_fat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_fat_darkh",
+      "path": "nature/tree_fat_darkh.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_fat_fall",
+      "path": "nature/tree_fat_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_oak",
+      "path": "nature/tree_oak.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_oak_dark",
+      "path": "nature/tree_oak_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_oak_fall",
+      "path": "nature/tree_oak_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_palm",
+      "path": "nature/tree_palm.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_palmBend",
+      "path": "nature/tree_palmBend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_palmDetailedShort",
+      "path": "nature/tree_palmDetailedShort.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_palmDetailedTall",
+      "path": "nature/tree_palmDetailedTall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_palmShort",
+      "path": "nature/tree_palmShort.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_palmTall",
+      "path": "nature/tree_palmTall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineDefaultA",
+      "path": "nature/tree_pineDefaultA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineDefaultB",
+      "path": "nature/tree_pineDefaultB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineGroundA",
+      "path": "nature/tree_pineGroundA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineGroundB",
+      "path": "nature/tree_pineGroundB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineRoundA",
+      "path": "nature/tree_pineRoundA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineRoundB",
+      "path": "nature/tree_pineRoundB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineRoundC",
+      "path": "nature/tree_pineRoundC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineRoundD",
+      "path": "nature/tree_pineRoundD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineRoundE",
+      "path": "nature/tree_pineRoundE.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineRoundF",
+      "path": "nature/tree_pineRoundF.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineSmallA",
+      "path": "nature/tree_pineSmallA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineSmallB",
+      "path": "nature/tree_pineSmallB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineSmallC",
+      "path": "nature/tree_pineSmallC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineSmallD",
+      "path": "nature/tree_pineSmallD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineTallA",
+      "path": "nature/tree_pineTallA.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineTallA_detailed",
+      "path": "nature/tree_pineTallA_detailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineTallB",
+      "path": "nature/tree_pineTallB.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineTallB_detailed",
+      "path": "nature/tree_pineTallB_detailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineTallC",
+      "path": "nature/tree_pineTallC.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineTallC_detailed",
+      "path": "nature/tree_pineTallC_detailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineTallD",
+      "path": "nature/tree_pineTallD.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_pineTallD_detailed",
+      "path": "nature/tree_pineTallD_detailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_plateau",
+      "path": "nature/tree_plateau.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_plateau_dark",
+      "path": "nature/tree_plateau_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_plateau_fall",
+      "path": "nature/tree_plateau_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_simple",
+      "path": "nature/tree_simple.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_simple_dark",
+      "path": "nature/tree_simple_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_simple_fall",
+      "path": "nature/tree_simple_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_small",
+      "path": "nature/tree_small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_small_dark",
+      "path": "nature/tree_small_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_small_fall",
+      "path": "nature/tree_small_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_tall",
+      "path": "nature/tree_tall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_tall_dark",
+      "path": "nature/tree_tall_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_tall_fall",
+      "path": "nature/tree_tall_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_thin",
+      "path": "nature/tree_thin.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_thin_dark",
+      "path": "nature/tree_thin_dark.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_thin_fall",
+      "path": "nature/tree_thin_fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge",
+      "path": "forest/bridge.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "building-platform",
+      "path": "forest/building-platform.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "building-roof",
+      "path": "forest/building-roof.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "building-structure",
+      "path": "forest/building-structure.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "character-archer",
+      "path": "forest/character-archer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence",
+      "path": "forest/fence.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "flag",
+      "path": "forest/flag.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ladder",
+      "path": "forest/ladder.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "patch-dirt",
+      "path": "forest/patch-dirt.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "patch-grass",
+      "path": "forest/patch-grass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant",
+      "path": "forest/plant.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "platform",
+      "path": "forest/platform.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-high",
+      "path": "forest/rocks-high.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-low",
+      "path": "forest/rocks-low.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-ramp",
+      "path": "forest/rocks-ramp.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stones",
+      "path": "forest/stones.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "target",
+      "path": "forest/target.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tent",
+      "path": "forest/tent.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-high",
+      "path": "forest/tree-high.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree",
+      "path": "forest/tree.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "weapon-arrow",
+      "path": "forest/weapon-arrow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "weapon-bow",
+      "path": "forest/weapon-bow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bench-short",
+      "path": "plaza/bench-short.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bench",
+      "path": "plaza/bench.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-corner-bottom",
+      "path": "plaza/cabin-corner-bottom.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-corner-logs",
+      "path": "plaza/cabin-corner-logs.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-corner",
+      "path": "plaza/cabin-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-door-rotate",
+      "path": "plaza/cabin-door-rotate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-doorway-center",
+      "path": "plaza/cabin-doorway-center.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-doorway-left",
+      "path": "plaza/cabin-doorway-left.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-doorway-right",
+      "path": "plaza/cabin-doorway-right.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-doorway",
+      "path": "plaza/cabin-doorway.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-fence",
+      "path": "plaza/cabin-fence.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-overhang-door-rotate",
+      "path": "plaza/cabin-overhang-door-rotate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-overhang-doorway",
+      "path": "plaza/cabin-overhang-doorway.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-chimney",
+      "path": "plaza/cabin-roof-chimney.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-corner",
+      "path": "plaza/cabin-roof-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-dormer",
+      "path": "plaza/cabin-roof-dormer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-point",
+      "path": "plaza/cabin-roof-point.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow-chimney",
+      "path": "plaza/cabin-roof-snow-chimney.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow-corner",
+      "path": "plaza/cabin-roof-snow-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow-dormer",
+      "path": "plaza/cabin-roof-snow-dormer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow-point",
+      "path": "plaza/cabin-roof-snow-point.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-snow",
+      "path": "plaza/cabin-roof-snow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof-top",
+      "path": "plaza/cabin-roof-top.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-roof",
+      "path": "plaza/cabin-roof.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall-low",
+      "path": "plaza/cabin-wall-low.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall-roof-center",
+      "path": "plaza/cabin-wall-roof-center.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall-roof",
+      "path": "plaza/cabin-wall-roof.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall-wreath",
+      "path": "plaza/cabin-wall-wreath.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-wall",
+      "path": "plaza/cabin-wall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-window-a",
+      "path": "plaza/cabin-window-a.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-window-b",
+      "path": "plaza/cabin-window-b.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-window-c",
+      "path": "plaza/cabin-window-c.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabin-window-large",
+      "path": "plaza/cabin-window-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "candy-cane-green",
+      "path": "plaza/candy-cane-green.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "candy-cane-red",
+      "path": "plaza/candy-cane-red.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "festivus-pole",
+      "path": "plaza/festivus-pole.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floor-stone",
+      "path": "plaza/floor-stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floor-wood-snow",
+      "path": "plaza/floor-wood-snow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floor-wood",
+      "path": "plaza/floor-wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gingerbread-man",
+      "path": "plaza/gingerbread-man.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gingerbread-woman",
+      "path": "plaza/gingerbread-woman.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hanukkah-dreidel",
+      "path": "plaza/hanukkah-dreidel.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hanukkah-menorah-candles",
+      "path": "plaza/hanukkah-menorah-candles.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hanukkah-menorah",
+      "path": "plaza/hanukkah-menorah.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kwanzaa-kikombe",
+      "path": "plaza/kwanzaa-kikombe.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kwanzaa-kinara-alternative",
+      "path": "plaza/kwanzaa-kinara-alternative.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kwanzaa-kinara",
+      "path": "plaza/kwanzaa-kinara.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lantern-hanging",
+      "path": "plaza/lantern-hanging.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lantern",
+      "path": "plaza/lantern.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lights-colored",
+      "path": "plaza/lights-colored.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lights-green",
+      "path": "plaza/lights-green.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lights-red",
+      "path": "plaza/lights-red.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "nutcracker",
+      "path": "plaza/nutcracker.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-a-cube",
+      "path": "plaza/present-a-cube.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-a-rectangle",
+      "path": "plaza/present-a-rectangle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-a-round",
+      "path": "plaza/present-a-round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-b-cube",
+      "path": "plaza/present-b-cube.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-b-rectangle",
+      "path": "plaza/present-b-rectangle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "present-b-round",
+      "path": "plaza/present-b-round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "reindeer",
+      "path": "plaza/reindeer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-large",
+      "path": "plaza/rocks-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-medium",
+      "path": "plaza/rocks-medium.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-small",
+      "path": "plaza/rocks-small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sled-long",
+      "path": "plaza/sled-long.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sled",
+      "path": "plaza/sled.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snow-bunker",
+      "path": "plaza/snow-bunker.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snow-flat-large",
+      "path": "plaza/snow-flat-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snow-flat",
+      "path": "plaza/snow-flat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snow-pile",
+      "path": "plaza/snow-pile.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowflake-a",
+      "path": "plaza/snowflake-a.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowflake-b",
+      "path": "plaza/snowflake-b.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowflake-c",
+      "path": "plaza/snowflake-c.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowman-hat",
+      "path": "plaza/snowman-hat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "snowman",
+      "path": "plaza/snowman.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sock-green-cane",
+      "path": "plaza/sock-green-cane.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sock-green",
+      "path": "plaza/sock-green.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sock-red-cane",
+      "path": "plaza/sock-red-cane.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sock-red",
+      "path": "plaza/sock-red.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-locomotive",
+      "path": "plaza/train-locomotive.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-tender",
+      "path": "plaza/train-tender.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon-flat-short",
+      "path": "plaza/train-wagon-flat-short.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon-flat",
+      "path": "plaza/train-wagon-flat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon-logs",
+      "path": "plaza/train-wagon-logs.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon-short",
+      "path": "plaza/train-wagon-short.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "train-wagon",
+      "path": "plaza/train-wagon.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-bend",
+      "path": "plaza/trainset-rail-bend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-corner",
+      "path": "plaza/trainset-rail-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-detailed-bend",
+      "path": "plaza/trainset-rail-detailed-bend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-detailed-corner",
+      "path": "plaza/trainset-rail-detailed-corner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-detailed-straight",
+      "path": "plaza/trainset-rail-detailed-straight.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trainset-rail-straight",
+      "path": "plaza/trainset-rail-straight.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-decorated-snow",
+      "path": "plaza/tree-decorated-snow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-decorated",
+      "path": "plaza/tree-decorated.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-snow-a",
+      "path": "plaza/tree-snow-a.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-snow-b",
+      "path": "plaza/tree-snow-b.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree-snow-c",
+      "path": "plaza/tree-snow-c.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree",
+      "path": "plaza/tree.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wreath-decorated",
+      "path": "plaza/wreath-decorated.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wreath",
+      "path": "plaza/wreath.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "altar-stone",
+      "path": "graveyard/altar-stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "altar-wood",
+      "path": "graveyard/altar-wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bench-damaged",
+      "path": "graveyard/bench-damaged.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bench",
+      "path": "graveyard/bench.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "border-pillar",
+      "path": "graveyard/border-pillar.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "brick-wall-curve-small",
+      "path": "graveyard/brick-wall-curve-small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "brick-wall-curve",
+      "path": "graveyard/brick-wall-curve.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "brick-wall-end",
+      "path": "graveyard/brick-wall-end.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "brick-wall",
+      "path": "graveyard/brick-wall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "candle-multiple",
+      "path": "graveyard/candle-multiple.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "candle",
+      "path": "graveyard/candle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "character-ghost",
+      "path": "graveyard/character-ghost.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "character-keeper",
+      "path": "graveyard/character-keeper.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "character-skeleton",
+      "path": "graveyard/character-skeleton.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "character-vampire",
+      "path": "graveyard/character-vampire.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "character-zombie",
+      "path": "graveyard/character-zombie.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "coffin-old",
+      "path": "graveyard/coffin-old.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "coffin",
+      "path": "graveyard/coffin.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "column-large",
+      "path": "graveyard/column-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cross-column",
+      "path": "graveyard/cross-column.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cross-wood",
+      "path": "graveyard/cross-wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cross",
+      "path": "graveyard/cross.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt-a",
+      "path": "graveyard/crypt-a.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt-b",
+      "path": "graveyard/crypt-b.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt-door",
+      "path": "graveyard/crypt-door.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt-large-door",
+      "path": "graveyard/crypt-large-door.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt-large-roof",
+      "path": "graveyard/crypt-large-roof.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt-large",
+      "path": "graveyard/crypt-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt-small-roof",
+      "path": "graveyard/crypt-small-roof.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt-small",
+      "path": "graveyard/crypt-small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "crypt",
+      "path": "graveyard/crypt.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "debris-wood",
+      "path": "graveyard/debris-wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "debris",
+      "path": "graveyard/debris.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "detail-bowl",
+      "path": "graveyard/detail-bowl.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "detail-chalice",
+      "path": "graveyard/detail-chalice.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "detail-plate",
+      "path": "graveyard/detail-plate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence-damaged",
+      "path": "graveyard/fence-damaged.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence-gate",
+      "path": "graveyard/fence-gate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fence",
+      "path": "graveyard/fence.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "fire-basket",
+      "path": "graveyard/fire-basket.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "grave-border",
+      "path": "graveyard/grave-border.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "grave",
+      "path": "graveyard/grave.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-bevel",
+      "path": "graveyard/gravestone-bevel.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-broken",
+      "path": "graveyard/gravestone-broken.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-cross-large",
+      "path": "graveyard/gravestone-cross-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-cross",
+      "path": "graveyard/gravestone-cross.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-debris",
+      "path": "graveyard/gravestone-debris.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-decorative",
+      "path": "graveyard/gravestone-decorative.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-roof",
+      "path": "graveyard/gravestone-roof.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-round",
+      "path": "graveyard/gravestone-round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "gravestone-wide",
+      "path": "graveyard/gravestone-wide.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hay-bale-bundled",
+      "path": "graveyard/hay-bale-bundled.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hay-bale",
+      "path": "graveyard/hay-bale.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "iron-fence-bar",
+      "path": "graveyard/iron-fence-bar.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "iron-fence-border-column",
+      "path": "graveyard/iron-fence-border-column.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "iron-fence-border-curve",
+      "path": "graveyard/iron-fence-border-curve.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "iron-fence-border-gate",
+      "path": "graveyard/iron-fence-border-gate.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "iron-fence-border",
+      "path": "graveyard/iron-fence-border.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "iron-fence-curve",
+      "path": "graveyard/iron-fence-curve.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "iron-fence-damaged",
+      "path": "graveyard/iron-fence-damaged.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "iron-fence",
+      "path": "graveyard/iron-fence.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lantern-candle",
+      "path": "graveyard/lantern-candle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lantern-glass",
+      "path": "graveyard/lantern-glass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lightpost-all",
+      "path": "graveyard/lightpost-all.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lightpost-double",
+      "path": "graveyard/lightpost-double.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lightpost-single",
+      "path": "graveyard/lightpost-single.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pillar-large",
+      "path": "graveyard/pillar-large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pillar-obelisk",
+      "path": "graveyard/pillar-obelisk.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pillar-small",
+      "path": "graveyard/pillar-small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pillar-square",
+      "path": "graveyard/pillar-square.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pine-crooked",
+      "path": "graveyard/pine-crooked.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pine-fall-crooked",
+      "path": "graveyard/pine-fall-crooked.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pine-fall",
+      "path": "graveyard/pine-fall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pine",
+      "path": "graveyard/pine.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pumpkin-carved",
+      "path": "graveyard/pumpkin-carved.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pumpkin-tall-carved",
+      "path": "graveyard/pumpkin-tall-carved.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pumpkin-tall",
+      "path": "graveyard/pumpkin-tall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pumpkin",
+      "path": "graveyard/pumpkin.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "road",
+      "path": "graveyard/road.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks-tall",
+      "path": "graveyard/rocks-tall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rocks",
+      "path": "graveyard/rocks.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "shovel-dirt",
+      "path": "graveyard/shovel-dirt.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "shovel",
+      "path": "graveyard/shovel.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone-wall-column",
+      "path": "graveyard/stone-wall-column.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone-wall-curve",
+      "path": "graveyard/stone-wall-curve.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone-wall-damaged",
+      "path": "graveyard/stone-wall-damaged.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stone-wall",
+      "path": "graveyard/stone-wall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trunk-long",
+      "path": "graveyard/trunk-long.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trunk",
+      "path": "graveyard/trunk.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "urn-round",
+      "path": "graveyard/urn-round.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "urn-square",
+      "path": "graveyard/urn-square.glb",
+      "exists": true,
+      "kind": "glb"
+    }
+  ],
+  "audio": [
+    {
+      "id": "park_day",
+      "path": "audio/bed/park_day.ogg",
+      "exists": true,
+      "kind": "ogg"
+    }
+  ],
+  "audio_bed": "res://assets/city/district_park/audio/bed/park_day.wav",
+  "audio_bed_long": "res://assets/city/district_park/audio/bed/park_day_long.ogg"
+}

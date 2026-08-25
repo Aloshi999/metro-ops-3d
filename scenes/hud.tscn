@@ -106,6 +106,22 @@ theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(0.75, 0.9, 1, 1)
 text = "RCI R — · C — · I —"
 
+[node name="OccLabel" type="Label" parent="Root/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.82, 0.88, 0.78, 1)
+text = "Occupancy —"
+
+[node name="MoodLabel" type="Label" parent="Root/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.95, 0.86, 0.55, 1)
+text = "Mood —"
+
 [node name="EventStatus" type="Label" parent="Root/TopBar/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -121,6 +137,14 @@ size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
 text = "Tool: Residential"
+
+[node name="GraphicsLabel" type="Label" parent="Root/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.85, 0.95, 1, 1)
+text = "GFX Low"
 
 [node name="WarChip" type="Label" parent="Root/TopBar/HBox"]
 layout_mode = 2
@@ -294,9 +318,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -180.0
-offset_top = -70.0
+offset_top = -110.0
 offset_right = 180.0
-offset_bottom = 70.0
+offset_bottom = 110.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -319,9 +343,17 @@ mouse_filter = 2
 theme_override_font_sizes/font_size = 20
 text = "Resume"
 
+[node name="GraphicsMenu" type="Label" parent="Root/PauseOverlay/PauseBox"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+text = "Graphics  < Low >"
+horizontal_alignment = 1
+
 [node name="PauseHint" type="Label" parent="Root/PauseOverlay/PauseBox"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_font_sizes/font_size = 18
-text = "View to resume"
+text = "LB/RB or D-pad cycle graphics · View resume"
 horizontal_alignment = 1

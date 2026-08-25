@@ -1,0 +1,134 @@
+{
+  "instance": true,
+  "unique_per_lot": false,
+  "shared_materials": true,
+  "scale": 14.5,
+  "lot_m": 16,
+  "model_unit": 1.0,
+  "lot_contract": "~1 model unit, 16m lots, instance scale 14.5",
+  "camera_read": "190m High camera \u2014 interiors are window/cutaway cards, not first-person rooms",
+  "district": "skyline",
+  "slots": [
+    {
+      "id": "Building_Large_2",
+      "path": "Building_Large_2.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "Building_Large_2",
+      "path": "Building_Large_2.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "T_Concrete_Asphalt_BaseColor",
+      "path": "T_Concrete_Asphalt_BaseColor.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_Concrete_Normal",
+      "path": "T_Concrete_Normal.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_Concrete_ORM",
+      "path": "T_Concrete_ORM.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_MarbleFloor_BaseColor",
+      "path": "T_MarbleFloor_BaseColor.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_MarbleFloor_Normal",
+      "path": "T_MarbleFloor_Normal.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_MarbleFloor_ORM",
+      "path": "T_MarbleFloor_ORM.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_MetalConcrete_BaseColor",
+      "path": "T_MetalConcrete_BaseColor.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_MetalConcrete_Normal",
+      "path": "T_MetalConcrete_Normal.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_MetalConcrete_ORM",
+      "path": "T_MetalConcrete_ORM.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_RedBrick_BaseColor",
+      "path": "T_RedBrick_BaseColor.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_RedBrick_Normal",
+      "path": "T_RedBrick_Normal.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_RedBrick_ORM",
+      "path": "T_RedBrick_ORM.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_Trim_BaseColor",
+      "path": "T_Trim_BaseColor.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_Trim_Normal",
+      "path": "T_Trim_Normal.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_Trim_ORM",
+      "path": "T_Trim_ORM.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_dark_interior",
+      "path": "T_dark_interior.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_lit_interior_1",
+      "path": "T_lit_interior_1.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "T_lit_interior_2",
+      "path": "T_lit_interior_2.png",
+      "exists": true,
+      "kind": "png"
+    }
+  ],
+  "note": "Extra-tall Quaternius MegaKit Building_Large_2. NOT Kenney building-skyscraper-a..e."
+}

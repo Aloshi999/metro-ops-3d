@@ -8,6 +8,7 @@ const MapData = preload("res://scripts/systems/map_data.gd")
 const BuildingCatalog = preload("res://scripts/world/building_catalog.gd")
 const CityView = preload("res://scripts/world/city_view.gd")
 const CityCamera = preload("res://scripts/world/city_camera.gd")
+const GraphicsPresets = preload("res://scripts/world/graphics_presets.gd")
 
 var map: MapData
 var catalog: BuildingCatalog
@@ -17,13 +18,14 @@ var catalog: BuildingCatalog
 @onready var world_env: WorldEnvironment = $WorldEnvironment
 @onready var sun: DirectionalLight3D = $DirectionalLight3D
 
+var graphics_preset: int = GraphicsPresets.Id.LOW
 var _capture_armed: bool = false
 var _stats_printed: bool = false
 var _boot_frames: int = 0
 
 
 func _ready() -> void:
-	Engine.max_fps = GameConstants.TARGET_FPS
+	graphics_preset = GraphicsPresets.from_env(GraphicsPresets.Id.LOW)
 	_setup_environment()
 	if map == null:
 		map = MapData.new()
@@ -33,6 +35,12 @@ func _ready() -> void:
 		setup(map, catalog)
 	if OS.get_environment("CITY_MESH_CAPTURE") == "1":
 		_capture_armed = true
+		# Store-page still: 800p + cheap SSAO on the 0.58/0.78 film. Do not lift to High 1080p.
+		if world_env and world_env.environment:
+			var env := world_env.environment
+			env.ssao_enabled = true
+			env.ssao_intensity = 0.40
+			env.ssao_radius = 1.0
 
 
 func setup(p_map: MapData, p_catalog: BuildingCatalog) -> void:
@@ -63,64 +71,26 @@ func _print_instance_counts() -> void:
 	var svc_n := city_view.services_root.get_child_count() if city_view.services_root else 0
 	var prop_n := city_view.props_root.get_child_count() if city_view.props_root else 0
 	print("CITY_MESH instances buildings=", bld_n, " roads=", rd_n, " lots=", lot_n, " services=", svc_n, " props=", prop_n)
+	print("CITY_MESH park=", city_view.park_count, " waterfront=", city_view.waterfront_count, " cards=", city_view.card_count)
 	if catalog:
 		print("CITY_MESH caches albedo=", catalog._albedo_cache.size(), " emissive=", catalog._emissive_cache.size())
 
 
+func apply_graphics_preset(preset: int) -> void:
+	## Controls/Builder: world.apply_graphics_preset(GraphicsPresets.Id.HIGH)
+	## or GraphicsPresets.apply(world, viewport, id). Stores + switches look.
+	graphics_preset = clampi(preset, GraphicsPresets.Id.LOW, GraphicsPresets.Id.ULTRA)
+	GraphicsPresets.apply(self, get_viewport(), graphics_preset)
+
+
+func apply_preset(name: String = "low") -> void:
+	## String alias for older Controls wiring.
+	apply_graphics_preset(GraphicsPresets.id_from_name(name))
+
+
 func _setup_environment() -> void:
-	var sky_mat := PanoramaSkyMaterial.new()
-	var hdr = load("res://assets/env/sky.hdr")
-	if hdr:
-		sky_mat.panorama = hdr
-	# Hair toward 014: 0.84/0.64/0.62 — whites held at 0.78, do not return to 1.05/1.18.
-	if "energy_multiplier" in sky_mat:
-		sky_mat.energy_multiplier = 0.62
-	var sky := Sky.new()
-	sky.sky_material = sky_mat
-	var env := Environment.new()
-	env.background_mode = Environment.BG_SKY
-	env.sky = sky
-	if not ("energy_multiplier" in sky_mat) and "background_energy_multiplier" in env:
-		env.background_energy_multiplier = 0.62
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.34
-	# Slightly more dusk than the exposure-pull cool blue (do not raise energy).
-	env.ambient_light_color = Color(0.55, 0.56, 0.70)
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 0.84
-	env.adjustment_enabled = true
-	env.adjustment_saturation = 1.10
-	env.adjustment_contrast = 1.14
-	env.fog_enabled = true
-	env.fog_density = 0.00155
-	env.fog_light_color = Color(0.52, 0.54, 0.66)
-	env.fog_aerial_perspective = 0.58
-	if "fog_sky_affect" in env:
-		env.fog_sky_affect = 0.68
-	if "fog_light_energy" in env:
-		env.fog_light_energy = 0.82
-	env.volumetric_fog_enabled = false
-	env.glow_enabled = false
-	# Cheap SSAO — low intensity. Builder: kill SSAO first if 1% lows slip.
-	env.ssao_enabled = true
-	env.ssao_intensity = 0.42
-	env.ssao_radius = 1.0
-	if "ssao_quality" in env:
-		env.ssao_quality = 0
-	env.ssil_enabled = false
-	env.sdfgi_enabled = false
-	env.ssr_enabled = false
-	if ProjectSettings.has_setting("rendering/environment/ssao/quality"):
-		ProjectSettings.set_setting("rendering/environment/ssao/quality", 0)
-	if world_env:
-		world_env.environment = env
-	if sun:
-		sun.rotation_degrees = Vector3(-50.0, 40.0, 0.0)
-		sun.light_energy = 0.64
-		sun.light_color = Color(1.0, 0.84, 0.68)
-		sun.shadow_enabled = true
-		sun.directional_shadow_max_distance = 320.0
-	_ensure_fill_light()
+	## Boot default LOW (Deck floor). METRO_GRAPHICS honored in _ready.
+	apply_graphics_preset(graphics_preset)
 
 
 func _ensure_fill_light() -> void:

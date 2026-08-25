@@ -12,6 +12,9 @@ const ToolSystem = preload("res://scripts/systems/tool_system.gd")
 const BuildingCatalog = preload("res://scripts/world/building_catalog.gd")
 const CityView = preload("res://scripts/world/city_view.gd")
 const WorldRoot = preload("res://scripts/world/world_root.gd")
+const GraphicsPresets = preload("res://scripts/world/graphics_presets.gd")
+const GraphicsSettings = preload("res://scripts/ui/graphics_settings.gd")
+const AudioBed = preload("res://scripts/systems/audio_bed.gd")
 
 @onready var deck: Node = $DeckController
 @onready var hud: CanvasLayer = $HUD
@@ -29,6 +32,9 @@ var advisor: AdvisorSystem
 var tools: ToolSystem
 var catalog: BuildingCatalog
 var radial: Control
+var gfx: GraphicsSettings
+
+var audio_bed: AudioBed
 
 var paused: bool = false
 var sim_accum: float = 0.0
@@ -66,13 +72,22 @@ func _bind_world_nodes() -> void:
 func _ready() -> void:
 	_bind_world_nodes()
 	Engine.max_fps = GameConstants.TARGET_FPS
-	get_viewport().scaling_3d_mode = GameConstants.FSR_MODE
-	get_viewport().scaling_3d_scale = GameConstants.FSR_SCALE
-	get_viewport().fsr_sharpness = GameConstants.FSR_SHARPNESS
+	var vp := get_viewport()
+	if vp:
+		vp.scaling_3d_mode = GameConstants.FSR_MODE
+		vp.scaling_3d_scale = GameConstants.FSR_SCALE
+		vp.fsr_sharpness = GameConstants.FSR_SHARPNESS
 	_apply_deck_window()
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
-	_setup_environment()
+	var preset: int = GraphicsPresets.Id.LOW
+	var metro_gfx := OS.get_environment("METRO_GRAPHICS").strip_edges()
+	if not metro_gfx.is_empty():
+		preset = GraphicsPresets.id_from_name(metro_gfx)
+	if world != null and world.has_method("apply_graphics_preset"):
+		world.apply_graphics_preset(preset)
+	else:
+		_setup_environment()
 
 	# WorldRoot bootstraps MapData + BuildingCatalog in its _ready (child first).
 	if world != null and world.get("map") != null:
@@ -118,12 +133,13 @@ func _ready() -> void:
 	deck.radial_toggled.connect(_on_radial_toggled)
 	deck.radial_select.connect(_on_radial_select)
 	deck.brush_cycled.connect(_on_brush_cycled)
+	if deck.has_signal("gfx_cycle"):
+		deck.gfx_cycle.connect(_on_gfx_cycle)
 
 	hud.war_clicked.connect(_trigger_war)
 	hud.disaster_clicked.connect(_trigger_disaster)
 	hud.advisor_dismissed.connect(func(): pass)
-	if hud.has_signal("resume_clicked"):
-		hud.resume_clicked.connect(_resume_play)
+	# View-only resume. Do not wire A / Resume button / events to _resume_play.
 	if hud.has_signal("overlay_focus_out"):
 		hud.overlay_focus_out.connect(_on_overlay_focus_out)
 	if hud.has_signal("overlay_focus_in"):
@@ -137,10 +153,16 @@ func _ready() -> void:
 	hud.set_tool(tools.label(), tools.brush)
 	hud.set_cash(budget.cash, 0, 0)
 	hud.set_rci(sim.demand_label())
+	if hud.has_method("set_occupancy"):
+		hud.set_occupancy(map.occupancy_percent())
+	if hud.has_method("set_happiness"):
+		hud.set_happiness(sim.happiness)
 	hud.set_event_status(0, 0)
 	_refresh_advisor()
 	paused = false
 	hud.set_paused(false)
+	_boot_graphics()
+	_boot_audio()
 	_update_cursor_visual()
 
 
@@ -197,6 +219,8 @@ func _process(dt: float) -> void:
 				city_view._mark_dirty()
 			if hud.has_method("set_occupancy"):
 				hud.set_occupancy(map.occupancy_percent())
+			if hud.has_method("set_happiness"):
+				hud.set_happiness(sim.happiness)
 			if hud.has_method("set_event_status"):
 				hud.set_event_status(sim.war_timer, sim.disaster_timer)
 			_refresh_advisor()
@@ -273,18 +297,15 @@ func _apply_deck_window() -> void:
 
 
 func _resume_play() -> void:
-	paused = false
-	hud.set_paused(false)
-	var vp := get_viewport()
-	if vp:
-		vp.gui_release_focus()
+	# Unused. Resume only via _toggle_pause (View). Kept so leftover HUD signals cannot unpause.
+	pass
 
 
 func _on_paint() -> void:
 	if deck.radial_open:
 		return
 	if paused:
-		_resume_play()
+		# Stay paused until View. A paints only when unpaused.
 		return
 	_try_paint_at(cursor)
 
@@ -377,6 +398,43 @@ func _on_radial_select(index: int) -> void:
 	_refresh_advisor()
 
 
+
+func _boot_graphics() -> void:
+	gfx = GraphicsSettings.new()
+	gfx.boot()
+	if world != null and world.get("graphics_preset") != null:
+		gfx.index = int(world.graphics_preset)
+	if hud.has_method("set_graphics"):
+		hud.set_graphics(gfx.label())
+
+
+func _boot_audio() -> void:
+	audio_bed = AudioBed.new()
+	audio_bed.name = "AudioBed"
+	add_child(audio_bed)
+	audio_bed.load_all()
+	audio_bed.play_boot()
+
+
+func set_district(district: String) -> void:
+	## Optional Mesh/Look hook: downtown / park / waterfront / rail / night.
+	if audio_bed != null:
+		audio_bed.set_district(district)
+
+
+func _on_gfx_cycle(dir: int) -> void:
+	if gfx == null:
+		_boot_graphics()
+	gfx.cycle(dir)
+	if world != null and world.has_method("apply_graphics_preset"):
+		world.apply_graphics_preset(gfx.index)
+	else:
+		gfx.apply(get_viewport(), world)
+	if hud.has_method("set_graphics"):
+		hud.set_graphics(gfx.label())
+	hud.show_event("Graphics", gfx.label())
+
+
 func _on_brush_cycled(size: int) -> void:
 	tools.brush = size
 	hud.set_tool(tools.label(), tools.brush)
@@ -387,6 +445,7 @@ func _toggle_pause() -> void:
 		return
 	paused = not paused
 	hud.set_paused(paused)
+	deck.graphics_focus = paused
 	if not paused:
 		var vp := get_viewport()
 		if vp:
@@ -404,8 +463,10 @@ func _on_overlay_focus_out() -> void:
 
 
 func _on_overlay_focus_in() -> void:
-	# Deck Tech: no auto-resume. View / A still unpause via _toggle_pause / _resume_play.
-	pass
+	# No auto-resume. Drop any GUI focus Steam overlay left behind. View unpauses.
+	var vp := get_viewport()
+	if vp:
+		vp.gui_release_focus()
 
 
 func _on_demand_changed(_r: float, _c: float, _i: float) -> void:
@@ -418,9 +479,6 @@ func _refresh_advisor() -> void:
 
 
 func _trigger_war() -> void:
-	if paused:
-		paused = false
-		hud.set_paused(false)
 	var info: Dictionary = sim.start_war(budget)
 	hud.show_event(info["title"], info["body"])
 	hud.set_event_status(sim.war_timer, sim.disaster_timer)
@@ -431,9 +489,6 @@ func _trigger_war() -> void:
 
 
 func _trigger_disaster() -> void:
-	if paused:
-		paused = false
-		hud.set_paused(false)
 	var info: Dictionary = sim.start_disaster(map, budget)
 	hud.show_event(info["title"], info["body"])
 	hud.set_event_status(sim.war_timer, sim.disaster_timer)

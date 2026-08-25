@@ -1,10 +1,17 @@
 class_name BuildingCatalog
 extends RefCounted
-## Loads Kenney City Kit GLBs (real meshes) and returns scaled instances.
+## Loads Kenney City Kit GLBs (real meshes) and MegaKit downtown prebuilts.
 ## Occupancy tiers swap house → midrise → skyscraper / factory.
+## Downtown core COM uses MegaKit at DISTRICT_DOWNTOWN_SCALE 1.0 (not 14.5).
 
 const GameConstants = preload("res://scripts/core/game_constants.gd")
 const TileTypes = preload("res://scripts/core/tile_types.gd")
+const MidriseKitGD = preload("res://scripts/world/midrise_kit.gd")
+const ParkKitGD = preload("res://scripts/world/park_kit.gd")
+const WaterfrontKitGD = preload("res://scripts/world/waterfront_kit.gd")
+const MidriseCardsGD = preload("res://scripts/world/midrise_cards.gd")
+const RailKitGD = preload("res://scripts/world/rail_kit.gd")
+const NightMarketKitGD = preload("res://scripts/world/night_market_kit.gd")
 
 const SUB := "res://assets/city/kenney_suburban/"
 const COM := "res://assets/city/kenney_commercial/"
@@ -12,7 +19,15 @@ const IND := "res://assets/city/kenney_industrial/"
 const ROAD := "res://assets/city/kenney_roads/"
 
 var _scenes: Dictionary = {}  # path -> PackedScene
+var downtown: DowntownKit
+var midrise
+var park
+var waterfront
+var rail
+var market
+var midrise_cards
 var loaded_count: int = 0
+var _window_card_tex: Dictionary = {}  # path -> Texture2D, shared
 var failed: PackedStringArray = []
 var _emissive_cache: Dictionary = {}  # path -> Array of StandardMaterial3D (walk order)
 var _albedo_cache: Dictionary = {}  # path -> Array of StandardMaterial3D (walk order)
@@ -130,6 +145,28 @@ const ROAD_END: String = ROAD + "road-end.glb"
 const ROAD_SQUARE: String = ROAD + "road-square.glb"
 const LAMP: String = ROAD + "light-curved.glb"
 
+const DOWNTOWN := "res://assets/city/district_downtown/buildings/"
+const DOWNTOWN_LARGE: String = DOWNTOWN + "Building_Large_2.gltf"
+const DOWNTOWN_MEDIUM: String = DOWNTOWN + "Building_Medium_2_001.gltf"
+const DOWNTOWN_SMALL: String = DOWNTOWN + "Building_Small_1.gltf"
+const DOWNTOWN_LIT: String = "res://assets/city/district_downtown/textures/T_lit_interior_1.png"
+const DOWNTOWN_LIT_2: String = "res://assets/city/district_downtown/textures/T_lit_interior_2.png"
+const INTERIORS_DROPIN := "res://assets/city/interiors_dropin/"
+## Tonemapped JPGs + T_lit only. Skip 2K HDRIs (hitch) and do not spawn rooms.
+const WINDOW_CARD_PATHS: Array[String] = [
+	DOWNTOWN_LIT,
+	DOWNTOWN_LIT_2,
+	INTERIORS_DROPIN + "window_cards/hotel_room_tonemapped.jpg",
+	INTERIORS_DROPIN + "window_cards/anniversary_lounge_tonemapped.jpg",
+	INTERIORS_DROPIN + "window_cards/fireplace_tonemapped.jpg",
+	INTERIORS_DROPIN + "window_cards/photo_studio_01_tonemapped.jpg",
+	INTERIORS_DROPIN + "window_cards/studio_small_03_tonemapped.jpg",
+	INTERIORS_DROPIN + "window_cards/apartment_kiara_interior/kiara_interior_tonemapped.jpg",
+	INTERIORS_DROPIN + "window_cards/shop_comfy_cafe/comfy_cafe_tonemapped.jpg",
+]
+
+var _downtown_lit_tex: Texture2D = null
+
 
 func load_all() -> void:
 	var paths: Array[String] = []
@@ -143,20 +180,65 @@ func load_all() -> void:
 			paths.append(p)
 	for p in paths:
 		_load(p)
+	downtown = DowntownKit.new()
+	downtown.load_kit()
+	midrise = MidriseKitGD.new()
+	midrise.load_kit()
+	park = ParkKitGD.new()
+	park.load_kit()
+	midrise_cards = MidriseCardsGD.new()
+	midrise_cards.load_kit()
+	rail = RailKitGD.new()
+	rail.load_kit()
+	market = NightMarketKitGD.new()
+	market.load_kit()
+	waterfront = WaterfrontKitGD.new()
+	if waterfront:
+		waterfront.load_kit()
 
 
 func _load(path: String) -> void:
 	if _scenes.has(path):
 		return
-	if not ResourceLoader.exists(path) and not FileAccess.file_exists(path):
+	if ResourceLoader.exists(path):
+		var res = ResourceLoader.load(path)
+		if res is PackedScene:
+			_scenes[path] = res
+			loaded_count += 1
+			return
+	# MegaKit glTF may not have editor .import sidecars — pack at runtime (no recook).
+	if path.ends_with(".gltf") or path.ends_with(".glb"):
+		var packed := _pack_gltf_runtime(path)
+		if packed:
+			_scenes[path] = packed
+			loaded_count += 1
+			return
+	if not FileAccess.file_exists(path):
 		failed.append(path)
 		return
-	var res = ResourceLoader.load(path)
-	if res is PackedScene:
-		_scenes[path] = res
-		loaded_count += 1
-	else:
-		failed.append(path)
+	failed.append(path)
+
+
+func _pack_gltf_runtime(path: String) -> PackedScene:
+	var abs_path := path
+	if path.begins_with("res://"):
+		abs_path = ProjectSettings.globalize_path(path)
+	if not FileAccess.file_exists(abs_path) and not FileAccess.file_exists(path):
+		return null
+	var doc := GLTFDocument.new()
+	var state := GLTFState.new()
+	var err := doc.append_from_file(path, state)
+	if err != OK:
+		err = doc.append_from_file(abs_path, state)
+	if err != OK:
+		return null
+	var node := doc.generate_scene(state)
+	if node == null:
+		return null
+	var packed := PackedScene.new()
+	if packed.pack(node) != OK:
+		return null
+	return packed
 
 
 func has_meshes() -> bool:
@@ -180,6 +262,65 @@ func instantiate_path(path: String, scale: float = GameConstants.BUILDING_SCALE)
 		wrap.add_child(n)
 	wrap.scale = Vector3(scale, scale, scale)
 	return wrap
+
+
+func pick_downtown_building(occupancy: float, lot_index: int) -> Node3D:
+	## Quaternius downtown via shared DowntownKit PackedScenes (look-measured scale).
+	if downtown == null or not downtown.ready:
+		return null
+	var n := downtown.pick_building(occupancy, lot_index)
+	if n:
+		var key := "downtown_small"
+		if occupancy >= 0.85 and ((lot_index % 128) & 1) == 0:
+			key = "downtown_large"
+		elif occupancy >= 0.58:
+			key = "downtown_medium"
+		_apply_downtown_window_glow(n, key)
+	return n
+
+
+func pick_midrise_building(occupancy: float, lot_index: int) -> Node3D:
+	## Fail soft — midrise pack has no exterior buildings this pass.
+	if midrise == null or not midrise.ready:
+		return null
+	return midrise.pick_building(occupancy, lot_index)
+
+
+func pick_park_piece(lot_index: int) -> Node3D:
+	if park == null or not park.ready:
+		return null
+	return park.pick_piece(lot_index)
+
+
+func pick_waterfront_piece(lot_index: int, on_water: bool = false) -> Node3D:
+	if waterfront == null or not waterfront.ready:
+		return null
+	return waterfront.pick_piece(lot_index, on_water)
+
+
+func pick_rail_piece(kind: String, index: int) -> Node3D:
+	## Mesh-callable. Fail soft if the rail pack did not cache.
+	if rail == null or not rail.ready:
+		return null
+	return rail.pick_piece(kind, index)
+
+
+func pick_market_prop(index: int) -> Node3D:
+	## Mesh-callable curated stall/prop. Fail soft. Not a lot building.
+	if market == null or not market.ready:
+		return null
+	return market.pick_prop(index)
+
+
+func pick_window_card_texture(index: int) -> Texture2D:
+	## Shared interiors_dropin / T_lit cards for 190m window glow. Not rooms.
+	var live: Array[String] = []
+	for p in WINDOW_CARD_PATHS:
+		if _window_card_exists(p):
+			live.append(p)
+	if live.is_empty():
+		return null
+	return _load_window_card(live[posmod(index, live.size())])
 
 
 func pick_zone_building(z: int, occupancy: float, lot_index: int) -> Node3D:
@@ -215,6 +356,11 @@ func pick_zone_building(z: int, occupancy: float, lot_index: int) -> Node3D:
 
 
 func instantiate_hq() -> Node3D:
+	if downtown and downtown.ready:
+		var dt := downtown.instantiate_hq()
+		if dt:
+			_apply_downtown_window_glow(dt, "downtown_hq")
+			return dt
 	var n := instantiate_path(HQ_PATH, GameConstants.BUILDING_SCALE * 1.15)
 	if n:
 		_apply_albedo_tint(n, HQ_PATH, Color(0.68, 0.70, 0.74), COM_ROUGHNESS, COM_METALLIC)
@@ -240,8 +386,12 @@ func instantiate_water() -> Node3D:
 	return n
 
 
-func instantiate_road(mask: int) -> Node3D:
+func instantiate_road(mask: int, use_downtown: bool = false) -> Node3D:
 	## mask: bit0 N, bit1 E, bit2 S, bit3 W. Returns yaw in radians via meta.
+	if use_downtown and downtown:
+		var dt := downtown.instantiate_street(mask)
+		if dt:
+			return dt
 	var bits := 0
 	if mask & 1:
 		bits += 1
@@ -307,6 +457,132 @@ func instantiate_tree(large: bool) -> Node3D:
 
 func instantiate_lamp() -> Node3D:
 	return instantiate_path(LAMP, GameConstants.PROP_SCALE)
+
+
+func _downtown_lit_texture() -> Texture2D:
+	if _downtown_lit_tex != null:
+		return _downtown_lit_tex
+	# T_lit first, then interiors_dropin tonemapped JPGs. Shared, not per-lot.
+	_downtown_lit_tex = pick_window_card_texture(0)
+	return _downtown_lit_tex
+
+
+func _window_card_exists(path: String) -> bool:
+	if path.is_empty():
+		return false
+	if ResourceLoader.exists(path):
+		return true
+	var abs_path := path
+	if path.begins_with("res://"):
+		abs_path = ProjectSettings.globalize_path(path)
+	return FileAccess.file_exists(abs_path) or FileAccess.file_exists(path)
+
+
+func _load_window_card(path: String) -> Texture2D:
+	if path.is_empty():
+		return null
+	if _window_card_tex.has(path):
+		return _window_card_tex[path]
+	var tex: Texture2D = null
+	if ResourceLoader.exists(path):
+		var res = ResourceLoader.load(path)
+		if res is Texture2D:
+			tex = res
+	if tex == null:
+		var abs_path := path
+		if path.begins_with("res://"):
+			abs_path = ProjectSettings.globalize_path(path)
+		if FileAccess.file_exists(abs_path):
+			var img := Image.new()
+			if img.load(abs_path) == OK:
+				tex = ImageTexture.create_from_image(img)
+	if tex:
+		_window_card_tex[path] = tex
+	return tex
+
+
+func _mat_name_is_window_lit(src: Material) -> bool:
+	if src == null:
+		return false
+	var nm := src.resource_name
+	if nm.is_empty():
+		nm = str(src.resource_path.get_file())
+	var low := nm.to_lower()
+	return low.contains("window") or low.contains("interior") or low.contains("lit")
+
+
+func _downtown_glow_or_null(src: Material) -> Variant:
+	## Cool COM-like sheen on Window / Interior / Lit only — not whole-building albedo emission.
+	if src == null or not (src is StandardMaterial3D):
+		return null
+	if not _mat_name_is_window_lit(src):
+		return null
+	var dupe := (src as StandardMaterial3D).duplicate() as StandardMaterial3D
+	dupe.emission_enabled = true
+	dupe.emission = Color(0.45, 0.62, 0.95)
+	dupe.emission_energy_multiplier = 0.35
+	var tex := _downtown_lit_texture()
+	if tex:
+		dupe.emission_texture = tex
+	return dupe
+
+
+func _apply_downtown_window_glow(root: Node3D, path: String) -> void:
+	## Path-cached surface mats (shared _emissive_cache). Not uniqued per lot.
+	if root == null:
+		return
+	if not _emissive_cache.has(path):
+		_emissive_cache[path] = _build_downtown_glow_mats(root)
+	var idx := [0]
+	_walk_assign_downtown_glow(root, _emissive_cache[path], idx)
+
+
+func _build_downtown_glow_mats(n: Node) -> Array:
+	var mats: Array = []
+	_walk_dupe_downtown_glow(n, mats)
+	return mats
+
+
+func _walk_dupe_downtown_glow(n: Node, mats: Array) -> void:
+	if n is MeshInstance3D:
+		var mi := n as MeshInstance3D
+		var mesh := mi.mesh
+		var scount := mesh.get_surface_count() if mesh else 0
+		if scount <= 0:
+			var src: Material = mi.material_override
+			if src == null:
+				src = mi.get_active_material(0)
+			mats.append(_downtown_glow_or_null(src))
+		else:
+			for s in scount:
+				var src: Material = mi.get_surface_override_material(s)
+				if src == null and mesh:
+					src = mesh.surface_get_material(s)
+				if src == null:
+					src = mi.get_active_material(s)
+				mats.append(_downtown_glow_or_null(src))
+	for c in n.get_children():
+		_walk_dupe_downtown_glow(c, mats)
+
+
+func _walk_assign_downtown_glow(n: Node, mats: Array, idx: Array) -> void:
+	if n is MeshInstance3D:
+		var mi := n as MeshInstance3D
+		var mesh := mi.mesh
+		var scount := mesh.get_surface_count() if mesh else 0
+		if scount <= 0:
+			var i: int = idx[0]
+			if i < mats.size() and mats[i] != null:
+				mi.material_override = mats[i]
+			idx[0] = i + 1
+		else:
+			for s in scount:
+				var i: int = idx[0]
+				if i < mats.size() and mats[i] != null:
+					mi.set_surface_override_material(s, mats[i])
+				idx[0] = i + 1
+	for c in n.get_children():
+		_walk_assign_downtown_glow(c, mats, idx)
 
 
 func _apply_albedo_tint(root: Node3D, path: String, mul: Color, roughness: float = RES_ROUGHNESS, metallic: float = RES_METALLIC) -> void:

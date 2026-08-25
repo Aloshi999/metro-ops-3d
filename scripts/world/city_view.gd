@@ -13,6 +13,14 @@ var catalog: BuildingCatalog
 var cursor_lot: Vector2i = Vector2i.ZERO
 var cursor_brush: int = 1
 var cursor_tint: Color = Color(1.0, 0.92, 0.18, 0.72)
+var park_count: int = 0
+var waterfront_count: int = 0
+var card_count: int = 0
+var _park_lots: Dictionary = {}
+var _wf_water: Dictionary = {}
+var _wf_shore: Dictionary = {}
+var park_root: Node3D
+var waterfront_root: Node3D
 
 @onready var terrain_mi: MeshInstance3D = $Terrain
 @onready var water_mi: MeshInstance3D = $Water
@@ -53,6 +61,9 @@ func setup(p_map: MapData, p_catalog: BuildingCatalog, _env: WorldEnvironment = 
 	dirt_tex = load("res://assets/env/dirt_diff.jpg")
 	asphalt_tex = load("res://assets/env/asphalt_diff.jpg")
 	_densify_downtown()
+	_seed_park()
+	_seed_waterfront()
+	_seed_midrise_ring()
 	_build_terrain()
 	_build_cursor()
 	_ensure_event_fx()
@@ -131,6 +142,8 @@ func _densify_downtown() -> void:
 		map._reveal_around(hq.x, hq.y, 16)
 
 
+
+
 func _on_map_changed() -> void:
 	_dirty_full = true
 	_dirty_occ = true
@@ -161,6 +174,8 @@ func rebuild_all() -> void:
 	_dirty_full = true
 	_dirty_occ = true
 	_scatter_trees()
+	_scatter_park()
+	_scatter_waterfront()
 
 
 func _ensure_ground_mesh(node_name: String) -> MeshInstance3D:
@@ -200,7 +215,7 @@ func _build_terrain() -> void:
 	road_st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
 	var grass_col := Color(0.18, 0.42, 0.16)
-	var dirt_col := Color(0.72, 0.36, 0.10)
+	var dirt_col := Color(0.78, 0.38, 0.10)
 	var asphalt_col := Color(0.16, 0.16, 0.18)
 
 	for y in n:
@@ -235,12 +250,12 @@ func _build_terrain() -> void:
 	terrain_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	dirt_mi.mesh = dirt_st.commit()
-	dirt_mi.material_override = _make_ground_mat(dirt_tex, n, Color(0.92, 0.42, 0.10))
+	dirt_mi.material_override = _make_ground_mat(dirt_tex, n, Color(1.0, 0.40, 0.08))
 	dirt_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	road_bed_mi.mesh = road_st.commit()
 	# Dark charcoal bed — no albedo lift; Kenney roads sit on asphalt not sidewalk.
-	road_bed_mi.material_override = _make_ground_mat(asphalt_tex, n, Color(0.48, 0.48, 0.52))
+	road_bed_mi.material_override = _make_ground_mat(asphalt_tex, n, Color(0.28, 0.28, 0.32))
 	road_bed_mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	# Water as a slightly lower plane covering water lots + a world-surrounding rim
@@ -394,6 +409,17 @@ func _clear_children(n: Node) -> void:
 		c.queue_free()
 
 
+func _downtown_cheb(x: int, y: int) -> int:
+	var hq: Vector2i = map.hq
+	var dx := absi(x - hq.x)
+	var dy := absi(y - hq.y)
+	return dx if dx > dy else dy
+
+
+func _is_overlay_lot(i: int) -> bool:
+	return _park_lots.has(i) or _wf_water.has(i) or _wf_shore.has(i)
+
+
 func _rebuild_roads() -> void:
 	_clear_children(roads_root)
 	_road_nodes.clear()
@@ -406,7 +432,7 @@ func _rebuild_roads() -> void:
 				continue
 			if map.service[i] != TileTypes.Service.NONE:
 				continue
-			var node := catalog.instantiate_road(map.road_mask(x, y))
+			var node := catalog.instantiate_road(map.road_mask(x, y), _downtown_cheb(x, y) <= 8)
 			if node == null:
 				continue
 			var pos := map.lot_to_world(x, y)
@@ -458,13 +484,41 @@ func _occ_tier(occ: float, damaged: bool) -> int:
 	return 3
 
 
+func _downtown_core_com(x: int, y: int, z: int) -> bool:
+	## cheb to HQ <= 5: replace Kenney COM_HIGH with MegaKit. Same lots, no densify.
+	if z != TileTypes.Zone.COMMERCIAL or map == null:
+		return false
+	var hq: Vector2i = map.hq
+	var dx := absi(x - hq.x)
+	var dy := absi(y - hq.y)
+	var cheb := dx if dx > dy else dy
+	return cheb <= 5
+
+
+func _mark_large_pad(pad_skip: Dictionary, x: int, y: int) -> bool:
+	## Reserve the +X neighbor so a 20.64 m Large does not stack a second mesh.
+	if map == null or not map.in_bounds(x + 1, y):
+		return false
+	var ni := map.idx(x + 1, y)
+	if map.revealed[ni] != 1:
+		return false
+	if map.zone[ni] != TileTypes.Zone.COMMERCIAL:
+		return false
+	if map.road[ni] == 1 or map.service[ni] != TileTypes.Service.NONE:
+		return false
+	pad_skip[ni] = true
+	return true
+
+
 func _rebuild_lots_and_buildings() -> void:
 	if _lot_mesh == null:
 		_lot_mesh = PlaneMesh.new()
 		_lot_mesh.size = Vector2(GameConstants.LOT_METERS * 0.92, GameConstants.LOT_METERS * 0.92)
 		_lot_mesh.orientation = PlaneMesh.FACE_Y
 
+	card_count = 0
 	var keep: Dictionary = {}
+	var pad_skip: Dictionary = {}  # 2-lot Large pad — neighbor gets decal, no second building
 	for c in map.chunks:
 		var chunk: ChunkData = c
 		if not chunk.active:
@@ -476,6 +530,8 @@ func _rebuild_lots_and_buildings() -> void:
 				var i := map.idx(x, y)
 				if map.revealed[i] != 1:
 					continue
+				if _is_overlay_lot(i):
+					continue
 				var z: int = map.zone[i]
 				if z == TileTypes.Zone.NONE:
 					continue
@@ -483,9 +539,27 @@ func _rebuild_lots_and_buildings() -> void:
 				var occ: float = map.occupancy[i]
 				var damaged: bool = map.damaged_tile[i] == 1 or chunk.damaged
 				_ensure_lot_decal(x, y, z, occ, damaged)
+				var downtown_com := _downtown_core_com(x, y, z)
 				var tier := _occ_tier(occ, damaged)
-				var key := "%d:%d:%d" % [z, tier, 1 if damaged else 0]
+				if downtown_com:
+					if damaged or occ < 0.08:
+						tier = 0
+					elif occ >= 0.85:
+						tier = 4 if (x & 1) == 0 else 3
+					elif occ >= 0.58:
+						tier = 3
+					else:
+						tier = 1
+				var key := "%s%d:%d:%d" % ["dt" if downtown_com else "", z, tier, 1 if damaged else 0]
+				if pad_skip.has(i):
+					_building_key[i] = key
+					if _building_nodes.has(i) and is_instance_valid(_building_nodes[i]):
+						(_building_nodes[i] as Node).queue_free()
+						_building_nodes.erase(i)
+					continue
 				if _building_key.get(i, "") == key:
+					if downtown_com and occ >= 0.85 and (x & 1) == 0:
+						_mark_large_pad(pad_skip, x, y)
 					continue
 				_building_key[i] = key
 				if _building_nodes.has(i) and is_instance_valid(_building_nodes[i]):
@@ -495,9 +569,20 @@ func _rebuild_lots_and_buildings() -> void:
 					continue
 				if catalog == null or not catalog.has_meshes():
 					continue
-				var b := catalog.pick_zone_building(z, occ, i)
+				var b: Node3D
+				if downtown_com:
+					b = catalog.pick_downtown_building(occ, i)
+				else:
+					b = catalog.pick_zone_building(z, occ, i)
 				if b:
-					b.position = map.lot_to_world(x, y)
+					var pos := map.lot_to_world(x, y)
+					if downtown_com and b.has_meta("downtown_lots") and int(b.get_meta("downtown_lots")) >= 2:
+						if _mark_large_pad(pad_skip, x, y):
+							pos.x += GameConstants.LOT_METERS * 0.5
+					b.position = pos
+					if not downtown_com and z != TileTypes.Zone.INDUSTRIAL and occ >= 0.32 and occ < 0.62 and card_count < 40:
+						if catalog.midrise_cards and catalog.midrise_cards.attach(b, i):
+							card_count += 1
 					buildings_root.add_child(b)
 					_building_nodes[i] = b
 
@@ -563,6 +648,8 @@ func _scatter_trees() -> void:
 			if map.revealed[i] != 1:
 				continue
 			if map.road[i] == 1 or map.zone[i] != TileTypes.Zone.NONE or map.service[i] != TileTypes.Service.NONE:
+				continue
+			if _is_overlay_lot(i):
 				continue
 			if map.terrain[i] != TileTypes.Terrain.GRASS:
 				continue
@@ -657,3 +744,325 @@ func _tick_event_fx(dt: float) -> void:
 		col = Color(1.0, 0.62, 0.10, dis_a)
 	_fx_mat.albedo_color = col
 	_fx_mi.visible = col.a > 0.002
+
+
+func _cheb_hq(x: int, y: int) -> int:
+	var hq: Vector2i = map.hq
+	var dx := absi(x - hq.x)
+	var dy := absi(y - hq.y)
+	return dx if dx > dy else dy
+
+
+func _has_water_neighbor(x: int, y: int) -> bool:
+	for d in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+		var nx: int = x + d.x
+		var ny: int = y + d.y
+		if map.in_bounds(nx, ny) and map.terrain[map.idx(nx, ny)] == TileTypes.Terrain.WATER:
+			return true
+	return false
+
+
+func _water_face_yaw(x: int, y: int) -> float:
+	## Yaw so +Z local aims at the first water neighbor (pier into water).
+	if map.in_bounds(x + 1, y) and map.terrain[map.idx(x + 1, y)] == TileTypes.Terrain.WATER:
+		return -PI * 0.5
+	if map.in_bounds(x - 1, y) and map.terrain[map.idx(x - 1, y)] == TileTypes.Terrain.WATER:
+		return PI * 0.5
+	if map.in_bounds(x, y + 1) and map.terrain[map.idx(x, y + 1)] == TileTypes.Terrain.WATER:
+		return 0.0
+	if map.in_bounds(x, y - 1) and map.terrain[map.idx(x, y - 1)] == TileTypes.Terrain.WATER:
+		return PI
+	return 0.0
+
+
+func _clear_lot_for_overlay(x: int, y: int, keep_road: bool) -> int:
+	var i := map.idx(x, y)
+	if map.service[i] != TileTypes.Service.NONE:
+		return -1
+	map.zone[i] = TileTypes.Zone.NONE
+	map.occupancy[i] = 0.0
+	if keep_road and map.road[i] == 1:
+		pass
+	else:
+		map.road[i] = 0
+	map.revealed[i] = 1
+	map.chunk_at(x, y).active = true
+	return i
+
+
+func _seed_park() -> void:
+	## Punch a park block west of HQ, visible from the south-looking 190m camera.
+	if map == null:
+		return
+	_park_lots.clear()
+	var hq: Vector2i = map.hq
+	var kept_path_y := hq.y
+	for y in range(hq.y + 1, hq.y + 8):
+		for x in range(hq.x - 10, hq.x - 5):
+			if not map.in_bounds(x, y):
+				continue
+			var i := map.idx(x, y)
+			if map.terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if map.service[i] != TileTypes.Service.NONE:
+				continue
+			map.terrain[i] = TileTypes.Terrain.GRASS
+			var keep_road := (y == kept_path_y and map.road[i] == 1)
+			if _clear_lot_for_overlay(x, y, keep_road) >= 0:
+				_park_lots[i] = Vector2i(x, y)
+	if map.has_method("_reveal_around"):
+		map._reveal_around(hq.x - 8, hq.y + 2, 8)
+	print("[CityView] seed park lots=", _park_lots.size())
+
+
+func _seed_waterfront() -> void:
+	## Dress existing downtown water + a small east inlet. World-layer only.
+	if map == null:
+		return
+	_wf_water.clear()
+	_wf_shore.clear()
+	var hq: Vector2i = map.hq
+	# Small inlet east of HQ so the south camera sees pier/palms on the right.
+	for y in range(hq.y + 1, hq.y + 8):
+		for x in range(hq.x + 6, hq.x + 11):
+			if not map.in_bounds(x, y):
+				continue
+			if _cheb_hq(x, y) <= 5:
+				continue
+			var i := map.idx(x, y)
+			if map.service[i] != TileTypes.Service.NONE:
+				continue
+			if _park_lots.has(i):
+				continue
+			if x >= hq.x + 8:
+				map.terrain[i] = TileTypes.Terrain.WATER
+				map.road[i] = 0
+				map.zone[i] = TileTypes.Zone.NONE
+				map.occupancy[i] = 0.0
+				map.revealed[i] = 1
+				map.chunk_at(x, y).active = true
+				_wf_water[i] = Vector2i(x, y)
+			else:
+				if map.terrain[i] == TileTypes.Terrain.WATER:
+					_wf_water[i] = Vector2i(x, y)
+				else:
+					var keep_road := (y == hq.y + 3)
+					if _clear_lot_for_overlay(x, y, keep_road) >= 0:
+						if not keep_road:
+							map.terrain[i] = TileTypes.Terrain.DIRT
+						_wf_shore[i] = Vector2i(x, y)
+	# Tag existing revealed water near HQ (already in the boot frame).
+	for y in range(hq.y - 6, hq.y + 14):
+		for x in range(hq.x - 4, hq.x + 14):
+			if not map.in_bounds(x, y):
+				continue
+			var i := map.idx(x, y)
+			if map.terrain[i] != TileTypes.Terrain.WATER:
+				continue
+			map.revealed[i] = 1
+			map.chunk_at(x, y).active = true
+			_wf_water[i] = Vector2i(x, y)
+	# Shore: land adjacent to tagged water, outside Quaternius core.
+	for y in range(hq.y - 6, hq.y + 14):
+		for x in range(hq.x - 4, hq.x + 14):
+			if not map.in_bounds(x, y):
+				continue
+			var i := map.idx(x, y)
+			if _wf_water.has(i) or _park_lots.has(i):
+				continue
+			if map.terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if map.service[i] != TileTypes.Service.NONE:
+				continue
+			if _cheb_hq(x, y) <= 5:
+				continue
+			if not _has_water_neighbor(x, y):
+				continue
+			var keep_road := (y == hq.y and x > hq.x)
+			if _clear_lot_for_overlay(x, y, keep_road) >= 0:
+				_wf_shore[i] = Vector2i(x, y)
+	if map.has_method("_reveal_around"):
+		map._reveal_around(hq.x + 8, hq.y + 4, 10)
+	print("[CityView] seed waterfront water=", _wf_water.size(), " shore=", _wf_shore.size())
+
+
+func _seed_midrise_ring() -> void:
+	## Pull some Kenney ring lots to mid occupancy so window cards attach.
+	if map == null:
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 314159
+	var hq: Vector2i = map.hq
+	var n := 0
+	for y in range(hq.y - 11, hq.y + 12):
+		for x in range(hq.x - 11, hq.x + 12):
+			if not map.in_bounds(x, y):
+				continue
+			var cheb := _cheb_hq(x, y)
+			if cheb <= 5 or cheb > 11:
+				continue
+			var i := map.idx(x, y)
+			if _is_overlay_lot(i):
+				continue
+			if map.terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if map.road[i] == 1 or map.service[i] != TileTypes.Service.NONE:
+				continue
+			var z: int = map.zone[i]
+			if z != TileTypes.Zone.RESIDENTIAL and z != TileTypes.Zone.COMMERCIAL:
+				continue
+			if (x + y) % 2 != 0:
+				continue
+			if map.occupancy[i] >= 0.58:
+				map.occupancy[i] = rng.randf_range(0.38, 0.56)
+				n += 1
+	print("[CityView] seed midrise-ring mid-occ=", n)
+
+
+func _ensure_overlay_roots() -> void:
+	if park_root == null or not is_instance_valid(park_root):
+		park_root = get_node_or_null("Park") as Node3D
+		if park_root == null:
+			park_root = Node3D.new()
+			park_root.name = "Park"
+			add_child(park_root)
+	if waterfront_root == null or not is_instance_valid(waterfront_root):
+		waterfront_root = get_node_or_null("Waterfront") as Node3D
+		if waterfront_root == null:
+			waterfront_root = Node3D.new()
+			waterfront_root.name = "Waterfront"
+			add_child(waterfront_root)
+
+
+func _scatter_park() -> void:
+	_ensure_overlay_roots()
+	_clear_children(park_root)
+	park_count = 0
+	if catalog == null or catalog.park == null or not catalog.park.ready:
+		print("[CityView] park scatter skipped ready=", catalog != null and catalog.park != null and catalog.park.ready)
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 70707
+	var lots: Array = _park_lots.values()
+	if lots.is_empty():
+		return
+	# Statue near the block center.
+	var mid: Vector2i = lots[lots.size() / 2]
+	var statue = catalog.park.pick_statue(0)
+	if statue:
+		statue.position = map.lot_to_world(mid.x, mid.y)
+		park_root.add_child(statue)
+		park_count += 1
+	for lot in lots:
+		if park_count >= 80:
+			break
+		var x: int = lot.x
+		var y: int = lot.y
+		var i := map.idx(x, y)
+		var base := map.lot_to_world(x, y)
+		if map.road[i] != 1:
+			var path = catalog.park.pick_path(i)
+			if path:
+				path.position = base
+				path.rotate_y(float((i * 3) % 4) * PI * 0.5)
+				park_root.add_child(path)
+				park_count += 1
+		var trees_here := 1 + (i % 2)
+		for t in trees_here:
+			if park_count >= 80:
+				break
+			var tree = catalog.park.pick_tree(i + t)
+			if tree == null:
+				continue
+			tree.position = base + Vector3(rng.randf_range(-5.0, 5.0), 0.0, rng.randf_range(-5.0, 5.0))
+			tree.rotate_y(rng.randf() * TAU)
+			park_root.add_child(tree)
+			park_count += 1
+		if (x + y) % 3 == 0 and park_count < 80:
+			var bench = catalog.park.pick_bench(i)
+			if bench:
+				bench.position = base + Vector3(rng.randf_range(-3.0, 3.0), 0.0, rng.randf_range(-3.0, 3.0))
+				bench.rotate_y(rng.randf() * TAU)
+				park_root.add_child(bench)
+				park_count += 1
+		if (x + y) % 4 == 1 and park_count < 80:
+			var fl = catalog.park.pick_flower(i)
+			if fl:
+				fl.position = base + Vector3(rng.randf_range(-4.0, 4.0), 0.0, rng.randf_range(-4.0, 4.0))
+				park_root.add_child(fl)
+				park_count += 1
+	print("[CityView] park instances=", park_count)
+
+
+func _scatter_waterfront() -> void:
+	_ensure_overlay_roots()
+	_clear_children(waterfront_root)
+	waterfront_count = 0
+	if catalog == null or catalog.waterfront == null or not catalog.waterfront.ready:
+		print("[CityView] waterfront scatter skipped")
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 19191
+	var crane_placed := false
+	for lot in _wf_shore.values():
+		if waterfront_count >= 40:
+			break
+		var x: int = lot.x
+		var y: int = lot.y
+		var i := map.idx(x, y)
+		var base := map.lot_to_world(x, y)
+		var yaw := _water_face_yaw(x, y)
+		if _has_water_neighbor(x, y) and (x + y) % 2 == 0:
+			var pier = catalog.waterfront.instantiate_pier()
+			if pier:
+				var step := Vector3(0.0, 0.05, 6.0).rotated(Vector3.UP, yaw)
+				pier.position = base + step
+				pier.rotate_y(yaw)
+				waterfront_root.add_child(pier)
+				waterfront_count += 1
+		if waterfront_count < 40:
+			var palm = catalog.waterfront.pick_palm(i)
+			if palm:
+				palm.position = base + Vector3(rng.randf_range(-3.5, 3.5), 0.0, rng.randf_range(-3.5, 3.5))
+				palm.rotate_y(rng.randf() * TAU)
+				waterfront_root.add_child(palm)
+				waterfront_count += 1
+		if (i % 3) == 0 and waterfront_count < 40:
+			var prop = catalog.waterfront.pick_prop(i)
+			if prop:
+				prop.position = base + Vector3(rng.randf_range(-2.5, 2.5), 0.0, rng.randf_range(-2.5, 2.5))
+				prop.rotate_y(rng.randf() * TAU)
+				waterfront_root.add_child(prop)
+				waterfront_count += 1
+		if not crane_placed and catalog.waterfront.crane_ok and waterfront_count < 40:
+			var crane = catalog.waterfront.instantiate_crane()
+			if crane:
+				crane.position = base
+				waterfront_root.add_child(crane)
+				waterfront_count += 1
+				crane_placed = true
+	for lot in _wf_water.values():
+		if waterfront_count >= 40:
+			break
+		var x2: int = lot.x
+		var y2: int = lot.y
+		var j := map.idx(x2, y2)
+		if y2 >= map.hq.y + 2 and (x2 + y2) % 3 == 0 and waterfront_count < 40:
+			var pier2 = catalog.waterfront.instantiate_pier()
+			if pier2:
+				var wp2 := map.lot_to_world(x2, y2)
+				pier2.position = Vector3(wp2.x, 0.05, wp2.z)
+				pier2.rotate_y(PI * 0.5)
+				waterfront_root.add_child(pier2)
+				waterfront_count += 1
+		if (x2 + y2) % 2 != 0:
+			continue
+		var lily = catalog.waterfront.pick_lily(j)
+		if lily == null:
+			continue
+		var wp := map.lot_to_world(x2, y2)
+		lily.position = Vector3(wp.x + rng.randf_range(-4.0, 4.0), -0.35, wp.z + rng.randf_range(-4.0, 4.0))
+		lily.rotate_y(rng.randf() * TAU)
+		waterfront_root.add_child(lily)
+		waterfront_count += 1
+	print("[CityView] waterfront instances=", waterfront_count)

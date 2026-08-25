@@ -9,10 +9,22 @@ export_credentials.cfg
 *.import
 .import/
 
-# Fat city bulk (Releases / LFS), not main
+# Fat binaries — Ops ships via GitHub Releases / LFS, not giant main commits
 assets/optional/bulk/
 
-# Downtown MegaKit bulk (GitHub Release / LFS)
-assets/city/district_downtown/**
-!assets/city/district_downtown/PACK.md
-!assets/city/district_downtown/LICENSES.md
+# Quaternius MegaKit extract — Release/LFS (not a giant main commit)
+assets/city/district_downtown/buildings/
+assets/city/district_downtown/textures/
+
+# District / skyline / interior kits — Releases, not main
+assets/city/district_*/**
+!assets/city/district_*/PACK.md
+!assets/city/district_*/LICENSES.md
+!assets/city/district_*/License*.txt
+!assets/city/district_*/instance_manifest.json
+assets/city/skyline/**
+!assets/city/skyline/PACK.md
+!assets/city/skyline/LICENSES.md
+assets/city/interiors_dropin/**
+!assets/city/interiors_dropin/PACK.md
+!assets/city/interiors_dropin/LICENSES.md

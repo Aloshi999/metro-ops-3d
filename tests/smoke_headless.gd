@@ -13,6 +13,7 @@ const BuildingCatalog = preload("res://scripts/world/building_catalog.gd")
 const CityView = preload("res://scripts/world/city_view.gd")
 const CityCamera = preload("res://scripts/world/city_camera.gd")
 const WorldRoot = preload("res://scripts/world/world_root.gd")
+const GraphicsPresets = preload("res://scripts/world/graphics_presets.gd")
 
 
 func _init() -> void:
@@ -36,6 +37,18 @@ func _init() -> void:
 	if GameConstants.FSR_MODE != 2 or GameConstants.FSR_SCALE != 0.67:
 		ok = false
 		errors.append("FSR constants wrong")
+
+	if GraphicsPresets.Id.LOW != 0 or GraphicsPresets.Id.MEDIUM != 1 or GraphicsPresets.Id.HIGH != 2 or GraphicsPresets.Id.ULTRA != 3:
+		ok = false
+		errors.append("GraphicsPresets.Id LOW..ULTRA missing or remapped")
+	if GraphicsPresets.name_of(GraphicsPresets.Id.LOW) != "low" or GraphicsPresets.name_of(GraphicsPresets.Id.MEDIUM) != "medium" or GraphicsPresets.name_of(GraphicsPresets.Id.HIGH) != "high" or GraphicsPresets.name_of(GraphicsPresets.Id.ULTRA) != "ultra":
+		ok = false
+		errors.append("GraphicsPresets.name_of mismatch")
+	var gfx_stub := Node.new()
+	for pid in [GraphicsPresets.Id.LOW, GraphicsPresets.Id.MEDIUM, GraphicsPresets.Id.HIGH, GraphicsPresets.Id.ULTRA]:
+		GraphicsPresets.apply(gfx_stub, null, pid)
+	GraphicsPresets.apply(gfx_stub, null, GraphicsPresets.Id.LOW)
+	gfx_stub.free()
 	if GameConstants.LOT_METERS != 16.0:
 		ok = false
 		errors.append("LOT_METERS != 16")
@@ -87,6 +100,87 @@ func _init() -> void:
 		ok = false
 		errors.append("Kenney failed paths: %s" % str(catalog.failed))
 
+	print("kits downtown ready=%s midrise ready=%s skip=%s park ready=%s loaded=%s waterfront ready=%s loaded=%s" % [
+		catalog.downtown.ready if catalog.downtown else false,
+		catalog.midrise.ready if catalog.midrise else false,
+		catalog.midrise.skip_reason if catalog.midrise else "no kit",
+		catalog.park.ready if catalog.park else false,
+		catalog.park.loaded_count if catalog.park else 0,
+		catalog.waterfront.ready if catalog.waterfront else false,
+		catalog.waterfront.loaded_count if catalog.waterfront else 0,
+	])
+	print("seed downtown=%d midrise=%d park=%d waterfront=%d" % [
+		map.seed_downtown_lots, map.seed_midrise_lots, map.seed_park_lots, map.seed_waterfront_lots
+	])
+	if map.seed_park_lots < 20:
+		ok = false
+		errors.append("park seed too small (%d)" % map.seed_park_lots)
+	if map.seed_waterfront_lots < 20:
+		ok = false
+		errors.append("waterfront seed too small (%d)" % map.seed_waterfront_lots)
+	if map.seed_midrise_lots < 20:
+		ok = false
+		errors.append("midrise seed too small (%d)" % map.seed_midrise_lots)
+	if catalog.park == null or not catalog.park.ready:
+		ok = false
+		errors.append("ParkKit not ready (need real nature GLBs)")
+	else:
+		var park_n := catalog.pick_park_piece(3)
+		if park_n == null or _first_mesh_class(park_n) == "":
+			ok = false
+			errors.append("ParkKit pick_piece returned no mesh")
+		elif park_n:
+			park_n.free()
+	if catalog.waterfront == null or not catalog.waterfront.ready:
+		ok = false
+		errors.append("WaterfrontKit not ready (need pier/crane/palm GLBs)")
+	else:
+		var wf_n := catalog.pick_waterfront_piece(0, false)
+		var wf_p := catalog.pick_waterfront_piece(1, true)
+		if wf_n == null or _first_mesh_class(wf_n) == "":
+			ok = false
+			errors.append("WaterfrontKit shore pick returned no mesh")
+		if wf_p == null or _first_mesh_class(wf_p) == "":
+			ok = false
+			errors.append("WaterfrontKit pier pick returned no mesh")
+		if wf_n:
+			wf_n.free()
+		if wf_p:
+			wf_p.free()
+	if catalog.midrise and catalog.midrise.ready:
+		ok = false
+		errors.append("MidriseKit ready=true but pack has no exterior buildings — do not stub")
+
+	var rail_n: int = int(catalog.rail.loaded_count) if catalog.rail else 0
+	var rail_ready: bool = bool(catalog.rail.ready) if catalog.rail else false
+	var mkt_n: int = int(catalog.market.loaded_count) if catalog.market else 0
+	var mkt_ready: bool = bool(catalog.market.ready) if catalog.market else false
+	print("kits rail ready=%s loaded=%s market ready=%s loaded=%s" % [rail_ready, rail_n, mkt_ready, mkt_n])
+	if catalog.rail == null or (not rail_ready and rail_n <= 0):
+		ok = false
+		errors.append("RailKit not ready / loaded_count=0")
+	else:
+		var rail_piece := catalog.pick_rail_piece("track", 0)
+		if rail_piece == null or _first_mesh_class(rail_piece) == "":
+			ok = false
+			errors.append("RailKit pick_rail_piece returned no mesh")
+		elif rail_piece:
+			rail_piece.free()
+	if catalog.market == null or (not mkt_ready and mkt_n <= 0):
+		ok = false
+		errors.append("NightMarketKit not ready / loaded_count=0")
+	else:
+		var mkt_piece := catalog.pick_market_prop(0)
+		if mkt_piece == null or _first_mesh_class(mkt_piece) == "":
+			ok = false
+			errors.append("NightMarketKit pick_market_prop returned no mesh")
+		elif mkt_piece:
+			mkt_piece.free()
+	var card := catalog.pick_window_card_texture(0)
+	if card == null:
+		ok = false
+		errors.append("window-card texture picker returned null")
+
 	var house := catalog.pick_zone_building(TileTypes.Zone.RESIDENTIAL, 0.9, 3)
 	var shop := catalog.pick_zone_building(TileTypes.Zone.COMMERCIAL, 0.9, 4)
 	var plant := catalog.pick_zone_building(TileTypes.Zone.INDUSTRIAL, 0.9, 5)
@@ -128,6 +222,88 @@ func _init() -> void:
 	if idle_budget.cash <= 0:
 		ok = false
 		errors.append("idle cash bankrupt")
+	var idle_parts: int = idle_budget.last_rent + idle_budget.last_jobs + idle_budget.last_trade + idle_budget.last_land
+	if absi(idle_budget.last_income - idle_parts) > 1:
+		ok = false
+		errors.append("idle last_income %d != rent+jobs+trade+land %d" % [idle_budget.last_income, idle_parts])
+	var idle_op_ok := false
+	for ic in idle_map.chunks:
+		if ic.active and ic.opinion_r >= GameConstants.OPINION_MIN and ic.opinion_r <= GameConstants.OPINION_MAX:
+			idle_op_ok = true
+			break
+	if not idle_op_ok:
+		ok = false
+		errors.append("no active chunk opinion_r in [OPINION_MIN, OPINION_MAX]")
+	if idle_sim.happiness < 0.0 or idle_sim.happiness > 1.0:
+		ok = false
+		errors.append("happiness %.3f not in 0..1" % idle_sim.happiness)
+	for ic2 in idle_map.chunks:
+		if not ic2.active:
+			continue
+		for pair in [["r", ic2.opinion_r], ["c", ic2.opinion_c], ["i", ic2.opinion_i]]:
+			var ov: float = float(pair[1])
+			if ov < GameConstants.OPINION_MIN or ov > GameConstants.OPINION_MAX:
+				ok = false
+				errors.append("idle opinion_%s %.3f not in [%.2f, %.2f]" % [
+					pair[0], ov, GameConstants.OPINION_MIN, GameConstants.OPINION_MAX])
+		if ic2.amenity < 0.0 or ic2.amenity > 1.0:
+			ok = false
+			errors.append("idle amenity %.3f not in 0..1" % ic2.amenity)
+		if ic2.power_cover < 0.0 or ic2.power_cover > 1.0 or ic2.water_cover < 0.0 or ic2.water_cover > 1.0:
+			ok = false
+			errors.append("idle power/water cover out of 0..1")
+	if idle_sim.city_opinion_r < GameConstants.OPINION_MIN or idle_sim.city_opinion_r > GameConstants.OPINION_MAX:
+		ok = false
+		errors.append("city_opinion_r %.3f out of range" % idle_sim.city_opinion_r)
+	var idle_rjt: int = idle_budget.last_rent + idle_budget.last_jobs + idle_budget.last_trade
+	if absi(idle_budget.last_income - idle_rjt) > 5:
+		ok = false
+		errors.append("idle last_income %d not approx rent+jobs+trade %d (land=%d)" % [
+			idle_budget.last_income, idle_rjt, idle_budget.last_land])
+	var r_hit := {}
+	var saw_water := false
+	var saw_empty := false
+	for yy in range(idle_map.hq.y - 10, idle_map.hq.y + 11):
+		for xx in range(idle_map.hq.x - 10, idle_map.hq.x + 11):
+			if not idle_map.in_bounds(xx, yy):
+				continue
+			var ii := idle_map.idx(xx, yy)
+			var d: Dictionary = idle_sim.inspect_lot(idle_map, xx, yy)
+			if idle_map.terrain[ii] == TileTypes.Terrain.WATER:
+				saw_water = true
+				if not d.is_empty():
+					ok = false
+					errors.append("inspect_lot on water not empty")
+			elif idle_map.zone[ii] == TileTypes.Zone.NONE and idle_map.occupancy[ii] <= 0.0:
+				saw_empty = true
+				if not d.is_empty():
+					ok = false
+					errors.append("inspect_lot on empty lot not empty")
+			if r_hit.is_empty() and idle_map.zone[ii] == TileTypes.Zone.RESIDENTIAL and idle_map.occupancy[ii] > 0.0:
+				r_hit = d
+	if r_hit.is_empty() or not r_hit.has("name") or not r_hit.has("tags"):
+		ok = false
+		errors.append("inspect_lot occupied R missing name/tags")
+	elif str(r_hit["name"]) == "" or r_hit["tags"].size() < 2:
+		ok = false
+		errors.append("inspect_lot name/tags too thin")
+	var voices: Array = idle_sim.sampled_voices(idle_map, 6)
+	if voices.size() > 6:
+		ok = false
+		errors.append("sampled_voices size %d > 6" % voices.size())
+	if not saw_water:
+		# Map always has water somewhere; probe a known water scan if HQ neighborhood is dry.
+		for yi in idle_map.size:
+			var found_w := false
+			for xi in idle_map.size:
+				if idle_map.terrain[idle_map.idx(xi, yi)] == TileTypes.Terrain.WATER:
+					if not idle_sim.inspect_lot(idle_map, xi, yi).is_empty():
+						ok = false
+						errors.append("inspect_lot on water not empty")
+					found_w = true
+					break
+			if found_w:
+				break
 
 	var lot_changed := false
 	var occ_ready := false
@@ -200,11 +376,40 @@ func _init() -> void:
 	if sim.demand_r <= 0.0 or sim.demand_c <= 0.0 or sim.demand_i <= 0.0:
 		ok = false
 		errors.append("RCI demand not computed")
+	var ledger: int = budget.last_rent + budget.last_jobs + budget.last_trade + budget.last_land
+	if absi(budget.last_income - ledger) > 1:
+		ok = false
+		errors.append("last_income %d != rent+jobs+trade+land %d" % [budget.last_income, ledger])
+	if sim.happiness < 0.0 or sim.happiness > 1.0:
+		ok = false
+		errors.append("painted-map happiness %.3f not in 0..1" % sim.happiness)
+	var op_ok := false
+	for oc in map.chunks:
+		if not oc.active:
+			continue
+		if oc.opinion_r >= GameConstants.OPINION_MIN and oc.opinion_r <= GameConstants.OPINION_MAX:
+			op_ok = true
+		for pair2 in [["r", oc.opinion_r], ["c", oc.opinion_c], ["i", oc.opinion_i]]:
+			var ov2: float = float(pair2[1])
+			if ov2 < GameConstants.OPINION_MIN or ov2 > GameConstants.OPINION_MAX:
+				ok = false
+				errors.append("painted opinion_%s %.3f out of range" % [pair2[0], ov2])
+	if not op_ok:
+		ok = false
+		errors.append("painted-map opinion_r not in [OPINION_MIN, OPINION_MAX]")
+	if sim.city_opinion_r < GameConstants.OPINION_MIN or sim.city_opinion_r > GameConstants.OPINION_MAX:
+		ok = false
+		errors.append("painted city_opinion_r %.3f out of range" % sim.city_opinion_r)
 
+	var trade_pre_war: int = budget.last_trade
 	var war := sim.start_war(budget)
 	if budget.tax_mult >= 1.0:
 		ok = false
 		errors.append("war tax_mult not applied")
+	sim.tick(map, budget)
+	if trade_pre_war > 2 and budget.last_trade >= trade_pre_war:
+		ok = false
+		errors.append("war trade %d not below pre-war %d" % [budget.last_trade, trade_pre_war])
 	if not war.has("title"):
 		ok = false
 		errors.append("war event malformed")
@@ -212,6 +417,16 @@ func _init() -> void:
 		ok = false
 		errors.append("war body missing demand feedback")
 
+	var blocked_dis := sim.start_disaster(map, budget)
+	if budget.demand_mult < 1.0 or sim.disaster_timer > 0:
+		ok = false
+		errors.append("disaster started while war active")
+	if not blocked_dis.has("title") or not blocked_dis.has("body"):
+		ok = false
+		errors.append("blocked disaster missing title/body")
+	sim.war_timer = 0
+	sim.event_cooldown = 0
+	budget.tax_mult = 1.0
 	var dis := sim.start_disaster(map, budget)
 	if budget.demand_mult >= 1.0:
 		ok = false
@@ -293,6 +508,30 @@ func _init() -> void:
 		print("zoom clamps dist=%.1f..%.1f minY=%.1f notch=%.1f" % [dmin, dmaxed, min_y, dist_notch])
 		rig.free()
 
+	## 0.1.4 View-only pause lock — source strings only, do not instantiate Main.
+	var main_src := FileAccess.get_file_as_string("res://scripts/main.gd")
+	if main_src.is_empty():
+		ok = false
+		errors.append("pause lock: main.gd unreadable")
+	else:
+		var stay_i := main_src.find("if paused:")
+		var stay_win := "" if stay_i < 0 else main_src.substr(stay_i, 200)
+		if stay_i < 0 or (stay_win.find("Stay paused") < 0 and stay_win.find("View") < 0 and stay_win.find("return") < 0):
+			ok = false
+			errors.append("pause lock: if paused: missing Stay-paused/View/return")
+		if main_src.find("func _resume_play") < 0 or _func_slice(main_src, "func _resume_play").find("pass") < 0:
+			ok = false
+			errors.append("pause lock: _resume_play is not a pass")
+		if main_src.find("func _on_overlay_focus_in") < 0 or _func_slice(main_src, "func _on_overlay_focus_in").find("paused = false") >= 0:
+			ok = false
+			errors.append("pause lock: _on_overlay_focus_in missing or sets paused = false")
+		if main_src.find("func _trigger_war") < 0 or _func_slice(main_src, "func _trigger_war").find("paused = false") >= 0:
+			ok = false
+			errors.append("pause lock: _trigger_war missing or sets paused = false")
+		if main_src.find("func _trigger_disaster") < 0 or _func_slice(main_src, "func _trigger_disaster").find("paused = false") >= 0:
+			ok = false
+			errors.append("pause lock: _trigger_disaster missing or sets paused = false")
+
 	print("=== Metro Ops 3D smoke ===")
 	print("map=%dx%d chunks=%dx%d lot_m=%.1f kenney=%d" % [
 		GameConstants.MAP_SIZE, GameConstants.MAP_SIZE,
@@ -312,6 +551,17 @@ func _init() -> void:
 		for e in errors:
 			print("  - ", e)
 		quit(1)
+
+
+func _func_slice(src: String, header: String) -> String:
+	var start := src.find(header)
+	if start < 0:
+		return ""
+	var rest := src.substr(start + header.length())
+	var nxt := rest.find("\nfunc ")
+	if nxt < 0:
+		return src.substr(start)
+	return src.substr(start, header.length() + nxt)
 
 
 func _first_mesh_class(n: Node) -> String:

@@ -1,0 +1,586 @@
+{
+  "instance": true,
+  "unique_per_lot": false,
+  "shared_materials": true,
+  "scale": 14.5,
+  "lot_m": 16,
+  "model_unit": 1.0,
+  "lot_contract": "~1 model unit, 16m lots, instance scale 14.5",
+  "camera_read": "190m High camera \u2014 interiors are window/cutaway cards, not first-person rooms",
+  "district": "waterfront",
+  "note": "Kenney has no waterfront kit. Assembled CC0 dock/shore. No modern boat GLB this pass (pirate kit skipped).",
+  "slots": [
+    {
+      "id": "bridge_stone",
+      "path": "nature_water/bridge_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_wood",
+      "path": "nature_water/bridge_wood.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bridge_woodNarrow",
+      "path": "nature_water/bridge_woodNarrow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_waterfall_rock",
+      "path": "nature_water/cliff_waterfall_rock.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cliff_waterfall_stone",
+      "path": "nature_water/cliff_waterfall_stone.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverBend",
+      "path": "nature_water/ground_riverBend.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverSide",
+      "path": "nature_water/ground_riverSide.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ground_riverStraight",
+      "path": "nature_water/ground_riverStraight.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lily_large",
+      "path": "nature_water/lily_large.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lily_small",
+      "path": "nature_water/lily_small.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_bush",
+      "path": "nature_water/plant_bush.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plant_flatTall",
+      "path": "nature_water/plant_flatTall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_default",
+      "path": "nature_water/tree_default.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_detailed",
+      "path": "nature_water/tree_detailed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_oak",
+      "path": "nature_water/tree_oak.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_palm",
+      "path": "nature_water/tree_palm.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tree_palmBend",
+      "path": "nature_water/tree_palmBend.glb",
+      "exists": true,
+      "kind": "glb"
+    }
+  ],
+  "polyhaven_models": [
+    {
+      "id": "Barrel_01",
+      "path": "models/Barrel_01/Barrel_01.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "Barrel_01_2k",
+      "path": "models/Barrel_01/Barrel_01_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "Barrel_01_explosive_arm_2k",
+      "path": "models/Barrel_01/textures/Barrel_01_explosive_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "Barrel_01_explosive_diff_2k",
+      "path": "models/Barrel_01/textures/Barrel_01_explosive_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "Barrel_01_explosive_nor_gl_2k",
+      "path": "models/Barrel_01/textures/Barrel_01_explosive_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "barrel_03",
+      "path": "models/barrel_03/barrel_03.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "barrel_03_2k",
+      "path": "models/barrel_03/barrel_03_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "barrel_03_arm_2k",
+      "path": "models/barrel_03/textures/barrel_03_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "barrel_03_diff_2k",
+      "path": "models/barrel_03/textures/barrel_03_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "barrel_03_nor_gl_2k",
+      "path": "models/barrel_03/textures/barrel_03_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "lateral_sea_marker",
+      "path": "models/lateral_sea_marker/lateral_sea_marker.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "lateral_sea_marker_2k",
+      "path": "models/lateral_sea_marker/lateral_sea_marker_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "lateral_sea_marker_arm_2k",
+      "path": "models/lateral_sea_marker/textures/lateral_sea_marker_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "lateral_sea_marker_diff_2k",
+      "path": "models/lateral_sea_marker/textures/lateral_sea_marker_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "lateral_sea_marker_nor_gl_2k",
+      "path": "models/lateral_sea_marker/textures/lateral_sea_marker_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "life_jacket",
+      "path": "models/life_jacket/life_jacket.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "life_jacket_2k",
+      "path": "models/life_jacket/life_jacket_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "life_jacket_arm_2k",
+      "path": "models/life_jacket/textures/life_jacket_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "life_jacket_diff_2k",
+      "path": "models/life_jacket/textures/life_jacket_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "life_jacket_nor_gl_2k",
+      "path": "models/life_jacket/textures/life_jacket_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "lifebuoy",
+      "path": "models/lifebuoy/lifebuoy.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "lifebuoy_2k",
+      "path": "models/lifebuoy/lifebuoy_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "lifebuoy_arm_2k",
+      "path": "models/lifebuoy/textures/lifebuoy_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "lifebuoy_diff_2k",
+      "path": "models/lifebuoy/textures/lifebuoy_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "lifebuoy_nor_gl_2k",
+      "path": "models/lifebuoy/textures/lifebuoy_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "modular_wooden_pier",
+      "path": "models/modular_wooden_pier/modular_wooden_pier.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "modular_wooden_pier_2k",
+      "path": "models/modular_wooden_pier/modular_wooden_pier_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "modular_wooden_pier_planks_arm_2k",
+      "path": "models/modular_wooden_pier/textures/modular_wooden_pier_planks_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "modular_wooden_pier_planks_diff_2k",
+      "path": "models/modular_wooden_pier/textures/modular_wooden_pier_planks_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "modular_wooden_pier_planks_nor_gl_2k",
+      "path": "models/modular_wooden_pier/textures/modular_wooden_pier_planks_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "modular_wooden_pier_poles_arm_2k",
+      "path": "models/modular_wooden_pier/textures/modular_wooden_pier_poles_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "modular_wooden_pier_poles_diff_2k",
+      "path": "models/modular_wooden_pier/textures/modular_wooden_pier_poles_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "modular_wooden_pier_poles_nor_gl_2k",
+      "path": "models/modular_wooden_pier/textures/modular_wooden_pier_poles_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "ocean_buoy",
+      "path": "models/ocean_buoy/ocean_buoy.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "ocean_buoy_2k",
+      "path": "models/ocean_buoy/ocean_buoy_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "ocean_buoy_arm_2k",
+      "path": "models/ocean_buoy/textures/ocean_buoy_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "ocean_buoy_diff_2k",
+      "path": "models/ocean_buoy/textures/ocean_buoy_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "ocean_buoy_emission_2k",
+      "path": "models/ocean_buoy/textures/ocean_buoy_emission_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "ocean_buoy_nor_gl_2k",
+      "path": "models/ocean_buoy/textures/ocean_buoy_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "overhead_crane",
+      "path": "models/overhead_crane/overhead_crane.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "overhead_crane_2k",
+      "path": "models/overhead_crane/overhead_crane_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "overhead_crane_arm_2k",
+      "path": "models/overhead_crane/textures/overhead_crane_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "overhead_crane_diff_2k",
+      "path": "models/overhead_crane/textures/overhead_crane_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "overhead_crane_nor_gl_2k",
+      "path": "models/overhead_crane/textures/overhead_crane_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "overhead_crane_trim_arm_2k",
+      "path": "models/overhead_crane/textures/overhead_crane_trim_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "overhead_crane_trim_diff_2k",
+      "path": "models/overhead_crane/textures/overhead_crane_trim_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "overhead_crane_trim_nor_gl_2k",
+      "path": "models/overhead_crane/textures/overhead_crane_trim_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_barrel01_arm_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_barrel01_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_barrel01_diff_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_barrel01_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_barrel01_nor_gl_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_barrel01_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_barrel02_arm_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_barrel02_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_barrel02_diff_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_barrel02_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_barrel02_nor_gl_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_barrel02_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_pieces_arm_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_pieces_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_pieces_diff_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_pieces_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01_pieces_nor_gl_2k",
+      "path": "models/wooden_barrels_01/textures/wooden_barrels_01_pieces_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_barrels_01",
+      "path": "models/wooden_barrels_01/wooden_barrels_01.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "wooden_barrels_01_2k",
+      "path": "models/wooden_barrels_01/wooden_barrels_01_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "wooden_crate_01_arm_2k",
+      "path": "models/wooden_crate_01/textures/wooden_crate_01_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_crate_01_diff_2k",
+      "path": "models/wooden_crate_01/textures/wooden_crate_01_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_crate_01_nor_gl_2k",
+      "path": "models/wooden_crate_01/textures/wooden_crate_01_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_crate_01",
+      "path": "models/wooden_crate_01/wooden_crate_01.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "wooden_crate_01_2k",
+      "path": "models/wooden_crate_01/wooden_crate_01_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    },
+    {
+      "id": "wooden_crate_02_arm_2k",
+      "path": "models/wooden_crate_02/textures/wooden_crate_02_arm_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_crate_02_diff_2k",
+      "path": "models/wooden_crate_02/textures/wooden_crate_02_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_crate_02_nor_gl_2k",
+      "path": "models/wooden_crate_02/textures/wooden_crate_02_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "wooden_crate_02",
+      "path": "models/wooden_crate_02/wooden_crate_02.bin",
+      "exists": true,
+      "kind": "bin"
+    },
+    {
+      "id": "wooden_crate_02_2k",
+      "path": "models/wooden_crate_02/wooden_crate_02_2k.gltf",
+      "exists": true,
+      "kind": "gltf"
+    }
+  ],
+  "textures": [
+    {
+      "id": "SOURCE",
+      "path": "textures/cobblestone_floor_04/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "cobblestone_floor_04_diff_2k",
+      "path": "textures/cobblestone_floor_04/cobblestone_floor_04_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "cobblestone_floor_04_nor_gl_2k",
+      "path": "textures/cobblestone_floor_04/cobblestone_floor_04_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "cobblestone_floor_04_rough_2k",
+      "path": "textures/cobblestone_floor_04/cobblestone_floor_04_rough_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "SOURCE",
+      "path": "textures/weathered_brown_planks/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "weathered_brown_planks_diff_2k",
+      "path": "textures/weathered_brown_planks/weathered_brown_planks_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "weathered_brown_planks_nor_gl_2k",
+      "path": "textures/weathered_brown_planks/weathered_brown_planks_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "weathered_brown_planks_rough_2k",
+      "path": "textures/weathered_brown_planks/weathered_brown_planks_rough_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    }
+  ],
+  "references": [
+    {
+      "id": "detail-tank",
+      "path": "../kenney_industrial/detail-tank.glb",
+      "exists": true,
+      "copied": false,
+      "note": "REFERENCE only \u2014 not duplicated from kenney_industrial"
+    }
+  ],
+  "audio_bed_long": "res://assets/city/district_waterfront/audio/bed/harbor_day_long.ogg"
+}

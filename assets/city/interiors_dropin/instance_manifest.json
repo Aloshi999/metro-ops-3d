@@ -1,0 +1,381 @@
+{
+  "id": "interiors_dropin",
+  "instance": true,
+  "unique_per_lot": false,
+  "shared_materials": true,
+  "scale": "n/a (textures)",
+  "camera_read": "190m High",
+  "lot_contract": "shared window-glow / cutaway cards only \u2014 not first-person rooms; no per-lot unique mats",
+  "interiors": "SHARED 2K indoor HDRIs + tonemapped photo cards + window GLB frames. Read from 190m High camera.",
+  "notes": "Furniture GLBs stay in district_midrise/interiors/furniture/ and district_downtown/interiors/. MegaKit T_lit_interior_* / CM_* live in district_downtown/textures/. Do not unique materials per lot.",
+  "window_cards": [
+    {
+      "id": "SOURCE_anniversary_lounge",
+      "path": "window_cards/SOURCE_anniversary_lounge.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_brown_photostudio_02",
+      "path": "window_cards/SOURCE_brown_photostudio_02.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_cayley_interior",
+      "path": "window_cards/SOURCE_cayley_interior.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_empty_play_room",
+      "path": "window_cards/SOURCE_empty_play_room.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_fireplace",
+      "path": "window_cards/SOURCE_fireplace.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_hotel_room",
+      "path": "window_cards/SOURCE_hotel_room.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_photo_studio_01",
+      "path": "window_cards/SOURCE_photo_studio_01.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_studio_small_03",
+      "path": "window_cards/SOURCE_studio_small_03.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_studio_small_08",
+      "path": "window_cards/SOURCE_studio_small_08.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_studio_small_09",
+      "path": "window_cards/SOURCE_studio_small_09.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "anniversary_lounge_2k",
+      "path": "window_cards/anniversary_lounge_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "anniversary_lounge_tonemapped",
+      "path": "window_cards/anniversary_lounge_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "brown_photostudio_02_2k",
+      "path": "window_cards/brown_photostudio_02_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "cayley_interior_2k",
+      "path": "window_cards/cayley_interior_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "empty_play_room_2k",
+      "path": "window_cards/empty_play_room_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "fireplace_2k",
+      "path": "window_cards/fireplace_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "fireplace_tonemapped",
+      "path": "window_cards/fireplace_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "hotel_room_2k",
+      "path": "window_cards/hotel_room_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "hotel_room_tonemapped",
+      "path": "window_cards/hotel_room_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "photo_studio_01_2k",
+      "path": "window_cards/photo_studio_01_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "photo_studio_01_tonemapped",
+      "path": "window_cards/photo_studio_01_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "studio_small_03_2k",
+      "path": "window_cards/studio_small_03_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "studio_small_03_tonemapped",
+      "path": "window_cards/studio_small_03_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "studio_small_08_2k",
+      "path": "window_cards/studio_small_08_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "studio_small_09_2k",
+      "path": "window_cards/studio_small_09_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "SOURCE",
+      "path": "window_cards/apartment_kiara_interior/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "kiara_interior_2k",
+      "path": "window_cards/apartment_kiara_interior/kiara_interior_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "kiara_interior_tonemapped",
+      "path": "window_cards/apartment_kiara_interior/kiara_interior_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "SOURCE",
+      "path": "window_cards/apartment_small_empty_room_1/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "small_empty_room_1_2k",
+      "path": "window_cards/apartment_small_empty_room_1/small_empty_room_1_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "bedDouble",
+      "path": "window_cards/kenney_furniture_side/bedDouble.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "bookcaseOpen",
+      "path": "window_cards/kenney_furniture_side/bookcaseOpen.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "chairDesk",
+      "path": "window_cards/kenney_furniture_side/chairDesk.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "computerScreen",
+      "path": "window_cards/kenney_furniture_side/computerScreen.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "desk",
+      "path": "window_cards/kenney_furniture_side/desk.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "deskCorner",
+      "path": "window_cards/kenney_furniture_side/deskCorner.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenBar",
+      "path": "window_cards/kenney_furniture_side/kitchenBar.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenCabinet",
+      "path": "window_cards/kenney_furniture_side/kitchenCabinet.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenFridge",
+      "path": "window_cards/kenney_furniture_side/kitchenFridge.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenSink",
+      "path": "window_cards/kenney_furniture_side/kitchenSink.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenStove",
+      "path": "window_cards/kenney_furniture_side/kitchenStove.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "lampRoundTable",
+      "path": "window_cards/kenney_furniture_side/lampRoundTable.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "laptop",
+      "path": "window_cards/kenney_furniture_side/laptop.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "loungeChair",
+      "path": "window_cards/kenney_furniture_side/loungeChair.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "loungeDesignChair",
+      "path": "window_cards/kenney_furniture_side/loungeDesignChair.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "table",
+      "path": "window_cards/kenney_furniture_side/table.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "televisionModern",
+      "path": "window_cards/kenney_furniture_side/televisionModern.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "SOURCE",
+      "path": "window_cards/office_unfinished_office/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "unfinished_office_2k",
+      "path": "window_cards/office_unfinished_office/unfinished_office_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "SOURCE",
+      "path": "window_cards/shop_comfy_cafe/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "comfy_cafe_2k",
+      "path": "window_cards/shop_comfy_cafe/comfy_cafe_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "comfy_cafe_tonemapped",
+      "path": "window_cards/shop_comfy_cafe/comfy_cafe_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    }
+  ],
+  "cutaways": [
+    {
+      "id": "License_Kenney_FurnitureKit",
+      "path": "cutaways/License_Kenney_FurnitureKit.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "License_Quaternius_UltimateHouseInterior",
+      "path": "cutaways/License_Quaternius_UltimateHouseInterior.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE",
+      "path": "cutaways/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "Window_Large1",
+      "path": "cutaways/Window_Large1.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "Window_Large2",
+      "path": "cutaways/Window_Large2.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "Window_Round1",
+      "path": "cutaways/Window_Round1.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "Window_Small1",
+      "path": "cutaways/Window_Small1.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kenney_wallWindow",
+      "path": "cutaways/kenney_wallWindow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kenney_wallWindowSlide",
+      "path": "cutaways/kenney_wallWindowSlide.glb",
+      "exists": true,
+      "kind": "glb"
+    }
+  ]
+}

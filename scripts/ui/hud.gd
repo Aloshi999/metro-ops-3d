@@ -27,6 +27,8 @@ signal overlay_focus_in
 @onready var flash: ColorRect = %FlashRect
 @onready var pause_overlay: Control = %PauseOverlay
 @onready var resume_button: Button = %ResumeButton
+@onready var graphics_label: Label = %GraphicsLabel
+@onready var graphics_menu: Label = get_node_or_null("%GraphicsMenu") as Label
 
 var show_fps: bool = false
 var _toast_timer: float = 0.0
@@ -46,7 +48,7 @@ func _ready() -> void:
 	if advisor_panel:
 		advisor_panel.visible = true
 		advisor_panel.modulate.a = 1.0
-	help_label.text = "L-stick pan · R-stick orbit · A paint · LB/RB cycle · Y radial · X brush · View pause · L3 FPS"
+	help_label.text = "L-stick pan · R-stick orbit · A paint · Y tools · LB/RB graphics · X brush · View pause · L3 FPS"
 	_force_mouse_ignore(get_node_or_null("Root"))
 	if resume_button:
 		resume_button.visible = false
@@ -96,10 +98,24 @@ func set_rci(label: String) -> void:
 	rci_label.text = label
 
 
+func set_graphics(label: String) -> void:
+	var line := "GFX %s" % label
+	if graphics_label:
+		graphics_label.text = line
+	if graphics_menu:
+		graphics_menu.text = "Graphics  < %s >" % label
+
+
 func set_occupancy(pct: float) -> void:
 	var occ := get_node_or_null("%OccLabel") as Label
 	if occ:
 		occ.text = "Occupancy %.0f%%" % pct
+
+
+func set_happiness(h: float) -> void:
+	var mood := get_node_or_null("%MoodLabel") as Label
+	if mood:
+		mood.text = "Mood %.0f%%" % (clampf(h, 0.0, 1.0) * 100.0)
 
 
 func set_event_status(war_timer: int, disaster_timer: int) -> void:
@@ -204,7 +220,8 @@ func _notification(what: int) -> void:
 	if not _focus_armed:
 		return
 	# Steam overlay / QAM / sleep — pause sim so the city does not tick under the overlay.
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+	# APPLICATION_FOCUS: Steam overlay. WM_WINDOW_FOCUS: Gamescope/windowed. Pause on out; never auto-resume.
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
 		overlay_focus_out.emit()
-	elif what == NOTIFICATION_APPLICATION_FOCUS_IN:
+	elif what == NOTIFICATION_APPLICATION_FOCUS_IN or what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
 		overlay_focus_in.emit()

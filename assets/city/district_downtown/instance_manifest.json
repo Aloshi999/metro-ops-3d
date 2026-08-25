@@ -1,0 +1,1245 @@
+{
+  "id": "district_downtown",
+  "instance": true,
+  "unique_per_lot": false,
+  "shared_materials": true,
+  "textures_dir": "res://assets/city/district_downtown/textures/",
+  "note": "Dense downtown MegaKit (shared PBR sets). Do not unique materials per lot. Deck Low floor (FSR2 0.67 / 40 / SSAO off) is Mesh/Look/Perf, not this pack. Fat GLB/texture bulk: GitHub Releases/LFS, not a giant main commit.",
+  "counts": {
+    "buildings": 142,
+    "interiors": 129,
+    "props": 30,
+    "textures": 54
+  },
+  "buildings": [
+    {
+      "id": "Brick_90Angle_L",
+      "path": "res://assets/city/district_downtown/buildings/Brick_90Angle_L.gltf"
+    },
+    {
+      "id": "Brick_90Angle_R",
+      "path": "res://assets/city/district_downtown/buildings/Brick_90Angle_R.gltf"
+    },
+    {
+      "id": "Brick_BottomTrim",
+      "path": "res://assets/city/district_downtown/buildings/Brick_BottomTrim.gltf"
+    },
+    {
+      "id": "Brick_Column_RedBricks",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Column_RedBricks.gltf"
+    },
+    {
+      "id": "Brick_Column_Small",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Column_Small.gltf"
+    },
+    {
+      "id": "Brick_Column_TrimBricks",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Column_TrimBricks.gltf"
+    },
+    {
+      "id": "Brick_CornerColumn_Bottom",
+      "path": "res://assets/city/district_downtown/buildings/Brick_CornerColumn_Bottom.gltf"
+    },
+    {
+      "id": "Brick_CornerColumn_Cap",
+      "path": "res://assets/city/district_downtown/buildings/Brick_CornerColumn_Cap.gltf"
+    },
+    {
+      "id": "Brick_CornerColumn_CapShort",
+      "path": "res://assets/city/district_downtown/buildings/Brick_CornerColumn_CapShort.gltf"
+    },
+    {
+      "id": "Brick_CornerColumn_Center",
+      "path": "res://assets/city/district_downtown/buildings/Brick_CornerColumn_Center.gltf"
+    },
+    {
+      "id": "Brick_CornerColumn_Center_Half",
+      "path": "res://assets/city/district_downtown/buildings/Brick_CornerColumn_Center_Half.gltf"
+    },
+    {
+      "id": "Brick_CornerColumn_Top",
+      "path": "res://assets/city/district_downtown/buildings/Brick_CornerColumn_Top.gltf"
+    },
+    {
+      "id": "Brick_Corner_Plain",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Corner_Plain.gltf"
+    },
+    {
+      "id": "Brick_HalfColumn_Bottom",
+      "path": "res://assets/city/district_downtown/buildings/Brick_HalfColumn_Bottom.gltf"
+    },
+    {
+      "id": "Brick_HalfColumn_Center",
+      "path": "res://assets/city/district_downtown/buildings/Brick_HalfColumn_Center.gltf"
+    },
+    {
+      "id": "Brick_HalfColumn_Top",
+      "path": "res://assets/city/district_downtown/buildings/Brick_HalfColumn_Top.gltf"
+    },
+    {
+      "id": "Brick_HalfTrim",
+      "path": "res://assets/city/district_downtown/buildings/Brick_HalfTrim.gltf"
+    },
+    {
+      "id": "Brick_Inset",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Inset.gltf"
+    },
+    {
+      "id": "Brick_Inset_Window",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Inset_Window.gltf"
+    },
+    {
+      "id": "Brick_Inset_Window_Curved",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Inset_Window_Curved.gltf"
+    },
+    {
+      "id": "Brick_Inset_Window_Curved_Small",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Inset_Window_Curved_Small.gltf"
+    },
+    {
+      "id": "Brick_Ornament_Horizontal",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Ornament_Horizontal.gltf"
+    },
+    {
+      "id": "Brick_Plain_1",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Plain_1.gltf"
+    },
+    {
+      "id": "Brick_Plain_3",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Plain_3.gltf"
+    },
+    {
+      "id": "Brick_Plain_3_noWear",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Plain_3_noWear.gltf"
+    },
+    {
+      "id": "Brick_Plain_4",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Plain_4.gltf"
+    },
+    {
+      "id": "Brick_RedWhite_DoubleWindow",
+      "path": "res://assets/city/district_downtown/buildings/Brick_RedWhite_DoubleWindow.gltf"
+    },
+    {
+      "id": "Brick_TopTrim",
+      "path": "res://assets/city/district_downtown/buildings/Brick_TopTrim.gltf"
+    },
+    {
+      "id": "Brick_TopTrim_90Angle_L",
+      "path": "res://assets/city/district_downtown/buildings/Brick_TopTrim_90Angle_L.gltf"
+    },
+    {
+      "id": "Brick_TopTrim_90Angle_R",
+      "path": "res://assets/city/district_downtown/buildings/Brick_TopTrim_90Angle_R.gltf"
+    },
+    {
+      "id": "Brick_TopTrim_Corner",
+      "path": "res://assets/city/district_downtown/buildings/Brick_TopTrim_Corner.gltf"
+    },
+    {
+      "id": "Brick_Window_CurvedDouble",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Window_CurvedDouble.gltf"
+    },
+    {
+      "id": "Brick_Window_Square_Single",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Window_Square_Single.gltf"
+    },
+    {
+      "id": "Brick_Window_Trim",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Window_Trim.gltf"
+    },
+    {
+      "id": "Brick_Window_Trim_Single",
+      "path": "res://assets/city/district_downtown/buildings/Brick_Window_Trim_Single.gltf"
+    },
+    {
+      "id": "Building_Large_2",
+      "path": "res://assets/city/district_downtown/buildings/Building_Large_2.gltf"
+    },
+    {
+      "id": "Building_Medium_2_001",
+      "path": "res://assets/city/district_downtown/buildings/Building_Medium_2_001.gltf"
+    },
+    {
+      "id": "Building_Small_1",
+      "path": "res://assets/city/district_downtown/buildings/Building_Small_1.gltf"
+    },
+    {
+      "id": "Cornice_Brick_90Angle_L",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Brick_90Angle_L.gltf"
+    },
+    {
+      "id": "Cornice_Brick_90Angle_R",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Brick_90Angle_R.gltf"
+    },
+    {
+      "id": "Cornice_Brick_Center",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Brick_Center.gltf"
+    },
+    {
+      "id": "Cornice_Brick_L",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Brick_L.gltf"
+    },
+    {
+      "id": "Cornice_Brick_R",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Brick_R.gltf"
+    },
+    {
+      "id": "Cornice_Metal_90Angle_L",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Metal_90Angle_L.gltf"
+    },
+    {
+      "id": "Cornice_Metal_90Angle_R",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Metal_90Angle_R.gltf"
+    },
+    {
+      "id": "Cornice_Metal_Center",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Metal_Center.gltf"
+    },
+    {
+      "id": "Cornice_Metal_L",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Metal_L.gltf"
+    },
+    {
+      "id": "Cornice_Metal_R",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Metal_R.gltf"
+    },
+    {
+      "id": "Cornice_Trim_90Angle_L",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Trim_90Angle_L.gltf"
+    },
+    {
+      "id": "Cornice_Trim_90Angle_R",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Trim_90Angle_R.gltf"
+    },
+    {
+      "id": "Cornice_Trim_Center",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Trim_Center.gltf"
+    },
+    {
+      "id": "Cornice_Trim_L",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Trim_L.gltf"
+    },
+    {
+      "id": "Cornice_Trim_R",
+      "path": "res://assets/city/district_downtown/buildings/Cornice_Trim_R.gltf"
+    },
+    {
+      "id": "Decal_ArrowForwardLeft",
+      "path": "res://assets/city/district_downtown/buildings/Decal_ArrowForwardLeft.gltf"
+    },
+    {
+      "id": "Decal_ArrowForwardRight",
+      "path": "res://assets/city/district_downtown/buildings/Decal_ArrowForwardRight.gltf"
+    },
+    {
+      "id": "Decal_ArrowStraight",
+      "path": "res://assets/city/district_downtown/buildings/Decal_ArrowStraight.gltf"
+    },
+    {
+      "id": "Decal_ArrowTurnLeft",
+      "path": "res://assets/city/district_downtown/buildings/Decal_ArrowTurnLeft.gltf"
+    },
+    {
+      "id": "Decal_ArrowTurnRight",
+      "path": "res://assets/city/district_downtown/buildings/Decal_ArrowTurnRight.gltf"
+    },
+    {
+      "id": "Decal_Bikelane",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Bikelane.gltf"
+    },
+    {
+      "id": "Decal_BrokenLine_Straight",
+      "path": "res://assets/city/district_downtown/buildings/Decal_BrokenLine_Straight.gltf"
+    },
+    {
+      "id": "Decal_Crosswalk",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Crosswalk.gltf"
+    },
+    {
+      "id": "Decal_Crosswalk_Wide",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Crosswalk_Wide.gltf"
+    },
+    {
+      "id": "Decal_Curve_2Lane_Stripe",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Curve_2Lane_Stripe.gltf"
+    },
+    {
+      "id": "Decal_Curve_4LaneShort",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Curve_4LaneShort.gltf"
+    },
+    {
+      "id": "Decal_Curve_4LaneShort_DoubleYellow",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Curve_4LaneShort_DoubleYellow.gltf"
+    },
+    {
+      "id": "Decal_Curve_4LaneShort_Stripe",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Curve_4LaneShort_Stripe.gltf"
+    },
+    {
+      "id": "Decal_DoubleYellow_Straight",
+      "path": "res://assets/city/district_downtown/buildings/Decal_DoubleYellow_Straight.gltf"
+    },
+    {
+      "id": "Decal_Only",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Only.gltf"
+    },
+    {
+      "id": "Decal_Slow",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Slow.gltf"
+    },
+    {
+      "id": "Decal_Stop",
+      "path": "res://assets/city/district_downtown/buildings/Decal_Stop.gltf"
+    },
+    {
+      "id": "DoorFrame_Metal_Single",
+      "path": "res://assets/city/district_downtown/buildings/DoorFrame_Metal_Single.gltf"
+    },
+    {
+      "id": "DoorFrame_Trim",
+      "path": "res://assets/city/district_downtown/buildings/DoorFrame_Trim.gltf"
+    },
+    {
+      "id": "DoorFrame_Wooden",
+      "path": "res://assets/city/district_downtown/buildings/DoorFrame_Wooden.gltf"
+    },
+    {
+      "id": "Door_1",
+      "path": "res://assets/city/district_downtown/buildings/Door_1.gltf"
+    },
+    {
+      "id": "Door_2",
+      "path": "res://assets/city/district_downtown/buildings/Door_2.gltf"
+    },
+    {
+      "id": "Door_3",
+      "path": "res://assets/city/district_downtown/buildings/Door_3.gltf"
+    },
+    {
+      "id": "Entrance_Concrete_2x1",
+      "path": "res://assets/city/district_downtown/buildings/Entrance_Concrete_2x1.gltf"
+    },
+    {
+      "id": "Entrance_Concrete_2x2",
+      "path": "res://assets/city/district_downtown/buildings/Entrance_Concrete_2x2.gltf"
+    },
+    {
+      "id": "Metal_Column_Bottom",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Column_Bottom.gltf"
+    },
+    {
+      "id": "Metal_Column_Center",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Column_Center.gltf"
+    },
+    {
+      "id": "Metal_Column_Small_Bottom",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Column_Small_Bottom.gltf"
+    },
+    {
+      "id": "Metal_Column_Small_Center",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Column_Small_Center.gltf"
+    },
+    {
+      "id": "Metal_Column_Small_Top",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Column_Small_Top.gltf"
+    },
+    {
+      "id": "Metal_Column_Top",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Column_Top.gltf"
+    },
+    {
+      "id": "Metal_FirstFloor_Wall",
+      "path": "res://assets/city/district_downtown/buildings/Metal_FirstFloor_Wall.gltf"
+    },
+    {
+      "id": "Metal_FirstFloor_Wall_1",
+      "path": "res://assets/city/district_downtown/buildings/Metal_FirstFloor_Wall_1.gltf"
+    },
+    {
+      "id": "Metal_FirstFloor_Window",
+      "path": "res://assets/city/district_downtown/buildings/Metal_FirstFloor_Window.gltf"
+    },
+    {
+      "id": "Metal_FullWindow",
+      "path": "res://assets/city/district_downtown/buildings/Metal_FullWindow.gltf"
+    },
+    {
+      "id": "Metal_Plain_1",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Plain_1.gltf"
+    },
+    {
+      "id": "Metal_Plain_3",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Plain_3.gltf"
+    },
+    {
+      "id": "Metal_Window",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Window.gltf"
+    },
+    {
+      "id": "Metal_Window_Half",
+      "path": "res://assets/city/district_downtown/buildings/Metal_Window_Half.gltf"
+    },
+    {
+      "id": "Roof_2x2",
+      "path": "res://assets/city/district_downtown/buildings/Roof_2x2.gltf"
+    },
+    {
+      "id": "Roof_2x2_90Angle_Center",
+      "path": "res://assets/city/district_downtown/buildings/Roof_2x2_90Angle_Center.gltf"
+    },
+    {
+      "id": "Roof_2x2_90Angle_L",
+      "path": "res://assets/city/district_downtown/buildings/Roof_2x2_90Angle_L.gltf"
+    },
+    {
+      "id": "Roof_2x2_90Angle_R",
+      "path": "res://assets/city/district_downtown/buildings/Roof_2x2_90Angle_R.gltf"
+    },
+    {
+      "id": "Roof_4x4",
+      "path": "res://assets/city/district_downtown/buildings/Roof_4x4.gltf"
+    },
+    {
+      "id": "Roof_SlateCornice_Center",
+      "path": "res://assets/city/district_downtown/buildings/Roof_SlateCornice_Center.gltf"
+    },
+    {
+      "id": "Roof_SlateCornice_Corner",
+      "path": "res://assets/city/district_downtown/buildings/Roof_SlateCornice_Corner.gltf"
+    },
+    {
+      "id": "Roof_SlateCornice_InnerCorner",
+      "path": "res://assets/city/district_downtown/buildings/Roof_SlateCornice_InnerCorner.gltf"
+    },
+    {
+      "id": "Roof_SlateCornice_Window_1",
+      "path": "res://assets/city/district_downtown/buildings/Roof_SlateCornice_Window_1.gltf"
+    },
+    {
+      "id": "Roof_Slate_Center",
+      "path": "res://assets/city/district_downtown/buildings/Roof_Slate_Center.gltf"
+    },
+    {
+      "id": "Roof_Slate_Corner",
+      "path": "res://assets/city/district_downtown/buildings/Roof_Slate_Corner.gltf"
+    },
+    {
+      "id": "Roof_Slate_InnerCorner",
+      "path": "res://assets/city/district_downtown/buildings/Roof_Slate_InnerCorner.gltf"
+    },
+    {
+      "id": "Roof_Slate_Window_1",
+      "path": "res://assets/city/district_downtown/buildings/Roof_Slate_Window_1.gltf"
+    },
+    {
+      "id": "Sidewalk_Corner_Flat_3m",
+      "path": "res://assets/city/district_downtown/buildings/Sidewalk_Corner_Flat_3m.gltf"
+    },
+    {
+      "id": "Sidewalk_Corner_Flat_3m_Stripe",
+      "path": "res://assets/city/district_downtown/buildings/Sidewalk_Corner_Flat_3m_Stripe.gltf"
+    },
+    {
+      "id": "Sidewalk_Corner_Round_3m",
+      "path": "res://assets/city/district_downtown/buildings/Sidewalk_Corner_Round_3m.gltf"
+    },
+    {
+      "id": "Sidewalk_Corner_Round_3m_Stripe",
+      "path": "res://assets/city/district_downtown/buildings/Sidewalk_Corner_Round_3m_Stripe.gltf"
+    },
+    {
+      "id": "Sidewalk_NoCurb_3m",
+      "path": "res://assets/city/district_downtown/buildings/Sidewalk_NoCurb_3m.gltf"
+    },
+    {
+      "id": "Sidewalk_Planter",
+      "path": "res://assets/city/district_downtown/buildings/Sidewalk_Planter.gltf"
+    },
+    {
+      "id": "Sidewalk_Straight_3m",
+      "path": "res://assets/city/district_downtown/buildings/Sidewalk_Straight_3m.gltf"
+    },
+    {
+      "id": "Sidewalk_Straight_3m_Stripe",
+      "path": "res://assets/city/district_downtown/buildings/Sidewalk_Straight_3m_Stripe.gltf"
+    },
+    {
+      "id": "Stairs_Entrance_Concrete",
+      "path": "res://assets/city/district_downtown/buildings/Stairs_Entrance_Concrete.gltf"
+    },
+    {
+      "id": "Stairs_Rails_Metal",
+      "path": "res://assets/city/district_downtown/buildings/Stairs_Rails_Metal.gltf"
+    },
+    {
+      "id": "Stairs_Rails_Metal_Straight_1",
+      "path": "res://assets/city/district_downtown/buildings/Stairs_Rails_Metal_Straight_1.gltf"
+    },
+    {
+      "id": "Stairs_Rails_Metal_Straight_2",
+      "path": "res://assets/city/district_downtown/buildings/Stairs_Rails_Metal_Straight_2.gltf"
+    },
+    {
+      "id": "Street_2Lane",
+      "path": "res://assets/city/district_downtown/buildings/Street_2Lane.gltf"
+    },
+    {
+      "id": "Street_2Lane_noSidewalk",
+      "path": "res://assets/city/district_downtown/buildings/Street_2Lane_noSidewalk.gltf"
+    },
+    {
+      "id": "Street_4Lane",
+      "path": "res://assets/city/district_downtown/buildings/Street_4Lane.gltf"
+    },
+    {
+      "id": "Street_4Lane_noSidewalk",
+      "path": "res://assets/city/district_downtown/buildings/Street_4Lane_noSidewalk.gltf"
+    },
+    {
+      "id": "Street_4WayIntersection",
+      "path": "res://assets/city/district_downtown/buildings/Street_4WayIntersection.gltf"
+    },
+    {
+      "id": "Street_Asphalt_6x6",
+      "path": "res://assets/city/district_downtown/buildings/Street_Asphalt_6x6.gltf"
+    },
+    {
+      "id": "Street_Asphalt_9x9",
+      "path": "res://assets/city/district_downtown/buildings/Street_Asphalt_9x9.gltf"
+    },
+    {
+      "id": "Street_Asphalt_Curve_2Lane",
+      "path": "res://assets/city/district_downtown/buildings/Street_Asphalt_Curve_2Lane.gltf"
+    },
+    {
+      "id": "Street_Asphalt_Curve_4Lane_Short",
+      "path": "res://assets/city/district_downtown/buildings/Street_Asphalt_Curve_4Lane_Short.gltf"
+    },
+    {
+      "id": "Street_Curve_2Lane",
+      "path": "res://assets/city/district_downtown/buildings/Street_Curve_2Lane.gltf"
+    },
+    {
+      "id": "Street_Curve_2Lane_Curb",
+      "path": "res://assets/city/district_downtown/buildings/Street_Curve_2Lane_Curb.gltf"
+    },
+    {
+      "id": "Street_Curve_4LaneShort",
+      "path": "res://assets/city/district_downtown/buildings/Street_Curve_4LaneShort.gltf"
+    },
+    {
+      "id": "Street_Curve_4Lane_Short_Curb",
+      "path": "res://assets/city/district_downtown/buildings/Street_Curve_4Lane_Short_Curb.gltf"
+    },
+    {
+      "id": "Street_TIntersection",
+      "path": "res://assets/city/district_downtown/buildings/Street_TIntersection.gltf"
+    },
+    {
+      "id": "Trim_90Angle_TopCover",
+      "path": "res://assets/city/district_downtown/buildings/Trim_90Angle_TopCover.gltf"
+    },
+    {
+      "id": "Trim_Column_Bottom",
+      "path": "res://assets/city/district_downtown/buildings/Trim_Column_Bottom.gltf"
+    },
+    {
+      "id": "Trim_Column_Center",
+      "path": "res://assets/city/district_downtown/buildings/Trim_Column_Center.gltf"
+    },
+    {
+      "id": "Trim_Column_Top",
+      "path": "res://assets/city/district_downtown/buildings/Trim_Column_Top.gltf"
+    },
+    {
+      "id": "Trim_Corner",
+      "path": "res://assets/city/district_downtown/buildings/Trim_Corner.gltf"
+    },
+    {
+      "id": "Trim_FirstFloor_Wall",
+      "path": "res://assets/city/district_downtown/buildings/Trim_FirstFloor_Wall.gltf"
+    },
+    {
+      "id": "Trim_FirstFloor_Window_001",
+      "path": "res://assets/city/district_downtown/buildings/Trim_FirstFloor_Window_001.gltf"
+    },
+    {
+      "id": "Trim_FirstFloor_Window_Columns",
+      "path": "res://assets/city/district_downtown/buildings/Trim_FirstFloor_Window_Columns.gltf"
+    },
+    {
+      "id": "Trim_Plain_3",
+      "path": "res://assets/city/district_downtown/buildings/Trim_Plain_3.gltf"
+    },
+    {
+      "id": "Trim_Wall_Guard",
+      "path": "res://assets/city/district_downtown/buildings/Trim_Wall_Guard.gltf"
+    },
+    {
+      "id": "Trim_Window",
+      "path": "res://assets/city/district_downtown/buildings/Trim_Window.gltf"
+    }
+  ],
+  "interiors": [
+    {
+      "id": "Brick_InteriorWall_1",
+      "path": "res://assets/city/district_downtown/interiors/Brick_InteriorWall_1.gltf"
+    },
+    {
+      "id": "Brick_InteriorWall_3",
+      "path": "res://assets/city/district_downtown/interiors/Brick_InteriorWall_3.gltf"
+    },
+    {
+      "id": "Brick_InteriorWall_4",
+      "path": "res://assets/city/district_downtown/interiors/Brick_InteriorWall_4.gltf"
+    },
+    {
+      "id": "Floor_2x2",
+      "path": "res://assets/city/district_downtown/interiors/Floor_2x2.gltf"
+    },
+    {
+      "id": "Floor_4x4",
+      "path": "res://assets/city/district_downtown/interiors/Floor_4x4.gltf"
+    },
+    {
+      "id": "Floor_Inset",
+      "path": "res://assets/city/district_downtown/interiors/Floor_Inset.gltf"
+    },
+    {
+      "id": "Bathroom_Bathtub",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_Bathtub.glb"
+    },
+    {
+      "id": "Bathroom_Mirror1",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_Mirror1.glb"
+    },
+    {
+      "id": "Bathroom_Mirror2",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_Mirror2.glb"
+    },
+    {
+      "id": "Bathroom_Shower1",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_Shower1.glb"
+    },
+    {
+      "id": "Bathroom_Sink",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_Sink.glb"
+    },
+    {
+      "id": "Bathroom_Toilet",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_Toilet.glb"
+    },
+    {
+      "id": "Bathroom_Toilet2",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_Toilet2.glb"
+    },
+    {
+      "id": "Bathroom_ToiletPaper",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_ToiletPaper.glb"
+    },
+    {
+      "id": "Bathroom_ToiletPaperPile",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_ToiletPaperPile.glb"
+    },
+    {
+      "id": "Bathroom_Towel",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_Towel.glb"
+    },
+    {
+      "id": "Bathroom_WashingMachine",
+      "path": "res://assets/city/district_downtown/interiors/Bathroom_WashingMachine.glb"
+    },
+    {
+      "id": "Bed_Bunk",
+      "path": "res://assets/city/district_downtown/interiors/Bed_Bunk.glb"
+    },
+    {
+      "id": "Bed_King",
+      "path": "res://assets/city/district_downtown/interiors/Bed_King.glb"
+    },
+    {
+      "id": "Bed_Single",
+      "path": "res://assets/city/district_downtown/interiors/Bed_Single.glb"
+    },
+    {
+      "id": "Bookshelf",
+      "path": "res://assets/city/district_downtown/interiors/Bookshelf.glb"
+    },
+    {
+      "id": "Carpet_1",
+      "path": "res://assets/city/district_downtown/interiors/Carpet_1.glb"
+    },
+    {
+      "id": "Carpet_2",
+      "path": "res://assets/city/district_downtown/interiors/Carpet_2.glb"
+    },
+    {
+      "id": "Carpet_Round",
+      "path": "res://assets/city/district_downtown/interiors/Carpet_Round.glb"
+    },
+    {
+      "id": "Chair_1",
+      "path": "res://assets/city/district_downtown/interiors/Chair_1.glb"
+    },
+    {
+      "id": "Chair_2",
+      "path": "res://assets/city/district_downtown/interiors/Chair_2.glb"
+    },
+    {
+      "id": "Chair_3",
+      "path": "res://assets/city/district_downtown/interiors/Chair_3.glb"
+    },
+    {
+      "id": "Chair_4",
+      "path": "res://assets/city/district_downtown/interiors/Chair_4.glb"
+    },
+    {
+      "id": "Column_Round1",
+      "path": "res://assets/city/district_downtown/interiors/Column_Round1.glb"
+    },
+    {
+      "id": "Column_Round2",
+      "path": "res://assets/city/district_downtown/interiors/Column_Round2.glb"
+    },
+    {
+      "id": "Column_Round3",
+      "path": "res://assets/city/district_downtown/interiors/Column_Round3.glb"
+    },
+    {
+      "id": "Column_SquareBig",
+      "path": "res://assets/city/district_downtown/interiors/Column_SquareBig.glb"
+    },
+    {
+      "id": "Column_SquareSmall",
+      "path": "res://assets/city/district_downtown/interiors/Column_SquareSmall.glb"
+    },
+    {
+      "id": "Couch_L",
+      "path": "res://assets/city/district_downtown/interiors/Couch_L.glb"
+    },
+    {
+      "id": "Couch_Large1",
+      "path": "res://assets/city/district_downtown/interiors/Couch_Large1.glb"
+    },
+    {
+      "id": "Couch_Large2",
+      "path": "res://assets/city/district_downtown/interiors/Couch_Large2.glb"
+    },
+    {
+      "id": "Couch_Large3",
+      "path": "res://assets/city/district_downtown/interiors/Couch_Large3.glb"
+    },
+    {
+      "id": "Couch_Medium1",
+      "path": "res://assets/city/district_downtown/interiors/Couch_Medium1.glb"
+    },
+    {
+      "id": "Couch_Medium2",
+      "path": "res://assets/city/district_downtown/interiors/Couch_Medium2.glb"
+    },
+    {
+      "id": "Couch_Small1",
+      "path": "res://assets/city/district_downtown/interiors/Couch_Small1.glb"
+    },
+    {
+      "id": "Couch_Small2",
+      "path": "res://assets/city/district_downtown/interiors/Couch_Small2.glb"
+    },
+    {
+      "id": "Curtains_Double",
+      "path": "res://assets/city/district_downtown/interiors/Curtains_Double.glb"
+    },
+    {
+      "id": "Curtains_Single",
+      "path": "res://assets/city/district_downtown/interiors/Curtains_Single.glb"
+    },
+    {
+      "id": "Door_1",
+      "path": "res://assets/city/district_downtown/interiors/Door_1.glb"
+    },
+    {
+      "id": "Door_2",
+      "path": "res://assets/city/district_downtown/interiors/Door_2.glb"
+    },
+    {
+      "id": "Door_3",
+      "path": "res://assets/city/district_downtown/interiors/Door_3.glb"
+    },
+    {
+      "id": "Door_4",
+      "path": "res://assets/city/district_downtown/interiors/Door_4.glb"
+    },
+    {
+      "id": "Door_5",
+      "path": "res://assets/city/district_downtown/interiors/Door_5.glb"
+    },
+    {
+      "id": "Door_6",
+      "path": "res://assets/city/district_downtown/interiors/Door_6.glb"
+    },
+    {
+      "id": "Door_7",
+      "path": "res://assets/city/district_downtown/interiors/Door_7.glb"
+    },
+    {
+      "id": "Door_8",
+      "path": "res://assets/city/district_downtown/interiors/Door_8.glb"
+    },
+    {
+      "id": "Door_9",
+      "path": "res://assets/city/district_downtown/interiors/Door_9.glb"
+    },
+    {
+      "id": "Door_Double",
+      "path": "res://assets/city/district_downtown/interiors/Door_Double.glb"
+    },
+    {
+      "id": "Drawer_1",
+      "path": "res://assets/city/district_downtown/interiors/Drawer_1.glb"
+    },
+    {
+      "id": "Drawer_2",
+      "path": "res://assets/city/district_downtown/interiors/Drawer_2.glb"
+    },
+    {
+      "id": "Drawer_3",
+      "path": "res://assets/city/district_downtown/interiors/Drawer_3.glb"
+    },
+    {
+      "id": "Drawer_4",
+      "path": "res://assets/city/district_downtown/interiors/Drawer_4.glb"
+    },
+    {
+      "id": "Drawer_5",
+      "path": "res://assets/city/district_downtown/interiors/Drawer_5.glb"
+    },
+    {
+      "id": "Fireplace",
+      "path": "res://assets/city/district_downtown/interiors/Fireplace.glb"
+    },
+    {
+      "id": "Fork",
+      "path": "res://assets/city/district_downtown/interiors/Fork.glb"
+    },
+    {
+      "id": "Houseplant_1",
+      "path": "res://assets/city/district_downtown/interiors/Houseplant_1.glb"
+    },
+    {
+      "id": "Houseplant_2",
+      "path": "res://assets/city/district_downtown/interiors/Houseplant_2.glb"
+    },
+    {
+      "id": "Houseplant_3",
+      "path": "res://assets/city/district_downtown/interiors/Houseplant_3.glb"
+    },
+    {
+      "id": "Houseplant_4",
+      "path": "res://assets/city/district_downtown/interiors/Houseplant_4.glb"
+    },
+    {
+      "id": "Houseplant_5",
+      "path": "res://assets/city/district_downtown/interiors/Houseplant_5.glb"
+    },
+    {
+      "id": "Houseplant_6",
+      "path": "res://assets/city/district_downtown/interiors/Houseplant_6.glb"
+    },
+    {
+      "id": "Houseplant_7",
+      "path": "res://assets/city/district_downtown/interiors/Houseplant_7.glb"
+    },
+    {
+      "id": "Houseplant_8",
+      "path": "res://assets/city/district_downtown/interiors/Houseplant_8.glb"
+    },
+    {
+      "id": "Kitchen_1Drawers",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_1Drawers.glb"
+    },
+    {
+      "id": "Kitchen_2Drawers",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_2Drawers.glb"
+    },
+    {
+      "id": "Kitchen_3Drawers",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_3Drawers.glb"
+    },
+    {
+      "id": "Kitchen_Cabinet1",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_Cabinet1.glb"
+    },
+    {
+      "id": "Kitchen_Cabinet2",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_Cabinet2.glb"
+    },
+    {
+      "id": "Kitchen_CabinetSmall",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_CabinetSmall.glb"
+    },
+    {
+      "id": "Kitchen_Fridge",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_Fridge.glb"
+    },
+    {
+      "id": "Kitchen_Oven",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_Oven.glb"
+    },
+    {
+      "id": "Kitchen_Oven_Large",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_Oven_Large.glb"
+    },
+    {
+      "id": "Kitchen_Sink",
+      "path": "res://assets/city/district_downtown/interiors/Kitchen_Sink.glb"
+    },
+    {
+      "id": "Knife",
+      "path": "res://assets/city/district_downtown/interiors/Knife.glb"
+    },
+    {
+      "id": "Light_Ceiling1",
+      "path": "res://assets/city/district_downtown/interiors/Light_Ceiling1.glb"
+    },
+    {
+      "id": "Light_Ceiling2",
+      "path": "res://assets/city/district_downtown/interiors/Light_Ceiling2.glb"
+    },
+    {
+      "id": "Light_Ceiling3",
+      "path": "res://assets/city/district_downtown/interiors/Light_Ceiling3.glb"
+    },
+    {
+      "id": "Light_Ceiling4",
+      "path": "res://assets/city/district_downtown/interiors/Light_Ceiling4.glb"
+    },
+    {
+      "id": "Light_Ceiling5",
+      "path": "res://assets/city/district_downtown/interiors/Light_Ceiling5.glb"
+    },
+    {
+      "id": "Light_Ceiling6",
+      "path": "res://assets/city/district_downtown/interiors/Light_Ceiling6.glb"
+    },
+    {
+      "id": "Light_CeilingSingle",
+      "path": "res://assets/city/district_downtown/interiors/Light_CeilingSingle.glb"
+    },
+    {
+      "id": "Light_Chandelier",
+      "path": "res://assets/city/district_downtown/interiors/Light_Chandelier.glb"
+    },
+    {
+      "id": "Light_Cube",
+      "path": "res://assets/city/district_downtown/interiors/Light_Cube.glb"
+    },
+    {
+      "id": "Light_Cube2",
+      "path": "res://assets/city/district_downtown/interiors/Light_Cube2.glb"
+    },
+    {
+      "id": "Light_Desk",
+      "path": "res://assets/city/district_downtown/interiors/Light_Desk.glb"
+    },
+    {
+      "id": "Light_Floor1",
+      "path": "res://assets/city/district_downtown/interiors/Light_Floor1.glb"
+    },
+    {
+      "id": "Light_Floor2",
+      "path": "res://assets/city/district_downtown/interiors/Light_Floor2.glb"
+    },
+    {
+      "id": "Light_Floor3",
+      "path": "res://assets/city/district_downtown/interiors/Light_Floor3.glb"
+    },
+    {
+      "id": "Light_Floor4",
+      "path": "res://assets/city/district_downtown/interiors/Light_Floor4.glb"
+    },
+    {
+      "id": "Light_Icosahedron",
+      "path": "res://assets/city/district_downtown/interiors/Light_Icosahedron.glb"
+    },
+    {
+      "id": "Light_Icosahedron2",
+      "path": "res://assets/city/district_downtown/interiors/Light_Icosahedron2.glb"
+    },
+    {
+      "id": "Light_Small",
+      "path": "res://assets/city/district_downtown/interiors/Light_Small.glb"
+    },
+    {
+      "id": "Light_Stand1",
+      "path": "res://assets/city/district_downtown/interiors/Light_Stand1.glb"
+    },
+    {
+      "id": "Light_Stand2",
+      "path": "res://assets/city/district_downtown/interiors/Light_Stand2.glb"
+    },
+    {
+      "id": "NightStand_1",
+      "path": "res://assets/city/district_downtown/interiors/NightStand_1.glb"
+    },
+    {
+      "id": "NightStand_2",
+      "path": "res://assets/city/district_downtown/interiors/NightStand_2.glb"
+    },
+    {
+      "id": "NightStand_3",
+      "path": "res://assets/city/district_downtown/interiors/NightStand_3.glb"
+    },
+    {
+      "id": "Plate_1",
+      "path": "res://assets/city/district_downtown/interiors/Plate_1.glb"
+    },
+    {
+      "id": "Plate_2",
+      "path": "res://assets/city/district_downtown/interiors/Plate_2.glb"
+    },
+    {
+      "id": "Plate_3",
+      "path": "res://assets/city/district_downtown/interiors/Plate_3.glb"
+    },
+    {
+      "id": "Shelf_1",
+      "path": "res://assets/city/district_downtown/interiors/Shelf_1.glb"
+    },
+    {
+      "id": "Shelf_2",
+      "path": "res://assets/city/district_downtown/interiors/Shelf_2.glb"
+    },
+    {
+      "id": "Shelf_Large",
+      "path": "res://assets/city/district_downtown/interiors/Shelf_Large.glb"
+    },
+    {
+      "id": "Shelf_Small1",
+      "path": "res://assets/city/district_downtown/interiors/Shelf_Small1.glb"
+    },
+    {
+      "id": "Shelf_Small2",
+      "path": "res://assets/city/district_downtown/interiors/Shelf_Small2.glb"
+    },
+    {
+      "id": "Shelf_Small3",
+      "path": "res://assets/city/district_downtown/interiors/Shelf_Small3.glb"
+    },
+    {
+      "id": "Spoon",
+      "path": "res://assets/city/district_downtown/interiors/Spoon.glb"
+    },
+    {
+      "id": "Stool",
+      "path": "res://assets/city/district_downtown/interiors/Stool.glb"
+    },
+    {
+      "id": "Table_RoundLarge",
+      "path": "res://assets/city/district_downtown/interiors/Table_RoundLarge.glb"
+    },
+    {
+      "id": "Table_RoundSmall",
+      "path": "res://assets/city/district_downtown/interiors/Table_RoundSmall.glb"
+    },
+    {
+      "id": "Table_RoundSmall2",
+      "path": "res://assets/city/district_downtown/interiors/Table_RoundSmall2.glb"
+    },
+    {
+      "id": "Trashcan_Cylindric",
+      "path": "res://assets/city/district_downtown/interiors/Trashcan_Cylindric.glb"
+    },
+    {
+      "id": "Trashcan_Green",
+      "path": "res://assets/city/district_downtown/interiors/Trashcan_Green.glb"
+    },
+    {
+      "id": "Trashcan_Large",
+      "path": "res://assets/city/district_downtown/interiors/Trashcan_Large.glb"
+    },
+    {
+      "id": "Trashcan_Small1",
+      "path": "res://assets/city/district_downtown/interiors/Trashcan_Small1.glb"
+    },
+    {
+      "id": "Trashcan_Small2",
+      "path": "res://assets/city/district_downtown/interiors/Trashcan_Small2.glb"
+    },
+    {
+      "id": "Window_Large1",
+      "path": "res://assets/city/district_downtown/interiors/Window_Large1.glb"
+    },
+    {
+      "id": "Window_Large2",
+      "path": "res://assets/city/district_downtown/interiors/Window_Large2.glb"
+    },
+    {
+      "id": "Window_Round1",
+      "path": "res://assets/city/district_downtown/interiors/Window_Round1.glb"
+    },
+    {
+      "id": "Window_Round2",
+      "path": "res://assets/city/district_downtown/interiors/Window_Round2.glb"
+    },
+    {
+      "id": "Window_Round3",
+      "path": "res://assets/city/district_downtown/interiors/Window_Round3.glb"
+    },
+    {
+      "id": "Window_Small1",
+      "path": "res://assets/city/district_downtown/interiors/Window_Small1.glb"
+    },
+    {
+      "id": "Window_Small2",
+      "path": "res://assets/city/district_downtown/interiors/Window_Small2.glb"
+    },
+    {
+      "id": "Window_Small3",
+      "path": "res://assets/city/district_downtown/interiors/Window_Small3.glb"
+    }
+  ],
+  "props": [
+    {
+      "id": "Prop_ACUnit",
+      "path": "res://assets/city/district_downtown/props/Prop_ACUnit.gltf"
+    },
+    {
+      "id": "Prop_Bollard",
+      "path": "res://assets/city/district_downtown/props/Prop_Bollard.gltf"
+    },
+    {
+      "id": "Prop_Drain",
+      "path": "res://assets/city/district_downtown/props/Prop_Drain.gltf"
+    },
+    {
+      "id": "Prop_ManholeCover",
+      "path": "res://assets/city/district_downtown/props/Prop_ManholeCover.gltf"
+    },
+    {
+      "id": "Prop_Planter_Single",
+      "path": "res://assets/city/district_downtown/props/Prop_Planter_Single.gltf"
+    },
+    {
+      "id": "car_Cop",
+      "path": "res://assets/city/district_downtown/props/car_Cop.glb"
+    },
+    {
+      "id": "car_NormalCar1",
+      "path": "res://assets/city/district_downtown/props/car_NormalCar1.glb"
+    },
+    {
+      "id": "car_NormalCar2",
+      "path": "res://assets/city/district_downtown/props/car_NormalCar2.glb"
+    },
+    {
+      "id": "car_SUV",
+      "path": "res://assets/city/district_downtown/props/car_SUV.glb"
+    },
+    {
+      "id": "car_SportsCar",
+      "path": "res://assets/city/district_downtown/props/car_SportsCar.glb"
+    },
+    {
+      "id": "car_SportsCar2",
+      "path": "res://assets/city/district_downtown/props/car_SportsCar2.glb"
+    },
+    {
+      "id": "car_Taxi",
+      "path": "res://assets/city/district_downtown/props/car_Taxi.glb"
+    },
+    {
+      "id": "transit_Ambulance",
+      "path": "res://assets/city/district_downtown/props/transit_Ambulance.glb"
+    },
+    {
+      "id": "transit_Bicycle",
+      "path": "res://assets/city/district_downtown/props/transit_Bicycle.glb"
+    },
+    {
+      "id": "transit_Bus",
+      "path": "res://assets/city/district_downtown/props/transit_Bus.glb"
+    },
+    {
+      "id": "transit_SchoolBus",
+      "path": "res://assets/city/district_downtown/props/transit_SchoolBus.glb"
+    },
+    {
+      "id": "transit_SquareFrameBicycle",
+      "path": "res://assets/city/district_downtown/props/transit_SquareFrameBicycle.glb"
+    },
+    {
+      "id": "transit_Taxi",
+      "path": "res://assets/city/district_downtown/props/transit_Taxi.glb"
+    },
+    {
+      "id": "transit_TrafficCone",
+      "path": "res://assets/city/district_downtown/props/transit_TrafficCone.glb"
+    },
+    {
+      "id": "transit_TrafficLight",
+      "path": "res://assets/city/district_downtown/props/transit_TrafficLight.glb"
+    },
+    {
+      "id": "transit_TrafficSign1",
+      "path": "res://assets/city/district_downtown/props/transit_TrafficSign1.glb"
+    },
+    {
+      "id": "transit_TrafficSign2",
+      "path": "res://assets/city/district_downtown/props/transit_TrafficSign2.glb"
+    },
+    {
+      "id": "transit_TrafficSign3",
+      "path": "res://assets/city/district_downtown/props/transit_TrafficSign3.glb"
+    },
+    {
+      "id": "transit_Train",
+      "path": "res://assets/city/district_downtown/props/transit_Train.glb"
+    },
+    {
+      "id": "polyhaven_street_lamp_01",
+      "path": "res://assets/city/district_downtown/props/polyhaven_street_lamp_01/street_lamp_01_2k.gltf"
+    },
+    {
+      "id": "polyhaven_painted_wooden_bench",
+      "path": "res://assets/city/district_downtown/props/polyhaven_painted_wooden_bench/painted_wooden_bench_2k.gltf"
+    },
+    {
+      "id": "polyhaven_CoffeeCart_01_2k",
+      "path": "res://assets/city/district_downtown/props/polyhaven/CoffeeCart_01/CoffeeCart_01_2k.gltf"
+    },
+    {
+      "id": "polyhaven_metal_trash_can_2k",
+      "path": "res://assets/city/district_downtown/props/polyhaven/metal_trash_can/metal_trash_can_2k.gltf"
+    },
+    {
+      "id": "polyhaven_modular_chainlink_fence_2k",
+      "path": "res://assets/city/district_downtown/props/polyhaven/modular_chainlink_fence/modular_chainlink_fence_2k.gltf"
+    },
+    {
+      "id": "polyhaven_street_lamp_01_2k",
+      "path": "res://assets/city/district_downtown/props/polyhaven/street_lamp_01/street_lamp_01_2k.gltf"
+    }
+  ],
+  "audio_bed": "res://assets/city/district_downtown/audio/bed/downtown_day.ogg",
+  "lot_m": 16,
+  "scale": 1.0,
+  "DISTRICT_DOWNTOWN_SCALE": 1.0,
+  "quaternius_scale": 1.0,
+  "kenney_scale": 14.5,
+  "look_measured_uniform": 1.0,
+  "lot_contract": "Quaternius 1u=1m, DISTRICT_DOWNTOWN_SCALE=1.0. Kenney catalog stays 14.5. Large uses a 2-lot pad; do not squash to 0.775.",
+  "look_measure": {
+    "mesh": "buildings/Building_Large_2.gltf",
+    "aabb_m": [
+      20.64,
+      16.64,
+      28.0
+    ],
+    "up": "Y",
+    "unit": "1u=1m",
+    "large_pad_lots": 2
+  },
+  "audio_bed_long": "res://assets/city/district_downtown/audio/bed/downtown_day_long.ogg",
+  "audio_bed_night_long": "res://assets/city/district_downtown/audio/bed/downtown_night_long.ogg"
+}

@@ -1,0 +1,1194 @@
+{
+  "instance": true,
+  "unique_per_lot": false,
+  "shared_materials": true,
+  "scale": 14.5,
+  "lot_m": 16,
+  "model_unit": 1.0,
+  "lot_contract": "~1 model unit, 16m lots, instance scale 14.5",
+  "camera_read": "190m High camera \u2014 interiors are window/cutaway cards, not first-person rooms",
+  "district": "midrise",
+  "interiors": "SHARED window/cutaway cards + furniture GLBs. Not first-person rooms. instance-shared.",
+  "slots": [
+    {
+      "id": "bathroomCabinet",
+      "path": "interiors/furniture/bathroomCabinet.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bathroomCabinetDrawer",
+      "path": "interiors/furniture/bathroomCabinetDrawer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bathroomMirror",
+      "path": "interiors/furniture/bathroomMirror.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bathroomSink",
+      "path": "interiors/furniture/bathroomSink.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bathroomSinkSquare",
+      "path": "interiors/furniture/bathroomSinkSquare.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bathtub",
+      "path": "interiors/furniture/bathtub.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bear",
+      "path": "interiors/furniture/bear.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bedBunk",
+      "path": "interiors/furniture/bedBunk.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bedDouble",
+      "path": "interiors/furniture/bedDouble.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bedSingle",
+      "path": "interiors/furniture/bedSingle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bench",
+      "path": "interiors/furniture/bench.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "benchCushion",
+      "path": "interiors/furniture/benchCushion.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "benchCushionLow",
+      "path": "interiors/furniture/benchCushionLow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bookcaseClosed",
+      "path": "interiors/furniture/bookcaseClosed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bookcaseClosedDoors",
+      "path": "interiors/furniture/bookcaseClosedDoors.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bookcaseClosedWide",
+      "path": "interiors/furniture/bookcaseClosedWide.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bookcaseOpen",
+      "path": "interiors/furniture/bookcaseOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "bookcaseOpenLow",
+      "path": "interiors/furniture/bookcaseOpenLow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "books",
+      "path": "interiors/furniture/books.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabinetBed",
+      "path": "interiors/furniture/cabinetBed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabinetBedDrawer",
+      "path": "interiors/furniture/cabinetBedDrawer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabinetBedDrawerTable",
+      "path": "interiors/furniture/cabinetBedDrawerTable.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabinetTelevision",
+      "path": "interiors/furniture/cabinetTelevision.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cabinetTelevisionDoors",
+      "path": "interiors/furniture/cabinetTelevisionDoors.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cardboardBoxClosed",
+      "path": "interiors/furniture/cardboardBoxClosed.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "cardboardBoxOpen",
+      "path": "interiors/furniture/cardboardBoxOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "ceilingFan",
+      "path": "interiors/furniture/ceilingFan.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chair",
+      "path": "interiors/furniture/chair.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chairCushion",
+      "path": "interiors/furniture/chairCushion.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chairDesk",
+      "path": "interiors/furniture/chairDesk.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chairModernCushion",
+      "path": "interiors/furniture/chairModernCushion.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chairModernFrameCushion",
+      "path": "interiors/furniture/chairModernFrameCushion.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "chairRounded",
+      "path": "interiors/furniture/chairRounded.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "coatRack",
+      "path": "interiors/furniture/coatRack.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "coatRackStanding",
+      "path": "interiors/furniture/coatRackStanding.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "computerKeyboard",
+      "path": "interiors/furniture/computerKeyboard.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "computerMouse",
+      "path": "interiors/furniture/computerMouse.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "computerScreen",
+      "path": "interiors/furniture/computerScreen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "desk",
+      "path": "interiors/furniture/desk.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "deskCorner",
+      "path": "interiors/furniture/deskCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "doorway",
+      "path": "interiors/furniture/doorway.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "doorwayFront",
+      "path": "interiors/furniture/doorwayFront.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "doorwayOpen",
+      "path": "interiors/furniture/doorwayOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "dryer",
+      "path": "interiors/furniture/dryer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floorCorner",
+      "path": "interiors/furniture/floorCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floorCornerRound",
+      "path": "interiors/furniture/floorCornerRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floorFull",
+      "path": "interiors/furniture/floorFull.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "floorHalf",
+      "path": "interiors/furniture/floorHalf.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hoodLarge",
+      "path": "interiors/furniture/hoodLarge.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "hoodModern",
+      "path": "interiors/furniture/hoodModern.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenBar",
+      "path": "interiors/furniture/kitchenBar.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenBarEnd",
+      "path": "interiors/furniture/kitchenBarEnd.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenBlender",
+      "path": "interiors/furniture/kitchenBlender.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCabinet",
+      "path": "interiors/furniture/kitchenCabinet.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCabinetCornerInner",
+      "path": "interiors/furniture/kitchenCabinetCornerInner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCabinetCornerRound",
+      "path": "interiors/furniture/kitchenCabinetCornerRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCabinetDrawer",
+      "path": "interiors/furniture/kitchenCabinetDrawer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCabinetUpper",
+      "path": "interiors/furniture/kitchenCabinetUpper.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCabinetUpperCorner",
+      "path": "interiors/furniture/kitchenCabinetUpperCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCabinetUpperDouble",
+      "path": "interiors/furniture/kitchenCabinetUpperDouble.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCabinetUpperLow",
+      "path": "interiors/furniture/kitchenCabinetUpperLow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenCoffeeMachine",
+      "path": "interiors/furniture/kitchenCoffeeMachine.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenFridge",
+      "path": "interiors/furniture/kitchenFridge.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenFridgeBuiltIn",
+      "path": "interiors/furniture/kitchenFridgeBuiltIn.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenFridgeLarge",
+      "path": "interiors/furniture/kitchenFridgeLarge.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenFridgeSmall",
+      "path": "interiors/furniture/kitchenFridgeSmall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenMicrowave",
+      "path": "interiors/furniture/kitchenMicrowave.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenSink",
+      "path": "interiors/furniture/kitchenSink.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenStove",
+      "path": "interiors/furniture/kitchenStove.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "kitchenStoveElectric",
+      "path": "interiors/furniture/kitchenStoveElectric.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lampRoundFloor",
+      "path": "interiors/furniture/lampRoundFloor.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lampRoundTable",
+      "path": "interiors/furniture/lampRoundTable.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lampSquareCeiling",
+      "path": "interiors/furniture/lampSquareCeiling.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lampSquareFloor",
+      "path": "interiors/furniture/lampSquareFloor.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lampSquareTable",
+      "path": "interiors/furniture/lampSquareTable.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "lampWall",
+      "path": "interiors/furniture/lampWall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "laptop",
+      "path": "interiors/furniture/laptop.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeChair",
+      "path": "interiors/furniture/loungeChair.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeChairRelax",
+      "path": "interiors/furniture/loungeChairRelax.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeDesignChair",
+      "path": "interiors/furniture/loungeDesignChair.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeDesignSofa",
+      "path": "interiors/furniture/loungeDesignSofa.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeDesignSofaCorner",
+      "path": "interiors/furniture/loungeDesignSofaCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeSofa",
+      "path": "interiors/furniture/loungeSofa.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeSofaCorner",
+      "path": "interiors/furniture/loungeSofaCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeSofaLong",
+      "path": "interiors/furniture/loungeSofaLong.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "loungeSofaOttoman",
+      "path": "interiors/furniture/loungeSofaOttoman.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "paneling",
+      "path": "interiors/furniture/paneling.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pillow",
+      "path": "interiors/furniture/pillow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pillowBlue",
+      "path": "interiors/furniture/pillowBlue.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pillowBlueLong",
+      "path": "interiors/furniture/pillowBlueLong.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pillowLong",
+      "path": "interiors/furniture/pillowLong.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plantSmall1",
+      "path": "interiors/furniture/plantSmall1.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plantSmall2",
+      "path": "interiors/furniture/plantSmall2.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "plantSmall3",
+      "path": "interiors/furniture/plantSmall3.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "pottedPlant",
+      "path": "interiors/furniture/pottedPlant.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "radio",
+      "path": "interiors/furniture/radio.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rugDoormat",
+      "path": "interiors/furniture/rugDoormat.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rugRectangle",
+      "path": "interiors/furniture/rugRectangle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rugRound",
+      "path": "interiors/furniture/rugRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rugRounded",
+      "path": "interiors/furniture/rugRounded.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "rugSquare",
+      "path": "interiors/furniture/rugSquare.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "shower",
+      "path": "interiors/furniture/shower.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "showerRound",
+      "path": "interiors/furniture/showerRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sideTable",
+      "path": "interiors/furniture/sideTable.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "sideTableDrawers",
+      "path": "interiors/furniture/sideTableDrawers.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "speaker",
+      "path": "interiors/furniture/speaker.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "speakerSmall",
+      "path": "interiors/furniture/speakerSmall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stairs",
+      "path": "interiors/furniture/stairs.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stairsCorner",
+      "path": "interiors/furniture/stairsCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stairsOpen",
+      "path": "interiors/furniture/stairsOpen.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stairsOpenSingle",
+      "path": "interiors/furniture/stairsOpenSingle.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stoolBar",
+      "path": "interiors/furniture/stoolBar.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "stoolBarSquare",
+      "path": "interiors/furniture/stoolBarSquare.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "table",
+      "path": "interiors/furniture/table.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableCloth",
+      "path": "interiors/furniture/tableCloth.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableCoffee",
+      "path": "interiors/furniture/tableCoffee.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableCoffeeGlass",
+      "path": "interiors/furniture/tableCoffeeGlass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableCoffeeGlassSquare",
+      "path": "interiors/furniture/tableCoffeeGlassSquare.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableCoffeeSquare",
+      "path": "interiors/furniture/tableCoffeeSquare.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableCross",
+      "path": "interiors/furniture/tableCross.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableCrossCloth",
+      "path": "interiors/furniture/tableCrossCloth.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableGlass",
+      "path": "interiors/furniture/tableGlass.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "tableRound",
+      "path": "interiors/furniture/tableRound.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "televisionAntenna",
+      "path": "interiors/furniture/televisionAntenna.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "televisionModern",
+      "path": "interiors/furniture/televisionModern.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "televisionVintage",
+      "path": "interiors/furniture/televisionVintage.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "toaster",
+      "path": "interiors/furniture/toaster.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "toilet",
+      "path": "interiors/furniture/toilet.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "toiletSquare",
+      "path": "interiors/furniture/toiletSquare.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "trashcan",
+      "path": "interiors/furniture/trashcan.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wall",
+      "path": "interiors/furniture/wall.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wallCorner",
+      "path": "interiors/furniture/wallCorner.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wallCornerRond",
+      "path": "interiors/furniture/wallCornerRond.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wallDoorway",
+      "path": "interiors/furniture/wallDoorway.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wallDoorwayWide",
+      "path": "interiors/furniture/wallDoorwayWide.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wallHalf",
+      "path": "interiors/furniture/wallHalf.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wallWindow",
+      "path": "interiors/furniture/wallWindow.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "wallWindowSlide",
+      "path": "interiors/furniture/wallWindowSlide.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "washer",
+      "path": "interiors/furniture/washer.glb",
+      "exists": true,
+      "kind": "glb"
+    },
+    {
+      "id": "washerDryerStacked",
+      "path": "interiors/furniture/washerDryerStacked.glb",
+      "exists": true,
+      "kind": "glb"
+    }
+  ],
+  "window_cards": [
+    {
+      "id": "SOURCE_cayley_interior",
+      "path": "interiors/window_cards/SOURCE_cayley_interior.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_empty_play_room",
+      "path": "interiors/window_cards/SOURCE_empty_play_room.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE",
+      "path": "interiors/window_cards/apartment_kiara_interior/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "kiara_interior_2k",
+      "path": "interiors/window_cards/apartment_kiara_interior/kiara_interior_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "kiara_interior_tonemapped",
+      "path": "interiors/window_cards/apartment_kiara_interior/kiara_interior_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "SOURCE",
+      "path": "interiors/window_cards/apartment_small_empty_room_1/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "small_empty_room_1_2k",
+      "path": "interiors/window_cards/apartment_small_empty_room_1/small_empty_room_1_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "cayley_interior_2k",
+      "path": "interiors/window_cards/cayley_interior_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "empty_play_room_2k",
+      "path": "interiors/window_cards/empty_play_room_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "bedDouble",
+      "path": "interiors/window_cards/kenney_furniture_side/bedDouble.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "bookcaseOpen",
+      "path": "interiors/window_cards/kenney_furniture_side/bookcaseOpen.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "chairDesk",
+      "path": "interiors/window_cards/kenney_furniture_side/chairDesk.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "computerScreen",
+      "path": "interiors/window_cards/kenney_furniture_side/computerScreen.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "desk",
+      "path": "interiors/window_cards/kenney_furniture_side/desk.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "deskCorner",
+      "path": "interiors/window_cards/kenney_furniture_side/deskCorner.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenBar",
+      "path": "interiors/window_cards/kenney_furniture_side/kitchenBar.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenCabinet",
+      "path": "interiors/window_cards/kenney_furniture_side/kitchenCabinet.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenFridge",
+      "path": "interiors/window_cards/kenney_furniture_side/kitchenFridge.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenSink",
+      "path": "interiors/window_cards/kenney_furniture_side/kitchenSink.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "kitchenStove",
+      "path": "interiors/window_cards/kenney_furniture_side/kitchenStove.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "lampRoundTable",
+      "path": "interiors/window_cards/kenney_furniture_side/lampRoundTable.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "laptop",
+      "path": "interiors/window_cards/kenney_furniture_side/laptop.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "loungeChair",
+      "path": "interiors/window_cards/kenney_furniture_side/loungeChair.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "loungeDesignChair",
+      "path": "interiors/window_cards/kenney_furniture_side/loungeDesignChair.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "table",
+      "path": "interiors/window_cards/kenney_furniture_side/table.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "televisionModern",
+      "path": "interiors/window_cards/kenney_furniture_side/televisionModern.png",
+      "exists": true,
+      "kind": "png"
+    },
+    {
+      "id": "SOURCE",
+      "path": "interiors/window_cards/office_unfinished_office/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "unfinished_office_2k",
+      "path": "interiors/window_cards/office_unfinished_office/unfinished_office_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "SOURCE",
+      "path": "interiors/window_cards/shop_comfy_cafe/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "comfy_cafe_2k",
+      "path": "interiors/window_cards/shop_comfy_cafe/comfy_cafe_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "comfy_cafe_tonemapped",
+      "path": "interiors/window_cards/shop_comfy_cafe/comfy_cafe_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "SOURCE_anniversary_lounge",
+      "path": "interiors/window_cards/SOURCE_anniversary_lounge.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_brown_photostudio_02",
+      "path": "interiors/window_cards/SOURCE_brown_photostudio_02.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_fireplace",
+      "path": "interiors/window_cards/SOURCE_fireplace.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_hotel_room",
+      "path": "interiors/window_cards/SOURCE_hotel_room.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_photo_studio_01",
+      "path": "interiors/window_cards/SOURCE_photo_studio_01.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_studio_small_03",
+      "path": "interiors/window_cards/SOURCE_studio_small_03.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_studio_small_08",
+      "path": "interiors/window_cards/SOURCE_studio_small_08.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "SOURCE_studio_small_09",
+      "path": "interiors/window_cards/SOURCE_studio_small_09.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "anniversary_lounge_2k",
+      "path": "interiors/window_cards/anniversary_lounge_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "anniversary_lounge_tonemapped",
+      "path": "interiors/window_cards/anniversary_lounge_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "brown_photostudio_02_2k",
+      "path": "interiors/window_cards/brown_photostudio_02_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "fireplace_2k",
+      "path": "interiors/window_cards/fireplace_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "fireplace_tonemapped",
+      "path": "interiors/window_cards/fireplace_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "hotel_room_2k",
+      "path": "interiors/window_cards/hotel_room_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "hotel_room_tonemapped",
+      "path": "interiors/window_cards/hotel_room_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "photo_studio_01_2k",
+      "path": "interiors/window_cards/photo_studio_01_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "photo_studio_01_tonemapped",
+      "path": "interiors/window_cards/photo_studio_01_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "studio_small_03_2k",
+      "path": "interiors/window_cards/studio_small_03_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "studio_small_03_tonemapped",
+      "path": "interiors/window_cards/studio_small_03_tonemapped.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "studio_small_08_2k",
+      "path": "interiors/window_cards/studio_small_08_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    },
+    {
+      "id": "studio_small_09_2k",
+      "path": "interiors/window_cards/studio_small_09_2k.hdr",
+      "exists": true,
+      "kind": "hdr"
+    }
+  ],
+  "textures": [
+    {
+      "id": "SOURCE",
+      "path": "textures/brick_wall_02/SOURCE.txt",
+      "exists": true,
+      "kind": "txt"
+    },
+    {
+      "id": "brick_wall_02_diff_2k",
+      "path": "textures/brick_wall_02/brick_wall_02_diff_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "brick_wall_02_nor_gl_2k",
+      "path": "textures/brick_wall_02/brick_wall_02_nor_gl_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    },
+    {
+      "id": "brick_wall_02_rough_2k",
+      "path": "textures/brick_wall_02/brick_wall_02_rough_2k.jpg",
+      "exists": true,
+      "kind": "jpg"
+    }
+  ]
+}

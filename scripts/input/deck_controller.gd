@@ -13,6 +13,7 @@ signal disaster_pressed
 signal radial_toggled(open: bool)
 signal radial_select(index: int)
 signal brush_cycled(size: int)
+signal gfx_cycle(dir: int)
 
 @export var pan_lerp: float = 0.22
 @export var stick_deadzone: float = 0.22
@@ -31,6 +32,7 @@ var brush_size: int = 1
 var prefer_gamepad: bool = true
 var mouse_active_until: float = 0.0
 var rmb_orbit: bool = false
+var graphics_focus: bool = false
 
 const BRUSH_STEPS: Array[int] = [1, 3, 5]
 const RADIAL_SLICES: int = 6
@@ -45,6 +47,10 @@ func _process(dt: float) -> void:
 
 
 func _update_pan() -> void:
+	if graphics_focus:
+		pan_smooth = Vector2.ZERO
+		pan_vector = Vector2.ZERO
+		return
 	var raw := Vector2.ZERO
 	if not radial_open:
 		if Input.is_action_pressed("pan_up"):
@@ -178,10 +184,17 @@ func _unhandled_input(event: InputEvent) -> void:
 		paint_released.emit()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cycle_tool_next"):
-		cycle_next.emit()
+		# LB/RB: graphics cycle (tools stay on Y radial)
+		gfx_cycle.emit(1)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("cycle_tool_prev"):
-		cycle_prev.emit()
+		gfx_cycle.emit(-1)
+		get_viewport().set_input_as_handled()
+	elif graphics_focus and event.is_action_pressed("pan_left"):
+		gfx_cycle.emit(-1)
+		get_viewport().set_input_as_handled()
+	elif graphics_focus and event.is_action_pressed("pan_right"):
+		gfx_cycle.emit(1)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("brush_size"):
 		_cycle_brush()

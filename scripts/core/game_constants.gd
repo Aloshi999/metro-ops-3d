@@ -10,6 +10,13 @@ const LOT_METERS: float = 16.0
 const BUILDING_SCALE: float = 14.5
 const ROAD_SCALE: float = 16.0
 const PROP_SCALE: float = 14.5
+## MegaKit downtown prebuilts are authored in meters (1 unit = 1 m). Do not use 14.5 —
+## that squashes 28 m midrise and kills skyline height. Measured AABB (Y-up):
+## Building_Large_2 20.64 × 16.64 × 28.00 m (X > 16 m → 2-lot / 32 m pad);
+## Building_Medium_2_001 15.06 × 13.06 × 25.01 m (one 16 m lot);
+## Building_Small_1 12.46 × 14.54 × 17.03 m (one 16 m lot).
+const DISTRICT_DOWNTOWN_SCALE: float = 1.0
+const DISTRICT_LARGE_LOTS: int = 2  # Large_2 pad
 
 const TARGET_FPS: int = 40
 const VIEWPORT_W: int = 1280
@@ -36,7 +43,8 @@ const TAX_PER_OCCUPANCY: float = 0.35
 const UPKEEP_GRACE_TICKS: int = 24  # 12s at 0.5s ticks
 const PAINT_ZONE_OCCUPANCY: float = 0.45
 
-const WAR_EMBARGO_TAX_MULT: float = 0.45
+const WAR_EMBARGO_TAX_START: float = 0.85
+const WAR_EMBARGO_TAX_MULT: float = 0.45  # embargo ceiling (worst)
 const WAR_LEVY_HIT: int = 4000
 const WAR_DURATION_TICKS: int = 120
 
@@ -59,6 +67,12 @@ const WAR_DEMAND_I: float = 0.55
 const DISASTER_DEMAND_R: float = 0.30
 const DISASTER_DEMAND_C: float = 0.70
 const DISASTER_DEMAND_I: float = 0.75
+
+const OPINION_MIN: float = 0.55
+const OPINION_MAX: float = 1.25
+const JOB_TAX: float = 0.08
+const TRADE_BONUS: float = 0.10
+const LAND_VALUE_TAX: float = 0.04
 
 const CAM_YAW_SPEED: float = 1.8
 const CAM_ZOOM_SPEED: float = 64.0

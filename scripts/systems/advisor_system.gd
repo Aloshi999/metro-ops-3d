@@ -2,6 +2,7 @@ class_name AdvisorSystem
 extends RefCounted
 ## Blocks / warns bad first moves + RCI imbalance / event feedback.
 
+const GameConstants = preload("res://scripts/core/game_constants.gd")
 const TileTypes = preload("res://scripts/core/tile_types.gd")
 const ChunkData = preload("res://scripts/core/chunk_data.gd")
 const MapData = preload("res://scripts/systems/map_data.gd")
@@ -48,9 +49,15 @@ func evaluate(map: MapData, budget: BudgetSystem, tool_name: String, sim: SimSys
 	if sim != null:
 		_add(Severity.INFO, sim.demand_label())
 		_advise_rci(sim, tool_name)
+		_advise_voices(map, sim)
+		_advise_happiness(sim)
 
 	if messages.is_empty():
 		_add(Severity.INFO, "City stable. Expand roads to reveal fog-of-build.")
+
+	## First 10 minutes: one card only. Cheap slice, HUD unchanged.
+	if sim != null and float(sim.tick_count) * GameConstants.SIM_TICK_SEC < 600.0 and messages.size() > 1:
+		messages.resize(1)
 
 	advice_changed.emit(messages)
 	return messages
@@ -74,6 +81,59 @@ func _advise_rci(sim: SimSystem, tool_name: String) -> void:
 		_add(Severity.INFO, "War timer %d ticks — embargo lifts when it hits 0." % sim.war_timer)
 	elif sim.disaster_timer > 0:
 		_add(Severity.INFO, "Disaster timer %d ticks — repair damaged chunk services." % sim.disaster_timer)
+
+
+func _advise_voices(map: MapData, sim: SimSystem) -> void:
+	## At most 1-2 INFO lines from extreme chunks OR sampled lot records. No bodies.
+	var added := 0
+	var poll_chunk: ChunkData = null
+	var poll_best: float = 0.05
+	var jobs_chunk: ChunkData = null
+	var jobs_worst: float = 0.30
+	var fear_chunk: ChunkData = null
+	for c in map.chunks:
+		var chunk: ChunkData = c
+		if not chunk.active or chunk.res_tiles <= 0:
+			continue
+		if chunk.hate_pollution > poll_best:
+			poll_best = chunk.hate_pollution
+			poll_chunk = chunk
+		if chunk.want_jobs < jobs_worst:
+			jobs_worst = chunk.want_jobs
+			jobs_chunk = chunk
+		if chunk.event_fear < 0.8 and fear_chunk == null:
+			fear_chunk = chunk
+	if poll_chunk != null:
+		if poll_chunk.amenity < 0.08:
+			_add(Severity.INFO, "Renters at chunk (%d,%d) hate the factories — no park buffer." % [poll_chunk.cx, poll_chunk.cy])
+		else:
+			_add(Severity.INFO, "Renters at chunk (%d,%d) hate the factories." % [poll_chunk.cx, poll_chunk.cy])
+		added += 1
+	if added < 2 and jobs_chunk != null:
+		_add(Severity.INFO, "Households at (%d,%d) want jobs — C/I too thin." % [jobs_chunk.cx, jobs_chunk.cy])
+		added += 1
+	if added < 2 and fear_chunk != null:
+		_add(Severity.INFO, "Neighbors fear the disaster / embargo.")
+		added += 1
+	var voices: Array = sim.sampled_voices(map, 1)
+	if not voices.is_empty():
+		var rec = voices[0]
+		var tag := "jobs"
+		if rec.tags.size() > 0:
+			tag = str(rec.tags[0])
+		_add(Severity.INFO, "%s (%s) wants %s." % [rec.name, rec.job_class, tag])
+
+
+func _advise_happiness(sim: SimSystem) -> void:
+	var mood_pct: int = int(round(clampf(sim.happiness, 0.0, 1.0) * 100.0))
+	if sim.happiness < 0.4:
+		_add(Severity.INFO, "City mood %d%% — %s." % [mood_pct, sim.worst_factor_name()])
+	elif sim.happiness > 0.75:
+		_add(Severity.INFO, "City mood %d%% — %s." % [mood_pct, sim.best_factor_name()])
+	else:
+		_add(Severity.INFO, "City mood %d%%." % mood_pct)
+	if sim.city_opinion_r <= GameConstants.OPINION_MIN + 0.08:
+		_add(Severity.WARN, "Renters are sour — cover power/water or pull industry off the parks.")
 
 
 func should_block_paint(tool_name: String, map: MapData) -> bool:
