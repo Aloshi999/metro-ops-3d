@@ -409,6 +409,32 @@ func _clear_children(n: Node) -> void:
 		c.queue_free()
 
 
+
+func landmark_world(kind: String) -> Vector3:
+	## Existing lots only — HQ / commercial core / Kenney ring / park / waterfront.
+	if map == null:
+		return Vector3.ZERO
+	var k := kind.strip_edges().to_lower()
+	match k:
+		"park":
+			if not _park_lots.is_empty():
+				var pv: Vector2i = _park_lots.values()[_park_lots.size() / 2]
+				return map.lot_to_world(pv.x, pv.y)
+			return map.lot_to_world(map.hq.x - 8, map.hq.y + 4)
+		"waterfront":
+			if not _wf_shore.is_empty():
+				var sv: Vector2i = _wf_shore.values()[0]
+				return map.lot_to_world(sv.x, sv.y)
+			if not _wf_water.is_empty():
+				var wv: Vector2i = _wf_water.values()[0]
+				return map.lot_to_world(wv.x, wv.y)
+			return map.lot_to_world(map.hq.x + 8, map.hq.y + 4)
+		"midrise":
+			return map.lot_to_world(map.hq.x + 8, map.hq.y - 8)
+		_:
+			return map.lot_to_world(map.hq.x, map.hq.y)
+
+
 func _downtown_cheb(x: int, y: int) -> int:
 	var hq: Vector2i = map.hq
 	var dx := absi(x - hq.x)
@@ -1003,7 +1029,18 @@ func _scatter_waterfront() -> void:
 		return
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 19191
-	var crane_placed := false
+	var hq: Vector2i = map.hq
+	# Heroes at the boot look-at (HQ + 6 south) so pier/palms read in-frame.
+	for hxy in [Vector2i(hq.x + 2, hq.y + 6), Vector2i(hq.x + 3, hq.y + 6), Vector2i(hq.x + 4, hq.y + 5)]:
+		if not map.in_bounds(hxy.x, hxy.y):
+			continue
+		var hp := map.lot_to_world(hxy.x, hxy.y)
+		var hero_palm = catalog.waterfront.pick_palm(hxy.x + hxy.y)
+		if hero_palm and waterfront_count < 40:
+			hero_palm.position = hp
+			waterfront_root.add_child(hero_palm)
+			waterfront_count += 1
+		# no PH pier in boot frustum
 	for lot in _wf_shore.values():
 		if waterfront_count >= 40:
 			break
@@ -1012,14 +1049,7 @@ func _scatter_waterfront() -> void:
 		var i := map.idx(x, y)
 		var base := map.lot_to_world(x, y)
 		var yaw := _water_face_yaw(x, y)
-		if _has_water_neighbor(x, y) and (x + y) % 2 == 0:
-			var pier = catalog.waterfront.instantiate_pier()
-			if pier:
-				var step := Vector3(0.0, 0.05, 6.0).rotated(Vector3.UP, yaw)
-				pier.position = base + step
-				pier.rotate_y(yaw)
-				waterfront_root.add_child(pier)
-				waterfront_count += 1
+		# no PH pier in boot frustum
 		if waterfront_count < 40:
 			var palm = catalog.waterfront.pick_palm(i)
 			if palm:
@@ -1034,27 +1064,13 @@ func _scatter_waterfront() -> void:
 				prop.rotate_y(rng.randf() * TAU)
 				waterfront_root.add_child(prop)
 				waterfront_count += 1
-		if not crane_placed and catalog.waterfront.crane_ok and waterfront_count < 40:
-			var crane = catalog.waterfront.instantiate_crane()
-			if crane:
-				crane.position = base
-				waterfront_root.add_child(crane)
-				waterfront_count += 1
-				crane_placed = true
 	for lot in _wf_water.values():
 		if waterfront_count >= 40:
 			break
 		var x2: int = lot.x
 		var y2: int = lot.y
 		var j := map.idx(x2, y2)
-		if y2 >= map.hq.y + 2 and (x2 + y2) % 3 == 0 and waterfront_count < 40:
-			var pier2 = catalog.waterfront.instantiate_pier()
-			if pier2:
-				var wp2 := map.lot_to_world(x2, y2)
-				pier2.position = Vector3(wp2.x, 0.05, wp2.z)
-				pier2.rotate_y(PI * 0.5)
-				waterfront_root.add_child(pier2)
-				waterfront_count += 1
+		# no boot-frustum piers
 		if (x2 + y2) % 2 != 0:
 			continue
 		var lily = catalog.waterfront.pick_lily(j)

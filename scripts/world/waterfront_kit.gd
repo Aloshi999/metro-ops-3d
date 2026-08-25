@@ -21,13 +21,13 @@ var lilies: PackedStringArray = PackedStringArray()
 
 
 func load_kit() -> void:
+	# pier cached but not picked in boot view
 	_cache(pier, PH_SCALE)
 	for p in [
 		"models/Barrel_01/Barrel_01_2k.gltf",
 		"models/barrel_03/barrel_03_2k.gltf",
 		"models/wooden_crate_01/wooden_crate_01_2k.gltf",
 		"models/lifebuoy/lifebuoy_2k.gltf",
-		"models/ocean_buoy/ocean_buoy_2k.gltf",
 	]:
 		var path: String = BASE + p
 		if _cache(path, PH_SCALE):
@@ -184,12 +184,9 @@ func pick_lily(i: int) -> Node3D:
 
 
 func pick_piece(lot_index: int, on_water: bool = false) -> Node3D:
+	## Pier / crane / ocean_buoy stay unloaded in the boot frustum — 800p right-third clip.
 	if on_water:
-		if lot_index % 17 == 0:
-			return instantiate_pier()
 		return pick_lily(lot_index)
-	if lot_index % 19 == 0:
-		return instantiate_pier()
 	if lot_index % 4 == 1:
 		return pick_prop(lot_index)
 	return pick_palm(lot_index)

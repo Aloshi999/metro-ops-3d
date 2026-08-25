@@ -68,6 +68,46 @@ const DISASTER_DEMAND_R: float = 0.30
 const DISASTER_DEMAND_C: float = 0.70
 const DISASTER_DEMAND_I: float = 0.75
 
+## Lots fill only when demand is hotter than this and the lot is powered+watered+roaded.
+const FILL_DEMAND_MIN: float = 0.40
+
+## Corridor interdiction — trade/roads spine (3 adjacent chunks).
+const CORRIDOR_DURATION_TICKS: int = 120
+const CORRIDOR_TAX_MULT: float = 0.80
+const CORRIDOR_TRADE_MULT: float = 0.33
+const CORRIDOR_DEMAND_R: float = 0.85
+const CORRIDOR_DEMAND_C: float = 0.45
+const CORRIDOR_DEMAND_I: float = 0.55
+const CORRIDOR_LAND_MULT: float = 0.70
+const CORRIDOR_CHUNKS: int = 3
+
+## Grid blackout — power off on one plant chunk. Hours-scale (24 ticks).
+const BLACKOUT_DURATION_TICKS: int = 24
+const BLACKOUT_TAX_MULT: float = 0.90
+const BLACKOUT_TRADE_MULT: float = 0.85
+const BLACKOUT_DEMAND_R: float = 0.90
+const BLACKOUT_DEMAND_C: float = 0.70
+const BLACKOUT_DEMAND_I: float = 0.55
+
+## Dock walkout — waterfront/com trade smash. No chunk damage.
+const WALKOUT_DURATION_TICKS: int = 48
+const WALKOUT_TAX_MULT: float = 0.95
+const WALKOUT_TRADE_MULT: float = 0.20
+const WALKOUT_DEMAND_C: float = 0.65
+const WALKOUT_DEMAND_I: float = 0.70
+const WALKOUT_WATERFRONT_C: float = 0.50
+const CORRIDOR_ROAD_MULT: float = 0.55
+const BLACKOUT_CHUNK_COUNT: int = 2
+
+## Quake — extend disaster damage, I rebuild pull.
+const QUAKE_DURATION_TICKS: int = 80
+const QUAKE_TAX_MULT: float = 0.94
+const QUAKE_TRADE_MULT: float = 0.90
+const QUAKE_DEMAND_R: float = 0.30
+const QUAKE_DEMAND_C: float = 0.70
+const QUAKE_DEMAND_I: float = 1.15
+const QUAKE_LAND_MULT: float = 0.75
+
 const OPINION_MIN: float = 0.55
 const OPINION_MAX: float = 1.25
 const JOB_TAX: float = 0.08

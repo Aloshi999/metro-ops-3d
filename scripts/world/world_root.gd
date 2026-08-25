@@ -74,7 +74,46 @@ func _print_instance_counts() -> void:
 	print("CITY_MESH park=", city_view.park_count, " waterfront=", city_view.waterfront_count, " cards=", city_view.card_count)
 	if catalog:
 		print("CITY_MESH caches albedo=", catalog._albedo_cache.size(), " emissive=", catalog._emissive_cache.size())
+	_dump_near_hq_aabbs()
 
+
+
+func _dump_near_hq_aabbs() -> void:
+	## Identify the light-blue right-third wall. Hide overlay/building VisualInstances > 64 m world.
+	if city_view == null or map == null:
+		return
+	var hq_w: Vector3 = map.lot_to_world(map.hq.x, map.hq.y)
+	var roots: Array = []
+	if city_view.waterfront_root:
+		roots.append(city_view.waterfront_root)
+	if city_view.park_root:
+		roots.append(city_view.park_root)
+	if city_view.buildings_root:
+		roots.append(city_view.buildings_root)
+	if city_view.services_root:
+		roots.append(city_view.services_root)
+	if city_view.roads_root:
+		roots.append(city_view.roads_root)
+	for r in roots:
+		_walk_aabb_dump(r, hq_w, true)
+
+
+func _walk_aabb_dump(n: Node, hq_w: Vector3, hide_giant: bool) -> void:
+	if n is VisualInstance3D:
+		var vi = n as VisualInstance3D
+		var local_sz: Vector3 = vi.get_aabb().size
+		var world_sz: Vector3 = (vi.global_transform * vi.get_aabb()).size
+		var longest: float = maxf(world_sz.x, maxf(world_sz.y, world_sz.z))
+		var pos: Vector3 = vi.global_position
+		var east: bool = pos.x >= hq_w.x - 8.0
+		var south: bool = pos.z >= hq_w.z - 8.0
+		if longest >= 24.0 and (east or south or longest >= 64.0):
+			print("[AABB] ", vi.get_path(), " longest=", snappedf(longest, 0.1), " world=", world_sz, " local=", local_sz, " pos=", pos, " vis=", vi.visible)
+		if hide_giant and longest > 64.0 and vi.visible:
+			vi.visible = false
+			print("[AABB] hide giant ", vi.name, " path=", vi.get_path(), " longest=", snappedf(longest, 0.1))
+	for c in n.get_children():
+		_walk_aabb_dump(c, hq_w, hide_giant)
 
 func apply_graphics_preset(preset: int) -> void:
 	## Controls/Builder: world.apply_graphics_preset(GraphicsPresets.Id.HIGH)

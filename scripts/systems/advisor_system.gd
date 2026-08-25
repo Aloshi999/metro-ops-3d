@@ -56,7 +56,7 @@ func evaluate(map: MapData, budget: BudgetSystem, tool_name: String, sim: SimSys
 		_add(Severity.INFO, "City stable. Expand roads to reveal fog-of-build.")
 
 	## First 10 minutes: one card only. Cheap slice, HUD unchanged.
-	if sim != null and float(sim.tick_count) * GameConstants.SIM_TICK_SEC < 600.0 and messages.size() > 1:
+	if sim != null and not sim.first_ten_complete() and messages.size() > 1:
 		messages.resize(1)
 
 	advice_changed.emit(messages)

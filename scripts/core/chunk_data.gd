@@ -9,6 +9,8 @@ var cy: int = 0
 var active: bool = false
 var damaged: bool = false
 var damage_timer: int = 0
+## Grid blackout: chunk treated as unpowered for the card duration.
+var unpowered: bool = false
 
 var res_tiles: int = 0
 var com_tiles: int = 0
@@ -36,6 +38,10 @@ var water_cover: float = 0.0
 var opinion_r: float = 1.0
 var opinion_c: float = 1.0
 var opinion_i: float = 1.0
+## Per-chunk land value 0..1 (services × roads × occ − pollution + amenity).
+var land_value: float = 0.5
+var land_mult: float = 1.0
+var blackout: bool = false
 
 
 func reset_counts() -> void:
@@ -100,6 +106,9 @@ func refresh_opinions(war_timer: int, disaster_timer: int, nearby_ind: float = 0
 		* lerpf(1.02, 0.92, amenity)
 		* lerpf(1.0, 0.85, fear),
 		GameConstants.OPINION_MIN, GameConstants.OPINION_MAX)
+	var road_q: float = clampf(float(roaded_zone_tiles) / zone_n, 0.0, 1.0)
+	land_value = clampf(svc_q * road_q * occ_avg - pollution + amenity * 0.20, 0.0, 1.0)
+	land_value = clampf(land_value * land_mult, 0.0, 1.0)
 
 
 func tax_yield(tax_per: float, demand_mult: float) -> float:

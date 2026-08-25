@@ -16,6 +16,8 @@ var tick_count: int = 0
 var war_timer: int = 0
 var disaster_timer: int = 0
 var event_cooldown: int = 0
+## Main sets true in _ready. Smoke never sets it, so start_war still applies at tick 0.
+var tutor_active: bool = false
 
 var demand_r: float = GameConstants.RCI_DEMAND_BASE
 var demand_c: float = GameConstants.RCI_DEMAND_BASE
@@ -53,6 +55,8 @@ const _W_REC: float = 0.10
 
 func tick(map: MapData, budget: BudgetSystem) -> void:
 	tick_count += 1
+	if tutor_active and float(tick_count) * GameConstants.SIM_TICK_SEC >= 600.0:
+		tutor_active = false
 	_tick_events(budget)
 	_recompute_city_demand(map, budget)
 	_sim_active_chunks(map)
@@ -134,6 +138,11 @@ func _recompute_city_demand(map: MapData, budget: BudgetSystem) -> void:
 	demand_r = clampf(dr, GameConstants.RCI_DEMAND_MIN, GameConstants.RCI_DEMAND_MAX)
 	demand_c = clampf(dc, GameConstants.RCI_DEMAND_MIN, GameConstants.RCI_DEMAND_MAX)
 	demand_i = clampf(di, GameConstants.RCI_DEMAND_MIN, GameConstants.RCI_DEMAND_MAX)
+	## First-10 tutor window: keep demand hot so minute 3–6 zone-paint fills (>0.4 gate).
+	if _in_tutor_window():
+		demand_r = maxf(demand_r, 0.45)
+		demand_c = maxf(demand_c, 0.45)
+		demand_i = maxf(demand_i, 0.45)
 
 
 func _sim_active_chunks(map: MapData) -> void:
@@ -167,7 +176,7 @@ func _sim_chunk(map: MapData, chunk: ChunkData) -> void:
 			var i := map.idx(x, y)
 			var ter: int = map.terrain[i]
 			var dcode: int = map.district[i] if map.district.size() > i else 0
-			if dcode == TileTypes.District.PARK or dcode == TileTypes.District.WATERFRONT:
+			if dcode == 3 or dcode == 4:  ## District.PARK / WATERFRONT (ints — headless class_name)
 				chunk.park_tiles += 1
 			elif ter == TileTypes.Terrain.WATER:
 				chunk.park_tiles += 1
@@ -433,6 +442,21 @@ func best_factor_name() -> String:
 	return dominant_factor_name(true)
 
 
+func first_ten_complete() -> bool:
+	return float(tick_count) * GameConstants.SIM_TICK_SEC >= 600.0
+
+
+func _in_tutor_window() -> bool:
+	return tutor_active and not first_ten_complete()
+
+
+func _tutor_hold_card() -> Dictionary:
+	return {
+		"title": "Advisor",
+		"body": "Finish the first lesson — View/L3 recap first."
+	}
+
+
 func _event_busy() -> bool:
 	return war_timer > 0 or disaster_timer > 0 or event_cooldown > 0
 
@@ -455,6 +479,8 @@ func density_unlock_tier() -> int:
 
 
 func start_war(budget: BudgetSystem) -> Dictionary:
+	if _in_tutor_window():
+		return _tutor_hold_card()
 	if _event_busy():
 		return _event_busy_card()
 	war_timer = GameConstants.WAR_DURATION_TICKS
@@ -471,6 +497,8 @@ func start_war(budget: BudgetSystem) -> Dictionary:
 
 
 func start_disaster(map: MapData, budget: BudgetSystem) -> Dictionary:
+	if _in_tutor_window():
+		return _tutor_hold_card()
 	if _event_busy():
 		return _event_busy_card()
 	disaster_timer = GameConstants.DISASTER_DURATION_TICKS

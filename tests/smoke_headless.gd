@@ -532,6 +532,108 @@ func _init() -> void:
 			ok = false
 			errors.append("pause lock: _trigger_disaster missing or sets paused = false")
 
+	## 0.1.5 Benchmark — wiring only. Do not assert specific FPS (headless has no GPU).
+	var BenchScr = load("res://scripts/systems/benchmark.gd")
+	if BenchScr == null:
+		ok = false
+		errors.append("benchmark.gd failed to load")
+	else:
+		var bench_map := MapData.new()
+		var bench_cam: Node3D = null
+		if cam_ps != null:
+			bench_cam = cam_ps.instantiate()
+			var hq_b := bench_map.lot_to_world(bench_map.hq.x, bench_map.hq.y)
+			bench_cam.setup(hq_b, bench_map.world_size())
+			bench_cam._process(1.0)
+		var bench = BenchScr.new()
+		if bench.has_method("setup"):
+			bench.setup(bench_cam, bench_map, null)
+		if bench.has_method("default_preset") and str(bench.default_preset()) != "low":
+			ok = false
+			errors.append("default bench preset is %s not low" % str(bench.default_preset()))
+		elif str(bench.get("preset_name")) != "low":
+			ok = false
+			errors.append("bench preset_name %s not low at boot" % str(bench.get("preset_name")))
+		bench.start_smoke("low")
+		for _f in 36:
+			bench.tick(0.1)
+		if bench.is_running():
+			bench.force_finish()
+		var last_path := "user://benchmark_last.txt"
+		if not FileAccess.file_exists(last_path):
+			ok = false
+			errors.append("user://benchmark_last.txt not written")
+		else:
+			var txt := FileAccess.get_file_as_string(last_path)
+			var avg_ok := false
+			var low_ok := false
+			var preset_ok := false
+			for line in txt.split("\n"):
+				var s := line.strip_edges()
+				if s.begins_with("avg="):
+					var vs := s.substr(4).strip_edges()
+					if vs.is_valid_float():
+						avg_ok = true
+				elif s.begins_with("1pct_low="):
+					var ls := s.substr(9).strip_edges()
+					if ls.is_valid_float():
+						low_ok = true
+				elif s.begins_with("preset="):
+					if s.substr(7).strip_edges().to_lower() == "low":
+						preset_ok = true
+			if not avg_ok:
+				ok = false
+				errors.append("benchmark_last.txt missing numeric avg=")
+			if not low_ok:
+				ok = false
+				errors.append("benchmark_last.txt missing numeric 1pct_low=")
+			if not preset_ok:
+				ok = false
+				errors.append("benchmark_last.txt preset is not low")
+		# B abort must not crash.
+		var bench2 = BenchScr.new()
+		bench2.setup(bench_cam, bench_map, null)
+		bench2.start_smoke("low")
+		bench2.tick(0.08)
+		bench2.tick(0.08)
+		bench2.abort()
+		if bench2.is_running():
+			ok = false
+			errors.append("B abort left benchmark running")
+		if bench_cam != null:
+			var bd: float = float(bench_cam.get("distance"))
+			var bp: float = rad_to_deg(float(bench_cam.get("pitch")))
+			if bd < 154.8 or bd > 215.2:
+				ok = false
+				errors.append("bench path left dist clamp (%.1f)" % bd)
+			if bp < -62.2 or bp > -43.8:
+				ok = false
+				errors.append("bench path left pitch clamp (%.1f)" % bp)
+			# restore + boot lock still hold
+			if bench_cam.has_method("end_scripted"):
+				bench_cam.end_scripted(true)
+			bench_cam._process(1.0)
+			var rd: float = float(bench_cam.get("distance"))
+			var rp: float = rad_to_deg(float(bench_cam.get("pitch")))
+			if absf(rd - 190.0) > 1.0:
+				ok = false
+				errors.append("after bench, camera dist %.1f not 190" % rd)
+			if absf(rp - (-56.0)) > 1.0:
+				ok = false
+				errors.append("after bench, camera pitch %.1f not -56" % rp)
+			bench_cam.free()
+		if bench is Node:
+			bench.free()
+		if bench2 is Node:
+			bench2.free()
+		# source wiring
+		if main_src.find("BenchmarkMode") < 0 or main_src.find("_start_benchmark") < 0:
+			ok = false
+			errors.append("main.gd missing Benchmark wiring")
+		if main_src.find("_start_benchmark_from_pause") < 0:
+			ok = false
+			errors.append("main.gd missing A-from-pause Benchmark start")
+
 	print("=== Metro Ops 3D smoke ===")
 	print("map=%dx%d chunks=%dx%d lot_m=%.1f kenney=%d" % [
 		GameConstants.MAP_SIZE, GameConstants.MAP_SIZE,

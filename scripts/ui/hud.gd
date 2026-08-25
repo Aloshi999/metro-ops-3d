@@ -48,7 +48,7 @@ func _ready() -> void:
 	if advisor_panel:
 		advisor_panel.visible = true
 		advisor_panel.modulate.a = 1.0
-	help_label.text = "L-stick pan · R-stick orbit · A paint · Y tools · LB/RB graphics · X brush · View pause · L3 FPS"
+	help_label.text = "L-stick pan · R-stick orbit · A paint · Y tools · LB/RB graphics · X brush · View pause · L3 FPS · A Benchmark (paused)"
 	_force_mouse_ignore(get_node_or_null("Root"))
 	if resume_button:
 		resume_button.visible = false
@@ -56,6 +56,7 @@ func _ready() -> void:
 		resume_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	# Arm after main.gd has connected — skip boot FOCUS_IN, never pause on advisor.
 	call_deferred("_arm_focus_watch")
+	_ensure_bench_ui()
 
 
 func _force_mouse_ignore(n: Node) -> void:
@@ -149,6 +150,7 @@ func set_advisor(messages: Array) -> void:
 func set_paused(p: bool) -> void:
 	# Advisor stays a side card. Pause is a chip + dim, no mouse modal.
 	paused_label.visible = p
+	_set_pause_bench_hint(p)
 	if advisor_panel:
 		advisor_panel.modulate.a = 1.0
 		advisor_panel.visible = true
@@ -225,3 +227,134 @@ func _notification(what: int) -> void:
 		overlay_focus_out.emit()
 	elif what == NOTIFICATION_APPLICATION_FOCUS_IN or what == NOTIFICATION_WM_WINDOW_FOCUS_IN:
 		overlay_focus_in.emit()
+
+
+func _ensure_bench_ui() -> void:
+	_ensure_pause_bench_item()
+	if get_node_or_null("%BenchOverlay") != null or get_node_or_null("Root/BenchOverlay") != null:
+		return
+	var root := get_node_or_null("Root") as Control
+	if root == null:
+		return
+	var overlay := Control.new()
+	overlay.name = "BenchOverlay"
+	overlay.visible = false
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.focus_mode = Control.FOCUS_NONE
+	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	overlay.offset_left = 24.0
+	overlay.offset_top = 16.0
+	overlay.offset_right = -96.0
+	overlay.offset_bottom = -16.0
+	overlay.z_index = 60
+	root.add_child(overlay)
+	var panel := PanelContainer.new()
+	panel.name = "BenchPanel"
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	panel.offset_left = -220.0
+	panel.offset_top = 88.0
+	panel.offset_right = 220.0
+	panel.offset_bottom = 280.0
+	overlay.add_child(panel)
+	var box := VBoxContainer.new()
+	box.name = "BenchBox"
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_theme_constant_override("separation", 10)
+	panel.add_child(box)
+	var title := Label.new()
+	title.name = "BenchTitle"
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title.add_theme_font_size_override("font_size", 28)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.text = "BENCHMARK"
+	box.add_child(title)
+	var body := Label.new()
+	body.name = "BenchBody"
+	body.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	body.add_theme_font_size_override("font_size", 18)
+	body.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.text = ""
+	box.add_child(body)
+	var hint := Label.new()
+	hint.name = "BenchHint"
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hint.add_theme_font_size_override("font_size", 18)
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.text = "B abort"
+	box.add_child(hint)
+
+
+func _ensure_pause_bench_item() -> void:
+	if pause_overlay == null:
+		return
+	var box := pause_overlay.get_node_or_null("PauseBox") as VBoxContainer
+	if box == null:
+		return
+	if box.get_node_or_null("BenchItem") == null:
+		var lab := Label.new()
+		lab.name = "BenchItem"
+		lab.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lab.focus_mode = Control.FOCUS_NONE
+		lab.add_theme_font_size_override("font_size", 18)
+		lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lab.text = "Benchmark   A start"
+		var hint := box.get_node_or_null("PauseHint")
+		if hint:
+			box.add_child(lab)
+			box.move_child(lab, hint.get_index())
+		else:
+			box.add_child(lab)
+	var hint2 := box.get_node_or_null("PauseHint") as Label
+	if hint2:
+		hint2.text = "A Benchmark · LB/RB graphics · View resume"
+
+
+func _set_pause_bench_hint(_p: bool) -> void:
+	_ensure_pause_bench_item()
+
+
+func set_bench_live(vis: bool, fps: float, elapsed: float, duration: float) -> void:
+	_ensure_bench_ui()
+	var overlay := get_node_or_null("Root/BenchOverlay") as Control
+	if overlay == null:
+		return
+	if not vis:
+		overlay.visible = false
+		return
+	overlay.visible = true
+	var title := overlay.get_node_or_null("BenchPanel/BenchBox/BenchTitle") as Label
+	var body := overlay.get_node_or_null("BenchPanel/BenchBox/BenchBody") as Label
+	var hint := overlay.get_node_or_null("BenchPanel/BenchBox/BenchHint") as Label
+	if title:
+		title.text = "BENCHMARK"
+	if body:
+		body.text = "FPS %.0f\n%.0f / %.0f s" % [fps, elapsed, duration]
+	if hint:
+		hint.text = "B abort"
+
+
+func set_bench_results(vis: bool, r: Dictionary = {}) -> void:
+	_ensure_bench_ui()
+	var overlay := get_node_or_null("Root/BenchOverlay") as Control
+	if overlay == null:
+		return
+	if not vis:
+		overlay.visible = false
+		return
+	overlay.visible = true
+	var title := overlay.get_node_or_null("BenchPanel/BenchBox/BenchTitle") as Label
+	var body := overlay.get_node_or_null("BenchPanel/BenchBox/BenchBody") as Label
+	var hint := overlay.get_node_or_null("BenchPanel/BenchBox/BenchHint") as Label
+	if title:
+		title.text = "BENCHMARK RESULTS"
+	if body:
+		body.text = "Avg FPS    %.2f\n1%% low     %.2f\nDuration   %.1f s\nPreset     %s" % [
+			float(r.get("avg", 0.0)),
+			float(r.get("1pct_low", 0.0)),
+			float(r.get("duration", 0.0)),
+			str(r.get("preset", "low")).capitalize(),
+		]
+	if hint:
+		hint.text = "B dismiss · View resume"

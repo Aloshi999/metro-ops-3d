@@ -23,6 +23,11 @@ var pitch: float = deg_to_rad(BOOT_PITCH)
 var distance: float = BOOT_DIST
 var _zoom_goal: float = BOOT_DIST
 var _smooth_target: Vector3 = Vector3.ZERO
+var scripted: bool = false
+var _saved_target: Vector3 = Vector3.ZERO
+var _saved_yaw: float = 0.0
+var _saved_pitch: float = 0.0
+var _saved_distance: float = BOOT_DIST
 
 
 func _ready() -> void:
@@ -50,11 +55,15 @@ func _reset_rig() -> void:
 
 
 func apply_input(pan_vec: Vector2, orbit_vec: Vector2, zoom: float, dt: float) -> void:
+	if scripted:
+		return
 	pan(pan_vec, dt)
 	orbit(orbit_vec.x, zoom + orbit_vec.y, 0.0, dt)
 
 
 func apply_mouse_orbit(relative: Vector2) -> void:
+	if scripted:
+		return
 	yaw += relative.x * 0.005
 	pitch = clampf(
 		pitch - relative.y * 0.004,
@@ -65,6 +74,8 @@ func apply_mouse_orbit(relative: Vector2) -> void:
 
 
 func apply_wheel(sign: float) -> void:
+	if scripted:
+		return
 	## One discrete notch per tick. Sign clamped to ±1 so a fat event cannot yeet the 60m range.
 	if absf(sign) < 0.0001:
 		return
@@ -166,3 +177,37 @@ func ground_point_at_screen(screen: Vector2) -> Vector3:
 
 func ground_point_center() -> Vector3:
 	return ground_point_at_screen(get_viewport().get_visible_rect().size * 0.5)
+
+
+func begin_scripted() -> void:
+	scripted = true
+	_saved_target = target
+	_saved_yaw = yaw
+	_saved_pitch = pitch
+	_saved_distance = distance
+
+
+func end_scripted(restore: bool = true) -> void:
+	scripted = false
+	if restore:
+		target = _saved_target
+		yaw = _saved_yaw
+		pitch = _saved_pitch
+		distance = _saved_distance
+		_zoom_goal = distance
+		_smooth_target = target
+		_clamp_rig()
+		_apply()
+
+
+func set_scripted_pose(p_target: Vector3, p_yaw: float, p_pitch: float, p_dist: float) -> void:
+	target = p_target
+	target.y = 0.0
+	yaw = p_yaw
+	pitch = p_pitch
+	distance = p_dist
+	_zoom_goal = p_dist
+	_smooth_target = target
+	_clamp_rig()
+	_apply()
+

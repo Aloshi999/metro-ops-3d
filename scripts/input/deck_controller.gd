@@ -14,6 +14,7 @@ signal radial_toggled(open: bool)
 signal radial_select(index: int)
 signal brush_cycled(size: int)
 signal gfx_cycle(dir: int)
+signal cancel_pressed
 
 @export var pan_lerp: float = 0.22
 @export var stick_deadzone: float = 0.22
@@ -128,6 +129,9 @@ func _input(event: InputEvent) -> void:
 			_set_radial(false)
 			get_viewport().set_input_as_handled()
 			return
+		cancel_pressed.emit()
+		get_viewport().set_input_as_handled()
+		return
 	if event.is_action_pressed("pause_advisor"):
 		if radial_open:
 			_set_radial(false)

@@ -32,6 +32,12 @@ var water_towers: Array[Vector2i] = []
 var starter_power_count: int = 0
 var starter_water_count: int = 0
 
+var district: PackedByteArray
+var seed_downtown_lots: int = 0
+var seed_midrise_lots: int = 0
+var seed_park_lots: int = 0
+var seed_waterfront_lots: int = 0
+
 
 func _init() -> void:
 	_alloc()
@@ -39,6 +45,7 @@ func _init() -> void:
 	_init_chunks()
 	_place_hq()
 	_seed_downtown()
+	_seed_district_lots()
 
 
 func _alloc() -> void:
@@ -52,6 +59,7 @@ func _alloc() -> void:
 	watered = PackedByteArray(); watered.resize(n)
 	damaged_tile = PackedByteArray(); damaged_tile.resize(n)
 	occupancy = PackedFloat32Array(); occupancy.resize(n)
+	district = PackedByteArray(); district.resize(n)
 	for i in n:
 		occupancy[i] = 0.0
 
@@ -171,6 +179,14 @@ func _seed_downtown() -> void:
 			_mark_chunk_active(x, y)
 	_reveal_around(hq.x, hq.y, 14)
 	recompute_services()
+	for y in range(hq.y - 7, hq.y + 8):
+		for x in range(hq.x - 7, hq.x + 8):
+			if not in_bounds(x, y):
+				continue
+			var i := idx(x, y)
+			if zone[i] != TileTypes.Zone.NONE:
+				district[i] = TileTypes.District.DOWNTOWN
+				seed_downtown_lots += 1
 
 
 func _force_service(x: int, y: int, s: int) -> void:
@@ -350,6 +366,90 @@ func clear_chunk_damage(c: ChunkData) -> void:
 		for x in range(x0, x0 + chunk_size):
 			damaged_tile[idx(x, y)] = 0
 	map_changed.emit()
+
+
+
+func _seed_district_lots() -> void:
+	## Stamp park / waterfront / midrise lots so smoke + sim see district counts
+	## without requiring CityView. CityView overlays the same ranges.
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 314159
+	seed_park_lots = 0
+	seed_waterfront_lots = 0
+	seed_midrise_lots = 0
+	# Park block west of HQ (CityView._seed_park).
+	for y in range(hq.y + 1, hq.y + 8):
+		for x in range(hq.x - 10, hq.x - 5):
+			if not in_bounds(x, y):
+				continue
+			var i := idx(x, y)
+			if terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if service[i] != TileTypes.Service.NONE:
+				continue
+			terrain[i] = TileTypes.Terrain.GRASS
+			if y != hq.y:
+				road[i] = 0
+			zone[i] = TileTypes.Zone.NONE
+			occupancy[i] = 0.0
+			district[i] = TileTypes.District.PARK
+			revealed[i] = 1
+			_mark_chunk_active(x, y)
+			seed_park_lots += 1
+	# Waterfront inlet east of HQ (CityView._seed_waterfront).
+	for y in range(hq.y + 1, hq.y + 8):
+		for x in range(hq.x + 6, hq.x + 11):
+			if not in_bounds(x, y):
+				continue
+			var i := idx(x, y)
+			if service[i] != TileTypes.Service.NONE:
+				continue
+			if district[i] == TileTypes.District.PARK:
+				continue
+			if x >= hq.x + 8:
+				terrain[i] = TileTypes.Terrain.WATER
+				road[i] = 0
+				zone[i] = TileTypes.Zone.NONE
+				occupancy[i] = 0.0
+			district[i] = TileTypes.District.WATERFRONT
+			revealed[i] = 1
+			_mark_chunk_active(x, y)
+			seed_waterfront_lots += 1
+	# Midrise Kenney ring: cheb 6–11, R/C lots (CityView._seed_midrise_ring).
+	for y in range(hq.y - 11, hq.y + 12):
+		for x in range(hq.x - 11, hq.x + 12):
+			if not in_bounds(x, y):
+				continue
+			var dx := absi(x - hq.x)
+			var dy := absi(y - hq.y)
+			var cheb := dx if dx > dy else dy
+			if cheb <= 5 or cheb > 11:
+				continue
+			var i := idx(x, y)
+			if terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if road[i] == 1 or service[i] != TileTypes.Service.NONE:
+				continue
+			if district[i] == TileTypes.District.PARK or district[i] == TileTypes.District.WATERFRONT:
+				continue
+			if zone[i] != TileTypes.Zone.RESIDENTIAL and zone[i] != TileTypes.Zone.COMMERCIAL:
+				if zone[i] == TileTypes.Zone.NONE and (x + y) % 2 == 0:
+					zone[i] = TileTypes.Zone.RESIDENTIAL if (x + y) % 4 == 0 else TileTypes.Zone.COMMERCIAL
+					occupancy[i] = rng.randf_range(0.40, 0.56)
+					revealed[i] = 1
+					_mark_chunk_active(x, y)
+				else:
+					continue
+			district[i] = TileTypes.District.MIDRISE
+			seed_midrise_lots += 1
+	if seed_downtown_lots < 20:
+		seed_downtown_lots = 0
+		for y in range(hq.y - 7, hq.y + 8):
+			for x in range(hq.x - 7, hq.x + 8):
+				if not in_bounds(x, y):
+					continue
+				if zone[idx(x, y)] != TileTypes.Zone.NONE:
+					seed_downtown_lots += 1
 
 
 func occupancy_percent() -> float:

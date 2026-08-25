@@ -15,6 +15,7 @@ const WorldRoot = preload("res://scripts/world/world_root.gd")
 const GraphicsPresets = preload("res://scripts/world/graphics_presets.gd")
 const GraphicsSettings = preload("res://scripts/ui/graphics_settings.gd")
 const AudioBed = preload("res://scripts/systems/audio_bed.gd")
+const BenchmarkMode = preload("res://scripts/systems/benchmark.gd")
 
 @onready var deck: Node = $DeckController
 @onready var hud: CanvasLayer = $HUD
@@ -35,6 +36,7 @@ var radial: Control
 var gfx: GraphicsSettings
 
 var audio_bed: AudioBed
+var bench: BenchmarkMode
 
 var paused: bool = false
 var sim_accum: float = 0.0
@@ -107,6 +109,7 @@ func _ready() -> void:
 
 	budget = BudgetSystem.new()
 	sim = SimSystem.new()
+	sim.tutor_active = true
 	advisor = AdvisorSystem.new()
 	tools = ToolSystem.new()
 
@@ -163,6 +166,7 @@ func _ready() -> void:
 	hud.set_paused(false)
 	_boot_graphics()
 	_boot_audio()
+	_boot_benchmark()
 	_update_cursor_visual()
 
 
@@ -190,7 +194,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(dt: float) -> void:
-	if not deck.radial_open:
+	if bench != null and bench.is_running():
+		bench.tick(dt)
+	if not deck.radial_open and not (bench != null and bench.is_blocking()):
 		if camera_rig != null and camera_rig.has_method("apply_input"):
 			camera_rig.apply_input(deck.pan_vector, deck.orbit_vector, deck.zoom_delta, dt)
 
@@ -205,10 +211,10 @@ func _process(dt: float) -> void:
 		if radial.get("sticky_index") != deck.radial_index:
 			radial.set_index(deck.radial_index)
 
-	if deck.painting and not paused and not deck.radial_open:
+	if deck.painting and not paused and not deck.radial_open and not (bench != null and bench.is_blocking()):
 		_try_paint_at(cursor)
 
-	if not paused:
+	if not paused or (bench != null and bench.is_running()):
 		sim_accum += dt
 		while sim_accum >= GameConstants.SIM_TICK_SEC:
 			sim_accum -= GameConstants.SIM_TICK_SEC
@@ -304,8 +310,13 @@ func _resume_play() -> void:
 func _on_paint() -> void:
 	if deck.radial_open:
 		return
+	if bench != null and bench.is_blocking():
+		if bench.is_results():
+			_dismiss_benchmark()
+		return
 	if paused:
-		# Stay paused until View. A paints only when unpaused.
+		# Stay paused until View. A starts Benchmark, never unpauses play.
+		_start_benchmark_from_pause()
 		return
 	_try_paint_at(cursor)
 
@@ -423,6 +434,8 @@ func set_district(district: String) -> void:
 
 
 func _on_gfx_cycle(dir: int) -> void:
+	if bench != null and bench.is_running():
+		return
 	if gfx == null:
 		_boot_graphics()
 	gfx.cycle(dir)
@@ -443,6 +456,11 @@ func _on_brush_cycled(size: int) -> void:
 func _toggle_pause() -> void:
 	if deck.radial_open:
 		return
+	if bench != null and bench.is_running():
+		bench.abort()
+		return
+	if bench != null and bench.is_results():
+		_dismiss_benchmark()
 	paused = not paused
 	hud.set_paused(paused)
 	deck.graphics_focus = paused
@@ -456,6 +474,8 @@ func _toggle_pause() -> void:
 
 func _on_overlay_focus_out() -> void:
 	# QAM / Steam overlay / sleep — stop the sim. Stay paused until View (no auto-resume on FOCUS_IN).
+	if bench != null and bench.is_running():
+		bench.abort()
 	if paused:
 		return
 	paused = true
@@ -467,6 +487,124 @@ func _on_overlay_focus_in() -> void:
 	var vp := get_viewport()
 	if vp:
 		vp.gui_release_focus()
+
+
+func _boot_benchmark() -> void:
+	bench = BenchmarkMode.new()
+	bench.name = "Benchmark"
+	add_child(bench)
+	bench.setup(camera_rig, map, city_view)
+	if bench.has_signal("live_fps"):
+		bench.live_fps.connect(_on_bench_live)
+	if bench.has_signal("finished"):
+		bench.finished.connect(_on_bench_finished)
+	if bench.has_signal("aborted"):
+		bench.aborted.connect(_on_bench_aborted)
+	if deck.has_signal("cancel_pressed"):
+		deck.cancel_pressed.connect(_on_cancel_pressed)
+	call_deferred("_maybe_boot_benchmark")
+
+
+func _maybe_boot_benchmark() -> void:
+	var args: PackedStringArray = OS.get_cmdline_args()
+	for a in OS.get_cmdline_user_args():
+		args.append(a)
+	var env := OS.get_environment("METRO_BENCH").strip_edges().to_lower()
+	var want_smoke := env == "smoke"
+	var want_full := env == "1" or env == "full" or env == "bench"
+	for a in args:
+		if a == "--bench-smoke":
+			want_smoke = true
+		elif a == "--bench":
+			want_full = true
+	if want_smoke:
+		_start_benchmark(true, true)
+	elif want_full:
+		_start_benchmark(true, false)
+
+
+func _start_benchmark_from_pause() -> void:
+	## A from pause starts the path. Does not resume free play.
+	_start_benchmark(false, false)
+
+
+func _start_benchmark(lock_low: bool, p_smoke: bool) -> void:
+	if bench == null:
+		return
+	if bench.is_running():
+		return
+	if lock_low:
+		_lock_bench_low()
+	if hud.has_method("set_bench_results"):
+		hud.set_bench_results(false, {})
+	paused = false
+	hud.set_paused(false)
+	deck.graphics_focus = false
+	var preset := "low"
+	if gfx != null:
+		preset = gfx.name()
+	elif world != null and world.get("graphics_preset") != null:
+		preset = GraphicsPresets.name_of(int(world.graphics_preset))
+	if lock_low:
+		preset = "low"
+	if p_smoke:
+		bench.start_smoke(preset)
+	else:
+		bench.start(preset)
+	if hud.has_method("set_bench_live"):
+		hud.set_bench_live(true, 0.0, 0.0, bench.duration)
+
+
+func _lock_bench_low() -> void:
+	if world != null and world.has_method("apply_graphics_preset"):
+		world.apply_graphics_preset(GraphicsPresets.Id.LOW)
+	if gfx != null:
+		gfx.index = GraphicsPresets.Id.LOW
+	if hud.has_method("set_graphics"):
+		hud.set_graphics(gfx.label() if gfx else "Low")
+
+
+func _on_cancel_pressed() -> void:
+	if bench == null:
+		return
+	if bench.is_running():
+		bench.abort()
+	elif bench.is_results():
+		_dismiss_benchmark()
+
+
+func _on_bench_live(fps: float, elapsed: float, duration: float) -> void:
+	if hud.has_method("set_bench_live"):
+		hud.set_bench_live(true, fps, elapsed, duration)
+
+
+func _on_bench_finished(results: Dictionary) -> void:
+	if hud.has_method("set_bench_live"):
+		hud.set_bench_live(false, 0.0, 0.0, 0.0)
+	if hud.has_method("set_bench_results"):
+		hud.set_bench_results(true, results)
+	paused = true
+	hud.set_paused(true)
+	deck.graphics_focus = true
+
+
+func _on_bench_aborted() -> void:
+	if hud.has_method("set_bench_live"):
+		hud.set_bench_live(false, 0.0, 0.0, 0.0)
+	if hud.has_method("set_bench_results"):
+		hud.set_bench_results(false, {})
+	paused = true
+	hud.set_paused(true)
+	deck.graphics_focus = true
+
+
+func _dismiss_benchmark() -> void:
+	if bench != null:
+		bench.dismiss()
+	if hud.has_method("set_bench_results"):
+		hud.set_bench_results(false, {})
+	if hud.has_method("set_bench_live"):
+		hud.set_bench_live(false, 0.0, 0.0, 0.0)
 
 
 func _on_demand_changed(_r: float, _c: float, _i: float) -> void:
