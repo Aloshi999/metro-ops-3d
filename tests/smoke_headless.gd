@@ -669,6 +669,110 @@ func _init() -> void:
 		ok = false
 		errors.append("Act I completed on idle boot city — charter bar too short")
 
+	## Post-tutor acts: grow / industry / shock / recover. After first-10 only.
+	if camp == null or not (camp is CampaignSystem):
+		ok = false
+		errors.append("campaign does not exist")
+	if not camp.has_method("is_unlocked") or not camp.has_method("acts"):
+		ok = false
+		errors.append("campaign missing is_unlocked / acts")
+	var lock_camp := CampaignSystem.new()
+	if lock_camp.is_unlocked("zone_c") or lock_camp.is_unlocked("zone_i"):
+		ok = false
+		errors.append("C/I unlocked before grow/industry")
+	if not lock_camp.is_unlocked("zone_r") or not lock_camp.is_unlocked("road"):
+		ok = false
+		errors.append("zone_r/road should start unlocked")
+	var lock_adv := AdvisorSystem.new()
+	if not lock_adv.should_block_paint("zone_c", idle_map, lock_camp):
+		ok = false
+		errors.append("advisor did not block locked zone_c")
+	if lock_adv.should_block_paint("zone_r", idle_map, lock_camp):
+		ok = false
+		errors.append("advisor blocked unlocked zone_r")
+	var early_sim := SimSystem.new()
+	early_sim.mass_r = 80.0
+	early_sim.mass_c = 40.0
+	early_sim.happiness = 0.8
+	var early_camp := CampaignSystem.new()
+	early_camp.tick(MapData.new(), BudgetSystem.new(), early_sim)
+	if early_camp.is_unlocked("zone_c") or early_camp.act_grow_done:
+		ok = false
+		errors.append("grow advanced before first-10 tutor")
+	var prog_map := MapData.new()
+	var prog_budget := BudgetSystem.new()
+	var prog_sim := SimSystem.new()
+	prog_sim.tick_count = 1200
+	prog_sim.mass_r = 80.0
+	prog_sim.mass_c = 0.0
+	prog_sim.happiness = 0.30
+	var prog_camp := CampaignSystem.new()
+	prog_sim.campaign = prog_camp
+	var prog_card: Dictionary = prog_camp.tick(prog_map, prog_budget, prog_sim)
+	if not prog_camp.act_grow_done or not prog_camp.is_unlocked("zone_c"):
+		ok = false
+		errors.append("tutor-complete path did not advance grow / unlock zone_c")
+	if prog_camp.is_unlocked("zone_i") or prog_camp.act_industry_done:
+		ok = false
+		errors.append("industry unlocked before C mass + cash")
+	if str(prog_camp.current_act_id()) != "industry":
+		ok = false
+		errors.append("current_act_id after grow is %s not industry" % str(prog_camp.current_act_id()))
+	prog_sim.mass_c = 40.0
+	prog_budget.cash = 30000
+	prog_camp.tick(prog_map, prog_budget, prog_sim)
+	if not prog_camp.act_industry_done or not prog_camp.is_unlocked("zone_i"):
+		ok = false
+		errors.append("industry did not unlock zone_i")
+	if lock_adv.should_block_paint("zone_c", prog_map, prog_camp):
+		ok = false
+		errors.append("advisor still blocks zone_c after grow")
+	prog_sim.happiness = 0.70
+	prog_camp.last_occ = 0.50
+	prog_camp.tick(prog_map, prog_budget, prog_sim)
+	if not prog_camp.act_shock_done or int(prog_sim.disaster_timer) <= 0:
+		ok = false
+		errors.append("campaign shock did not call start_disaster")
+	if str(prog_camp.shock_kind) != "disaster":
+		ok = false
+		errors.append("shock_kind is %s not disaster" % str(prog_camp.shock_kind))
+	prog_sim.disaster_timer = 0
+	prog_sim.event_cooldown = 0
+	prog_sim.happiness = 0.70
+	prog_camp.last_occ = 0.50
+	prog_camp.tick(prog_map, prog_budget, prog_sim)
+	if not prog_camp.act_recover_done or not prog_camp.is_unlocked("trade_recovery"):
+		ok = false
+		errors.append("recover did not unlock trade-recovery bonus")
+	if prog_budget.demand_mult < 1.10:
+		ok = false
+		errors.append("recover demand_mult bonus missing (got %s)" % str(prog_budget.demand_mult))
+	var act_ids: PackedStringArray = PackedStringArray()
+	for a in prog_camp.acts():
+		act_ids.append(str(a.get("id", "")))
+	if act_ids != PackedStringArray(["grow", "industry", "shock", "recover"]):
+		ok = false
+		errors.append("acts() ids are %s" % str(act_ids))
+	## start_war / start_disaster still work on a clean sim (tutor_active default false).
+	var ev_map := MapData.new()
+	var ev_budget := BudgetSystem.new()
+	var ev_sim := SimSystem.new()
+	var ev_war: Dictionary = ev_sim.start_war(ev_budget)
+	if ev_budget.tax_mult >= 1.0 or int(ev_sim.war_timer) <= 0 or not ev_war.has("title"):
+		ok = false
+		errors.append("start_war broken after campaign acts")
+	ev_sim.war_timer = 0
+	ev_sim.event_cooldown = 0
+	ev_budget.tax_mult = 1.0
+	var ev_dis: Dictionary = ev_sim.start_disaster(ev_map, ev_budget)
+	if ev_budget.demand_mult >= 1.0 or int(ev_sim.disaster_timer) <= 0 or not ev_dis.has("title"):
+		ok = false
+		errors.append("start_disaster broken after campaign acts")
+	print("campaign acts grow=%s industry=%s shock=%s recover=%s post=%s" % [
+		prog_camp.act_grow_done, prog_camp.act_industry_done,
+		prog_camp.act_shock_done, prog_camp.act_recover_done, prog_card.get("post_act", "")
+	])
+
 	var view_ps = load("res://scenes/city_view.tscn")
 	if view_ps == null:
 		ok = false
@@ -1160,6 +1264,18 @@ func _init() -> void:
 		if not _tree_is_paused(hx):
 			ok = false
 			errors.append("opening title did not set tree.paused")
+		# A / activate on title Play is not quit.
+		if hx.has_method("activate_focused"):
+			hx.activate_focused()
+		if bool(hx.get("quit_requested")) or bool(hx.get("would_quit")):
+			ok = false
+			errors.append("title Play activate quit")
+		if hx.has_method("is_title_open") and not hx.is_title_open():
+			ok = false
+			errors.append("title Play activate closed title without Play wiring")
+		if hx.get_script():
+			hx.set("quit_requested", false)
+			hx.set("would_quit", false)
 		if hx.has_method("highlight_exit"):
 			hx.highlight_exit()
 		if hx.has_method("focused_action") and str(hx.focused_action()) != "exit":
@@ -1195,16 +1311,18 @@ func _init() -> void:
 		if not _tree_is_paused(hx):
 			ok = false
 			errors.append("opening pause did not set tree.paused")
-		# Confirm on Resume must not unpause (View/Start does).
+		# 0.1.8: A on Resume must unpause. Re-open pause for Exit / FOCUS_IN checks.
 		if hx.has_method("focused_action") and str(hx.focused_action()) == "resume":
 			if hx.has_method("activate_focused"):
 				hx.activate_focused()
-			if not bool(hx.get("paused")) or not _tree_is_paused(hx):
+			if bool(hx.get("paused")) or _tree_is_paused(hx):
 				ok = false
-				errors.append("confirm on Resume unpaused")
+				errors.append("confirm on Resume did not unpause")
 			if bool(hx.get("quit_requested")):
 				ok = false
 				errors.append("confirm on Resume requested quit")
+			if hx.has_method("show_pause"):
+				hx.show_pause()
 		# FOCUS_IN must not auto-resume.
 		if hx.has_method("_notification"):
 			hx._notification(Node.NOTIFICATION_APPLICATION_FOCUS_IN)
@@ -1212,6 +1330,26 @@ func _init() -> void:
 		if not bool(hx.get("paused")) or not _tree_is_paused(hx):
 			ok = false
 			errors.append("FOCUS_IN auto-resumed")
+		# A on Graphics opens the graphics screen (not quit). Resume(0)·Exit(1)·Graphics(2).
+		if hx.has_method("move_menu"):
+			hx.move_menu(1)
+			hx.move_menu(1)
+		if hx.has_method("focused_action") and str(hx.focused_action()) != "graphics":
+			ok = false
+			errors.append("pause Graphics is not two flicks from Resume (got %s)" % str(hx.focused_action() if hx.has_method("focused_action") else "?"))
+		if hx.has_method("activate_focused"):
+			hx.activate_focused()
+		if not (hx.has_method("is_graphics_screen") and hx.is_graphics_screen()):
+			ok = false
+			errors.append("pause Graphics did not open graphics screen")
+		if bool(hx.get("quit_requested")):
+			ok = false
+			errors.append("pause Graphics requested quit")
+		if hx.has_method("show_pause"):
+			hx.show_pause()
+		if hx.get_script():
+			hx.set("quit_requested", false)
+			hx.set("would_quit", false)
 		if hx.has_method("move_menu"):
 			hx.move_menu(1)
 		if hx.has_method("focused_action") and str(hx.focused_action()) != "exit":

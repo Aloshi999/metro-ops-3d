@@ -22,6 +22,8 @@ func evaluate(map: MapData, budget: BudgetSystem, tool_name: String, sim: SimSys
 		var line: String = str(campaign.advisor_line())
 		if line != "":
 			_add(Severity.INFO, line)
+	if campaign != null and campaign.has_method("is_unlocked") and not campaign.is_unlocked(tool_name):
+		_add(Severity.BLOCK, "Advisor: %s is locked — finish the current act." % tool_name)
 	var has_power: bool = map.power_plants.size() > 0
 	var has_water: bool = map.water_towers.size() > 0
 	var zone_count := _count_zones(map)
@@ -140,7 +142,9 @@ func _advise_happiness(sim: SimSystem) -> void:
 		_add(Severity.WARN, "Renters are sour — cover power/water or pull industry off the parks.")
 
 
-func should_block_paint(tool_name: String, map: MapData) -> bool:
+func should_block_paint(tool_name: String, map: MapData, campaign = null) -> bool:
+	if campaign != null and campaign.has_method("is_unlocked") and not campaign.is_unlocked(tool_name):
+		return true
 	if not tool_name.begins_with("zone_"):
 		return false
 	if map.power_plants.is_empty() and _count_zones(map) >= 8:

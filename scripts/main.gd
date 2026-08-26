@@ -194,6 +194,8 @@ func _ready() -> void:
 	_update_cursor_visual()
 	if hud.has_signal("play_pressed") and not hud.play_pressed.is_connected(_on_title_play):
 		hud.play_pressed.connect(_on_title_play)
+	if hud.has_signal("resume_clicked") and not hud.resume_clicked.is_connected(_resume_from_menu):
+		hud.resume_clicked.connect(_resume_from_menu)
 	if hud.has_method("show_title"):
 		hud.show_title()
 		_apply_city_pause(true)
@@ -293,8 +295,6 @@ func _process(dt: float) -> void:
 				hud.set_happiness(sim.happiness)
 			if hud.has_method("set_event_status"):
 				hud.set_event_status(sim.war_timer, sim.disaster_timer)
-			if campaign != null:
-				campaign.tick(map, budget, sim)
 			_refresh_advisor()
 
 
@@ -399,7 +399,7 @@ func _on_paint() -> void:
 			_dismiss_benchmark()
 		return
 	if paused:
-		# Stay paused until View. A confirms the focused item, never unpauses play.
+		# Stay paused until View or A-on-Resume. A confirms the focused item.
 		_on_pause_confirm()
 		return
 	_try_paint_at(cursor)
@@ -409,6 +409,8 @@ func _on_pause_confirm() -> void:
 	if hud == null:
 		return
 	if hud.has_method("is_graphics_screen") and hud.is_graphics_screen():
+		if hud.has_method("activate_focused"):
+			hud.activate_focused()
 		return
 	var id := ""
 	if hud.has_method("confirm_pause_item"):
@@ -418,13 +420,13 @@ func _on_pause_confirm() -> void:
 	if id == "benchmark":
 		_start_benchmark_from_pause()
 	elif id == "resume":
-		pass  # A never unpauses free play. View / Resume signal resumes.
+		_resume_from_menu()
 	elif id == "" and hud.has_method("activate_focused"):
 		hud.activate_focused()
 
 
 func _try_paint_at(tile: Vector2i) -> void:
-	if advisor.should_block_paint(tools.id_name(), map):
+	if advisor.should_block_paint(tools.id_name(), map, campaign):
 		hud.show_event("Advisor Block", "Build power before mass zoning.")
 		_refresh_advisor()
 		return
@@ -902,6 +904,7 @@ func _sync_bench_block() -> void:
 
 func _boot_campaign() -> void:
 	campaign = CampaignSystem.new()
+	sim.campaign = campaign
 	if campaign.has_signal("card_fired"):
 		campaign.card_fired.connect(_on_campaign_card)
 	if campaign.has_signal("goal_changed"):

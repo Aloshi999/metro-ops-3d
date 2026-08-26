@@ -18,6 +18,8 @@ var disaster_timer: int = 0
 var event_cooldown: int = 0
 ## Main sets true in _ready. Smoke never sets it, so start_war still applies at tick 0.
 var tutor_active: bool = false
+## Main assigns CampaignSystem. Tick after budget so acts see live mass/cash.
+var campaign = null
 
 var demand_r: float = GameConstants.RCI_DEMAND_BASE
 var demand_c: float = GameConstants.RCI_DEMAND_BASE
@@ -62,6 +64,8 @@ func tick(map: MapData, budget: BudgetSystem) -> void:
 	_sim_active_chunks(map)
 	_recompute_city_factors(map, budget)
 	budget.tick(map, land_value)
+	if campaign != null and campaign.has_method("tick"):
+		campaign.tick(map, budget, self)
 	tick_done.emit()
 	demand_changed.emit(demand_r, demand_c, demand_i)
 

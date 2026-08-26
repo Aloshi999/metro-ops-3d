@@ -3265,5 +3265,7 @@
     }
   ],
   "audio_bed": "res://assets/city/district_park/audio/bed/park_day.wav",
-  "audio_bed_long": "res://assets/city/district_park/audio/bed/park_day_long.ogg"
+  "audio_bed_long": "res://assets/city/district_park/audio/bed/park_day_long.ogg",
+  "id": "district_park",
+  "kenney_scale": 14.5
 }

@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## Cash HUD, tool strip, RCI, advisor side card, War/Disaster chips, optional FPS.
 ## Root is the Deck SafeArea: anchors full, offsets L48 T48 R-96 B-48.
-## Title + Pause + Graphics screens. Exit is a menu item (request_quit).
+## 0.1.8: same gold focus fill on every menu item. Title Play/Exit. Pause Resume/Exit/Graphics.
 
 const GameConstants = preload("res://scripts/core/game_constants.gd")
 const AdvisorSystem = preload("res://scripts/systems/advisor_system.gd")
@@ -358,9 +358,12 @@ func activate_focused() -> void:
 		elif act == "benchmark":
 			pass
 		else:
-			pass  # Resume item: Start/Menu resumes. Confirm does not quit.
+			# 0.1.8: A / confirm activates Resume (0.1.7 "A never unpauses" overridden).
+			resume_clicked.emit()
+			set_paused(false)
 	elif screen == Screen.GRAPHICS:
-		pass
+		# A keeps the focused row selected; L/R already applied the value.
+		_paint_graphics_rows()
 
 
 
@@ -398,6 +401,7 @@ func show_title() -> void:
 	_set_help(Glyphs.help_title())
 	_apply_title_focus()
 	_apply_menu_pause(true)
+	call_deferred("_apply_title_focus")
 
 
 func hide_title() -> void:
@@ -427,8 +431,10 @@ func show_pause() -> void:
 	_show_pause_items(true)
 	_show_graphics_items(false)
 	_set_help(Glyphs.help_pause())
+	_set_play_chrome(false)
 	_apply_pause_focus()
 	_apply_menu_pause(true)
+	call_deferred("_apply_pause_focus")
 
 
 func show_graphics_screen() -> void:
@@ -441,10 +447,8 @@ func show_graphics_screen() -> void:
 	_set_help(Glyphs.help_graphics())
 	_paint_graphics_rows()
 	graphics_opened.emit()
-	var vp := get_viewport()
-	if vp:
-		vp.gui_release_focus()
 	_apply_menu_pause(true)
+	call_deferred("_paint_graphics_rows")
 
 
 func back_from_menu() -> String:
@@ -491,11 +495,11 @@ func _ensure_title_ui() -> void:
 		box.name = "TitleBox"
 		box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		box.set_anchors_preset(Control.PRESET_CENTER)
-		box.offset_left = -220.0
-		box.offset_top = -160.0
-		box.offset_right = 220.0
-		box.offset_bottom = 160.0
-		box.add_theme_constant_override("separation", 14)
+		box.offset_left = -260.0
+		box.offset_top = -200.0
+		box.offset_right = 260.0
+		box.offset_bottom = 200.0
+		box.add_theme_constant_override("separation", 16)
 		overlay.add_child(box)
 	if box.get_node_or_null("TitleName") == null:
 		var name_l := Label.new()
@@ -552,6 +556,7 @@ func _ensure_pause_menu() -> void:
 			if ch is Control:
 				(ch as Control).unique_name_in_owner = false
 				(ch as Control).visible = false
+				(ch as Control).focus_mode = Control.FOCUS_NONE
 	var title := box.get_node_or_null("PauseTitle") as Label
 	if title == null:
 		title = box.get_node_or_null("PauseRootTitle") as Label
@@ -565,8 +570,7 @@ func _ensure_pause_menu() -> void:
 		box.move_child(title, 0)
 	title.text = "PAUSED"
 	_ensure_menu_button(box, "ResumeButton", "Resume", _on_resume_pressed)
-	if resume_button == null:
-		resume_button = box.get_node_or_null("ResumeButton") as Button
+	resume_button = box.get_node_or_null("ResumeButton") as Button
 	_ensure_menu_button(box, "ExitButton", "Exit", _on_exit_pressed)
 	_ensure_menu_button(box, "GraphicsButton", "Graphics", _on_graphics_pressed)
 	for extra in ["AudioButton", "ControlsButton", "Item_audio", "Item_controls", "Item_benchmark", "Item_resume", "Item_exit", "Item_graphics"]:
@@ -595,8 +599,9 @@ func _ensure_menu_button(box: Node, node_name: String, caption: String, cb: Call
 		b.name = node_name
 		box.add_child(b)
 	b.text = caption
-	b.custom_minimum_size = Vector2(0, 44)
-	b.add_theme_font_size_override("font_size", 22)
+	b.custom_minimum_size = Vector2(0, 56)
+	b.add_theme_font_size_override("font_size", 24)
+	_paint_menu_button(b, false)
 	b.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.focus_mode = Control.FOCUS_ALL
 	b.visible = true
@@ -615,10 +620,20 @@ func _title_overlay() -> Control:
 
 
 func _title_play() -> Button:
+	var box := get_node_or_null("Root/TitleOverlay/TitleBox")
+	if box:
+		var b := box.get_node_or_null("PlayButton") as Button
+		if b:
+			return b
 	return get_node_or_null("%PlayButton") as Button
 
 
 func _title_exit() -> Button:
+	var box := get_node_or_null("Root/TitleOverlay/TitleBox")
+	if box:
+		var b := box.get_node_or_null("TitleExit") as Button
+		if b:
+			return b
 	var b := get_node_or_null("%TitleExit") as Button
 	if b == null:
 		b = get_node_or_null("Root/TitleOverlay/TitleBox/TitleExit") as Button
@@ -626,15 +641,25 @@ func _title_exit() -> Button:
 
 
 func _pause_exit() -> Button:
+	var box := _pause_box()
+	if box:
+		var b := box.get_node_or_null("ExitButton") as Button
+		if b:
+			return b
 	var b := get_node_or_null("%ExitButton") as Button
 	if b == null and pause_overlay:
-		b = pause_overlay.find_child("Item_exit", true, false) as Button
+		b = pause_overlay.find_child("ExitButton", true, false) as Button
 	if b == null:
 		b = find_child("ExitButton", true, false) as Button
 	return b
 
 
 func _graphics_button() -> Button:
+	var box := _pause_box()
+	if box:
+		var b := box.get_node_or_null("GraphicsButton") as Button
+		if b:
+			return b
 	return get_node_or_null("%GraphicsButton") as Button
 
 
@@ -644,8 +669,7 @@ func _apply_title_focus() -> void:
 	_paint_menu_button(play_b, title_index == 0)
 	_paint_menu_button(exit_b, title_index == 1)
 	var target := play_b if title_index == 0 else exit_b
-	if target and target.is_inside_tree():
-		target.grab_focus()
+	_grab_row(target)
 
 
 func _pause_item(node_name: String) -> Button:
@@ -659,10 +683,18 @@ func _pause_item(node_name: String) -> Button:
 	return pause_overlay.find_child(node_name, true, false) as Button
 
 
+func _pause_resume() -> Button:
+	var box := _pause_box()
+	if box:
+		var b := box.get_node_or_null("ResumeButton") as Button
+		if b:
+			return b
+	return get_node_or_null("%ResumeButton") as Button
+
+
 func _apply_pause_focus() -> void:
-	var resume_b := resume_button
-	if resume_b == null:
-		resume_b = get_node_or_null("%ResumeButton") as Button
+	var resume_b := _pause_resume()
+	resume_button = resume_b
 	var exit_b := _pause_exit()
 	var gfx_b := _graphics_button()
 	_paint_menu_button(resume_b, pause_index == 0)
@@ -673,19 +705,55 @@ func _apply_pause_focus() -> void:
 		target = exit_b
 	elif pause_index == 2:
 		target = gfx_b
-	if target and target.is_inside_tree():
-		target.grab_focus()
+	_grab_row(target)
+
+
+func _grab_row(c: Control) -> void:
+	if c == null or not c.is_inside_tree():
+		return
+	c.visible = true
+	c.focus_mode = Control.FOCUS_ALL
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	c.grab_focus()
+	if not c.has_focus():
+		c.call_deferred("grab_focus")
+
+
+func _menu_style(on: bool) -> StyleBoxFlat:
+	## Same selected chrome on every item. Gold fill + 4px ring, not a 1px outline.
+	var s := StyleBoxFlat.new()
+	if on:
+		s.bg_color = Color(1.0, 0.84, 0.14, 1.0)
+		s.border_color = Color(1.0, 1.0, 1.0, 1.0)
+		s.set_border_width_all(4)
+	else:
+		s.bg_color = Color(0.08, 0.10, 0.14, 0.94)
+		s.border_color = Color(0.52, 0.58, 0.68, 0.55)
+		s.set_border_width_all(2)
+	s.set_corner_radius_all(8)
+	s.content_margin_left = 18.0
+	s.content_margin_right = 18.0
+	s.content_margin_top = 12.0
+	s.content_margin_bottom = 12.0
+	return s
 
 
 func _paint_menu_button(b: Button, on: bool) -> void:
+	## One selected style for Play / Exit / Resume / Graphics / gfx rows. No Exit special-case.
 	if b == null:
 		return
+	b.visible = true
 	b.focus_mode = Control.FOCUS_ALL
 	b.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	if on:
-		b.modulate = Color(1.0, 0.95, 0.55, 1.0)
-	else:
-		b.modulate = Color(0.86, 0.90, 0.94, 1.0)
+	b.modulate = Color.WHITE
+	b.custom_minimum_size = Vector2(0, 56)
+	b.add_theme_font_size_override("font_size", 24)
+	var box := _menu_style(on)
+	for key in ["normal", "hover", "pressed", "focus", "disabled"]:
+		b.add_theme_stylebox_override(key, box)
+	var ink := Color(0.08, 0.07, 0.03, 1.0) if on else Color(0.90, 0.93, 0.97, 1.0)
+	for key in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_disabled_color"]:
+		b.add_theme_color_override(key, ink)
 
 
 func _show_pause_items(vis: bool) -> void:
@@ -700,8 +768,7 @@ func _show_pause_items(vis: bool) -> void:
 	if title:
 		title.visible = vis
 		title.text = "PAUSED"
-	if resume_button == null:
-		resume_button = get_node_or_null("%ResumeButton") as Button
+	resume_button = _pause_resume()
 	if resume_button:
 		resume_button.visible = vis
 		resume_button.focus_mode = Control.FOCUS_ALL if vis else Control.FOCUS_NONE
@@ -828,15 +895,16 @@ func _fill_help_chips(pairs: Array) -> void:
 
 
 func _on_play_pressed() -> void:
-	play_pressed.emit()
+	## ui_accept may land on the wrong Button; index + highlight own the action.
+	activate_focused()
 
 
 func _on_graphics_pressed() -> void:
-	show_graphics_screen()
+	activate_focused()
 
 
 func _on_exit_pressed() -> void:
-	request_quit()
+	activate_focused()
 
 
 func _ensure_graphics_menu() -> void:
@@ -893,17 +961,23 @@ func _ensure_graphics_menu() -> void:
 
 
 func _ensure_gfx_row(menu: Control, row_name: String, text: String) -> void:
-	if menu.get_node_or_null(row_name) != null:
+	var n := menu.get_node_or_null(row_name)
+	if n is Button:
 		return
-	var lab := Label.new()
-	lab.name = row_name
-	lab.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lab.focus_mode = Control.FOCUS_NONE
-	lab.add_theme_font_size_override("font_size", 18)
-	lab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lab.text = text
-	lab.unique_name_in_owner = true
-	menu.add_child(lab)
+	if n != null:
+		n.name = row_name + "_old"
+		menu.remove_child(n)
+		n.free()
+	var b := Button.new()
+	b.name = row_name
+	b.text = text
+	b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	b.focus_mode = Control.FOCUS_ALL
+	b.unique_name_in_owner = true
+	if not b.is_in_group("menu_item"):
+		b.add_to_group("menu_item")
+	menu.add_child(b)
+	_paint_menu_button(b, false)
 
 
 func _paint_graphics_rows() -> void:
@@ -915,16 +989,20 @@ func _paint_graphics_rows() -> void:
 	var titles: PackedStringArray = ["Preset", "FPS cap", "FSR"]
 	var nodes: PackedStringArray = ["RowPreset", "RowCap", "RowFsr"]
 	for i in nodes.size():
-		var lab := menu.get_node_or_null(nodes[i]) as Label
-		if lab == null:
+		var row := menu.get_node_or_null(nodes[i])
+		if row == null:
 			continue
 		var mark := "▸ " if i == gfx_row else "  "
-		lab.text = "%s%s     < %s >" % [mark, titles[i], vals[i]]
-		lab.add_theme_font_size_override("font_size", 18)
-		if i == gfx_row:
-			lab.modulate = Color(1.0, 0.95, 0.55, 1.0)
-		else:
-			lab.modulate = Color(0.78, 0.84, 0.90, 1.0)
+		var line := "%s%s     < %s >" % [mark, titles[i], vals[i]]
+		if row is Button:
+			(row as Button).text = line
+			_paint_menu_button(row as Button, i == gfx_row)
+			if i == gfx_row and (row as Button).is_inside_tree():
+				(row as Button).grab_focus()
+		elif row is Label:
+			(row as Label).text = line
+			(row as Label).add_theme_font_size_override("font_size", 24)
+			(row as Label).modulate = Color.WHITE
 
 
 func set_occupancy(pct: float) -> void:
@@ -1010,6 +1088,7 @@ func set_paused(p: bool) -> void:
 		if vp:
 			vp.gui_release_focus()
 		_set_help(Glyphs.help_play())
+		_set_play_chrome(true)
 		_apply_menu_pause(false)
 	# Arm after main.gd has connected — skip boot FOCUS_IN, never pause on advisor.
 	call_deferred("_arm_focus_watch")
@@ -1103,8 +1182,7 @@ func _on_advisor_close_pressed() -> void:
 
 
 func _on_resume_pressed() -> void:
-	# A / Resume row never unpauses. View toggles play.
-	pass
+	activate_focused()
 
 
 func _arm_focus_watch() -> void:

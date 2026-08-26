@@ -2,7 +2,7 @@
   "instance": true,
   "unique_per_lot": false,
   "shared_materials": true,
-  "scale": 14.5,
+  "scale": 1.0,
   "lot_m": 16,
   "model_unit": 1.0,
   "lot_contract": "~1 model unit, 16m lots, instance scale 14.5",
@@ -130,5 +130,8 @@
       "kind": "png"
     }
   ],
-  "note": "Extra-tall Quaternius MegaKit Building_Large_2. NOT Kenney building-skyscraper-a..e."
+  "note": "Building_Large_2 same as downtown. Scale 1.0, 2-lot pad. Not a separate district if already instanced downtown.",
+  "id": "skyline",
+  "quaternius_scale": 1.0,
+  "DISTRICT_DOWNTOWN_SCALE": 1.0
 }

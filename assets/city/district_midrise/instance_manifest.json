@@ -2,7 +2,7 @@
   "instance": true,
   "unique_per_lot": false,
   "shared_materials": true,
-  "scale": 14.5,
+  "scale": 1.0,
   "lot_m": 16,
   "model_unit": 1.0,
   "lot_contract": "~1 model unit, 16m lots, instance scale 14.5",
@@ -1190,5 +1190,23 @@
       "exists": true,
       "kind": "jpg"
     }
-  ]
+  ],
+  "id": "district_midrise",
+  "kenney_scale": 14.5,
+  "building_scale": 1.0,
+  "buildings": [
+    {
+      "id": "Building_Small_1",
+      "path": "res://assets/city/district_midrise/buildings/Building_Small_1.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Building_Medium_2_001",
+      "path": "res://assets/city/district_midrise/buildings/Building_Medium_2_001.gltf",
+      "lots": 1,
+      "scale": 1.0
+    }
+  ],
+  "note": "Exteriors are Quaternius MegaKit Small/Medium (1u=1m, scale 1.0, one 16m lot). Furniture remains Kenney 14.5. Window cards for 190m. Do not invent towers from furniture. Do not use Kenney skyscraper-a..e."
 }

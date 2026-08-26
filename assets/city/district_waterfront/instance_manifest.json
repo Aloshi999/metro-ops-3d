@@ -2,13 +2,13 @@
   "instance": true,
   "unique_per_lot": false,
   "shared_materials": true,
-  "scale": 14.5,
+  "scale": 1.0,
   "lot_m": 16,
   "model_unit": 1.0,
   "lot_contract": "~1 model unit, 16m lots, instance scale 14.5",
   "camera_read": "190m High camera \u2014 interiors are window/cutaway cards, not first-person rooms",
   "district": "waterfront",
-  "note": "Kenney has no waterfront kit. Assembled CC0 dock/shore. No modern boat GLB this pass (pirate kit skipped).",
+  "note": "Poly Haven pier/crane/crates are 1u=1m \u2014 do not apply Kenney 14.5. Kenney pirate dock subset if used is 14.5.",
   "slots": [
     {
       "id": "bridge_stone",
@@ -582,5 +582,8 @@
       "note": "REFERENCE only \u2014 not duplicated from kenney_industrial"
     }
   ],
-  "audio_bed_long": "res://assets/city/district_waterfront/audio/bed/harbor_day_long.ogg"
+  "audio_bed_long": "res://assets/city/district_waterfront/audio/bed/harbor_day_long.ogg",
+  "id": "district_waterfront",
+  "ph_scale": "look_measures_first_glb",
+  "kenney_scale": 14.5
 }

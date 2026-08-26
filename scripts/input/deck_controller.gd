@@ -193,6 +193,10 @@ func _is_menu_nav(event: InputEvent) -> bool:
 		return false
 	if event.is_action("paint") or event.is_action("cancel"):
 		return true
+	if InputMap.has_action("ui_accept") and event.is_action("ui_accept"):
+		return true
+	if InputMap.has_action("confirm") and event.is_action("confirm"):
+		return true
 	if event.is_action("pause_advisor") or event.is_action("view_resume"):
 		return true
 	if event.is_action("pan_up") or event.is_action("pan_down") \
@@ -214,13 +218,46 @@ func _is_menu_nav(event: InputEvent) -> bool:
 	return false
 
 
+func _is_menu_confirm_pressed(event: InputEvent) -> bool:
+	## A / ui_accept / confirm / paint — Deck A is not always mapped as "paint".
+	if event == null:
+		return false
+	if event.is_action_pressed("paint"):
+		return true
+	if InputMap.has_action("ui_accept") and event.is_action_pressed("ui_accept"):
+		return true
+	if InputMap.has_action("confirm") and event.is_action_pressed("confirm"):
+		return true
+	if event is InputEventJoypadButton:
+		var jb := event as InputEventJoypadButton
+		if jb.pressed and jb.button_index == JOY_BUTTON_A:
+			return true
+	return false
+
+
+func _is_menu_confirm_released(event: InputEvent) -> bool:
+	if event == null:
+		return false
+	if event.is_action_released("paint"):
+		return true
+	if InputMap.has_action("ui_accept") and event.is_action_released("ui_accept"):
+		return true
+	if InputMap.has_action("confirm") and event.is_action_released("confirm"):
+		return true
+	if event is InputEventJoypadButton:
+		var jb := event as InputEventJoypadButton
+		if (not jb.pressed) and jb.button_index == JOY_BUTTON_A:
+			return true
+	return false
+
+
 func _route_menu_event(event: InputEvent) -> bool:
 	## Drive the overlay. Returns true if this event was a menu action.
-	if event.is_action_pressed("paint"):
+	if _is_menu_confirm_pressed(event):
 		painting = false
 		paint_pressed.emit()
 		return true
-	if event.is_action_released("paint"):
+	if _is_menu_confirm_released(event):
 		painting = false
 		return true
 	if event.is_action_pressed("pan_up"):
