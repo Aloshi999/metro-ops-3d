@@ -111,6 +111,10 @@ const WALKOUT_TRADE_MULT: float = 0.20
 const WALKOUT_DEMAND_C: float = 0.65
 const WALKOUT_DEMAND_I: float = 0.70
 const WALKOUT_WATERFRONT_C: float = 0.50
+const EMBARGO_TRADE_MULT: float = 0.50
+const FLOOD_CHUNKS: int = 2
+const FLOOD_LAND_MULT: float = 0.92
+const FLOOD_TRADE_MULT: float = 0.80
 const CORRIDOR_ROAD_MULT: float = 0.55
 const BLACKOUT_CHUNK_COUNT: int = 2
 

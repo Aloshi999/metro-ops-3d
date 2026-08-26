@@ -17,6 +17,7 @@ var last_jobs: int = 0
 var last_trade: int = 0
 var last_land: int = 0
 var tax_mult: float = 1.0
+var trade_mult: float = 1.0
 var demand_mult: float = 1.0
 var grace_ticks: int = GameConstants.UPKEEP_GRACE_TICKS
 
@@ -75,7 +76,7 @@ func _tax_income(map: MapData, land_value: float = 0.70) -> float:
 		var ci_mass: float = chunk.com_occ * float(chunk.com_tiles) + chunk.ind_occ * float(chunk.ind_tiles)
 		jobs += ci_mass * GameConstants.JOB_TAX * event_mult
 		## Trade: war embargo is tax_mult; shops' mood is the second real factor.
-		trade += chunk.com_occ * float(chunk.com_tiles) * GameConstants.TRADE_BONUS * tax_mult * op_c
+		trade += chunk.com_occ * float(chunk.com_tiles) * GameConstants.TRADE_BONUS * trade_mult * op_c
 	if rent + jobs + trade <= 0.01:
 		# Fallback if sim has not aggregated yet: tax occupied lots on active chunks.
 		for c2 in map.chunks:
@@ -99,7 +100,7 @@ func _tax_income(map: MapData, land_value: float = 0.70) -> float:
 							land += occ * GameConstants.LAND_VALUE_TAX * land_value * event_mult
 						TileTypes.Zone.COMMERCIAL:
 							jobs += occ * GameConstants.JOB_TAX * event_mult
-							trade += occ * GameConstants.TRADE_BONUS * tax_mult * clampf(chunk2.opinion_c, GameConstants.OPINION_MIN, GameConstants.OPINION_MAX)
+							trade += occ * GameConstants.TRADE_BONUS * trade_mult * clampf(chunk2.opinion_c, GameConstants.OPINION_MIN, GameConstants.OPINION_MAX)
 						TileTypes.Zone.INDUSTRIAL:
 							jobs += occ * GameConstants.JOB_TAX * event_mult
 	last_rent = int(rent)

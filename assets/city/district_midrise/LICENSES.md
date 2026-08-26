@@ -19,4 +19,10 @@
 | Poly Haven `photo_studio_01` | `interiors/window_cards/photo_studio_01_2k.hdr` | https://polyhaven.com/a/photo_studio_01 | CC0 1.0 | `SOURCE_photo_studio_01.txt` |
 | Poly Haven `brick_wall_02` | `textures/brick_wall_02/` | https://polyhaven.com/a/brick_wall_02 | CC0 1.0 | `SOURCE.txt` |
 
-Credit Kenney / Poly Haven appreciated, not required.
+
+| Quaternius Ultimate Buildings Pack (Dec 2019, official Drive) | `buildings/2Story*.gltf` `3Story*` `4Story*` `6Story_Stack` + `textures/Texture_*.png` | https://quaternius.com/packs/ultimatetexturedbuildings.html | CC0 1.0 | `License_Quaternius_UltimateBuildings.txt` |
+| Quaternius Buildings Pack (Jan 2019, official Drive) | `buildings/Building1_*` `Building2_*` `Building3_*` `Building4` | https://quaternius.com/packs/buildings.html | CC0 1.0 | `License_Quaternius_BuildingsPack.txt` |
+| Quaternius Simple Buildings Pack (Aug 2017, official Drive) | `buildings/Bank` `Flat` `Flat2` `Hospital` `Shop` + `textures/Hotel.png` `Shop.png` | https://quaternius.com/packs/simplebuildings.html | CC0 1.0 | `License_Quaternius_SimpleBuildings.txt` |
+| Downtown City MegaKit Standard (Building_Large_2) | `buildings/Building_Large_2.gltf` (textures shared with downtown) | https://quaternius.itch.io/downtown-city-megakit · $0 Standard | CC0 1.0 | downtown `License_Standard.txt` |
+
+Credit Kenney / Poly Haven / Quaternius appreciated, not required.

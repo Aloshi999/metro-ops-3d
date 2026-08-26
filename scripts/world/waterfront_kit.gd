@@ -27,7 +27,12 @@ func load_kit() -> void:
 		"models/Barrel_01/Barrel_01_2k.gltf",
 		"models/barrel_03/barrel_03_2k.gltf",
 		"models/wooden_crate_01/wooden_crate_01_2k.gltf",
+		"models/wooden_crate_02/wooden_crate_02_2k.gltf",
+		"models/wooden_barrels_01/wooden_barrels_01_2k.gltf",
 		"models/lifebuoy/lifebuoy_2k.gltf",
+		"models/life_jacket/life_jacket_2k.gltf",
+		"models/ocean_buoy/ocean_buoy_2k.gltf",
+		"models/lateral_sea_marker/lateral_sea_marker_2k.gltf",
 	]:
 		var path: String = BASE + p
 		if _cache(path, PH_SCALE):

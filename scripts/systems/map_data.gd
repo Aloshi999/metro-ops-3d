@@ -28,6 +28,7 @@ var chunks: Array = []
 var hq: Vector2i = Vector2i(64, 64)
 
 var power_plants: Array[Vector2i] = []
+var blackout_plant: Vector2i = Vector2i(-1, -1)
 var water_towers: Array[Vector2i] = []
 var starter_power_count: int = 0
 var starter_water_count: int = 0
@@ -37,6 +38,8 @@ var seed_downtown_lots: int = 0
 var seed_midrise_lots: int = 0
 var seed_park_lots: int = 0
 var seed_waterfront_lots: int = 0
+var seed_rail_lots: int = 0
+var seed_market_lots: int = 0
 
 
 func _init() -> void:
@@ -295,6 +298,9 @@ func recompute_services() -> void:
 	_stamp_radius(water_towers, GameConstants.WATER_RADIUS, watered)
 	_stamp_one(hq, GameConstants.HQ_SERVICE_RADIUS, powered)
 	_stamp_one(hq, GameConstants.HQ_SERVICE_RADIUS, watered)
+	if blackout_plant.x >= 0:
+		_unstamp_one(blackout_plant, GameConstants.POWER_RADIUS, powered)
+		_stamp_one(hq, GameConstants.HQ_SERVICE_RADIUS, powered)
 	services_changed.emit()
 
 
@@ -315,6 +321,18 @@ func _stamp_one(p: Vector2i, radius: int, field: PackedByteArray, r2: int = -1) 
 			var dy := y - p.y
 			if dx * dx + dy * dy <= r2:
 				field[idx(x, y)] = 1
+
+
+func _unstamp_one(p: Vector2i, radius: int, field: PackedByteArray) -> void:
+	var r2 := radius * radius
+	for y in range(p.y - radius, p.y + radius + 1):
+		for x in range(p.x - radius, p.x + radius + 1):
+			if not in_bounds(x, y):
+				continue
+			var dx := x - p.x
+			var dy := y - p.y
+			if dx * dx + dy * dy <= r2:
+				field[idx(x, y)] = 0
 
 
 func has_road_neighbor(x: int, y: int) -> bool:
@@ -377,6 +395,8 @@ func _seed_district_lots() -> void:
 	seed_park_lots = 0
 	seed_waterfront_lots = 0
 	seed_midrise_lots = 0
+	seed_rail_lots = 0
+	seed_market_lots = 0
 	# Park block west of HQ (CityView._seed_park).
 	for y in range(hq.y + 1, hq.y + 8):
 		for x in range(hq.x - 10, hq.x - 5):
@@ -415,6 +435,54 @@ func _seed_district_lots() -> void:
 			revealed[i] = 1
 			_mark_chunk_active(x, y)
 			seed_waterfront_lots += 1
+	# Rail line south of park/wf (CityView._seed_rail).
+	var rail_y := hq.y + 9
+	for x in range(hq.x - 8, hq.x + 9):
+		if not in_bounds(x, rail_y):
+			continue
+		var dx := absi(x - hq.x)
+		var dy := absi(rail_y - hq.y)
+		var cheb := dx if dx > dy else dy
+		if cheb <= 5:
+			continue
+		var i := idx(x, rail_y)
+		if terrain[i] == TileTypes.Terrain.WATER:
+			continue
+		if service[i] != TileTypes.Service.NONE:
+			continue
+		if district[i] == TileTypes.District.PARK or district[i] == TileTypes.District.WATERFRONT:
+			continue
+		zone[i] = TileTypes.Zone.NONE
+		occupancy[i] = 0.0
+		road[i] = 0
+		district[i] = TileTypes.District.RAIL
+		revealed[i] = 1
+		_mark_chunk_active(x, rail_y)
+		seed_rail_lots += 1
+	# Night market SW plaza (CityView._seed_market).
+	for y in range(hq.y - 2, hq.y + 1):
+		for x in range(hq.x - 9, hq.x - 5):
+			if not in_bounds(x, y):
+				continue
+			var dx2 := absi(x - hq.x)
+			var dy2 := absi(y - hq.y)
+			var cheb2 := dx2 if dx2 > dy2 else dy2
+			if cheb2 <= 5:
+				continue
+			var i2 := idx(x, y)
+			if terrain[i2] == TileTypes.Terrain.WATER:
+				continue
+			if service[i2] != TileTypes.Service.NONE:
+				continue
+			if district[i2] == TileTypes.District.PARK or district[i2] == TileTypes.District.WATERFRONT or district[i2] == TileTypes.District.RAIL:
+				continue
+			zone[i2] = TileTypes.Zone.NONE
+			occupancy[i2] = 0.0
+			road[i2] = 0
+			district[i2] = TileTypes.District.MARKET
+			revealed[i2] = 1
+			_mark_chunk_active(x, y)
+			seed_market_lots += 1
 	# Midrise Kenney ring: cheb 6–11, R/C lots (CityView._seed_midrise_ring).
 	for y in range(hq.y - 11, hq.y + 12):
 		for x in range(hq.x - 11, hq.x + 12):
@@ -430,7 +498,7 @@ func _seed_district_lots() -> void:
 				continue
 			if road[i] == 1 or service[i] != TileTypes.Service.NONE:
 				continue
-			if district[i] == TileTypes.District.PARK or district[i] == TileTypes.District.WATERFRONT:
+			if district[i] == TileTypes.District.PARK or district[i] == TileTypes.District.WATERFRONT or district[i] == TileTypes.District.RAIL or district[i] == TileTypes.District.MARKET:
 				continue
 			if zone[i] != TileTypes.Zone.RESIDENTIAL and zone[i] != TileTypes.Zone.COMMERCIAL:
 				if zone[i] == TileTypes.Zone.NONE and (x + y) % 2 == 0:

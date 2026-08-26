@@ -1206,7 +1206,217 @@
       "path": "res://assets/city/district_midrise/buildings/Building_Medium_2_001.gltf",
       "lots": 1,
       "scale": 1.0
+    },
+    {
+      "id": "Building_Large_2",
+      "path": "res://assets/city/district_midrise/buildings/Building_Large_2.gltf",
+      "lots": 2,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story",
+      "path": "res://assets/city/district_midrise/buildings/2Story.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_2",
+      "path": "res://assets/city/district_midrise/buildings/2Story_2.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Balcony",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Balcony.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Center",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Center.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Columns",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Columns.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Double",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Double.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_GableRoof",
+      "path": "res://assets/city/district_midrise/buildings/2Story_GableRoof.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_RoundRoof",
+      "path": "res://assets/city/district_midrise/buildings/2Story_RoundRoof.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Sidehouse",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Sidehouse.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Sign",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Sign.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Slim",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Slim.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Stairs",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Stairs.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Wide",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Wide.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "2Story_Wide_2Doors",
+      "path": "res://assets/city/district_midrise/buildings/2Story_Wide_2Doors.gltf",
+      "lots": 2,
+      "scale": 1.0
+    },
+    {
+      "id": "3Story_Balcony",
+      "path": "res://assets/city/district_midrise/buildings/3Story_Balcony.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "3Story_Slim",
+      "path": "res://assets/city/district_midrise/buildings/3Story_Slim.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "3Story_Small",
+      "path": "res://assets/city/district_midrise/buildings/3Story_Small.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "4Story",
+      "path": "res://assets/city/district_midrise/buildings/4Story.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "4Story_Center",
+      "path": "res://assets/city/district_midrise/buildings/4Story_Center.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "4Story_Wide_2Doors",
+      "path": "res://assets/city/district_midrise/buildings/4Story_Wide_2Doors.gltf",
+      "lots": 2,
+      "scale": 1.0
+    },
+    {
+      "id": "4Story_Wide_2Doors_Roof",
+      "path": "res://assets/city/district_midrise/buildings/4Story_Wide_2Doors_Roof.gltf",
+      "lots": 2,
+      "scale": 1.0
+    },
+    {
+      "id": "6Story_Stack",
+      "path": "res://assets/city/district_midrise/buildings/6Story_Stack.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Bank",
+      "path": "res://assets/city/district_midrise/buildings/Bank.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Building1_Large",
+      "path": "res://assets/city/district_midrise/buildings/Building1_Large.gltf",
+      "lots": 2,
+      "scale": 1.0
+    },
+    {
+      "id": "Building1_Small",
+      "path": "res://assets/city/district_midrise/buildings/Building1_Small.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Building2_Large",
+      "path": "res://assets/city/district_midrise/buildings/Building2_Large.gltf",
+      "lots": 2,
+      "scale": 1.0
+    },
+    {
+      "id": "Building2_Small",
+      "path": "res://assets/city/district_midrise/buildings/Building2_Small.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Building3_Big",
+      "path": "res://assets/city/district_midrise/buildings/Building3_Big.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Building3_Small",
+      "path": "res://assets/city/district_midrise/buildings/Building3_Small.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Building4",
+      "path": "res://assets/city/district_midrise/buildings/Building4.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Flat",
+      "path": "res://assets/city/district_midrise/buildings/Flat.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Flat2",
+      "path": "res://assets/city/district_midrise/buildings/Flat2.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Hospital",
+      "path": "res://assets/city/district_midrise/buildings/Hospital.gltf",
+      "lots": 1,
+      "scale": 1.0
+    },
+    {
+      "id": "Shop",
+      "path": "res://assets/city/district_midrise/buildings/Shop.gltf",
+      "lots": 1,
+      "scale": 1.0
     }
   ],
-  "note": "Exteriors are Quaternius MegaKit Small/Medium (1u=1m, scale 1.0, one 16m lot). Furniture remains Kenney 14.5. Window cards for 190m. Do not invent towers from furniture. Do not use Kenney skyscraper-a..e."
+  "note": "Exteriors: Quaternius MegaKit Small/Medium/Large (1u=1m) plus official CC0 Ultimate/Buildings/Simple packs (OBJ flattened, 3.0 baked so 1u reads as meters). building_scale 1.0. Furniture remains Kenney 14.5. Window cards for 190m. Do not invent towers from furniture. Do not use Kenney skyscraper-a..e."
 }

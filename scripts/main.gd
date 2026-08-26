@@ -132,6 +132,8 @@ func _ready() -> void:
 	radial.set_open(false)
 
 	deck.paint_pressed.connect(_on_paint)
+	if deck.has_signal("menu_confirm"):
+		deck.menu_confirm.connect(_on_menu_confirm)
 	deck.cycle_next.connect(func(): tools.cycle(1); _refresh_advisor())
 	deck.cycle_prev.connect(func(): tools.cycle(-1); _refresh_advisor())
 	deck.toggle_pause.connect(_toggle_pause)
@@ -202,27 +204,49 @@ func _ready() -> void:
 
 
 
+func _on_menu_confirm() -> void:
+	## Exclusive A / Enter / Space / ui_accept. Always activate the focused row.
+	if hud != null and hud.has_method("activate_focused"):
+		hud.activate_focused()
+
+
 func _sync_menu_exclusive() -> void:
 	## Title / pause / graphics → city input dead. Play / Resume is the only clear.
+	## Must stay true whenever hud.screen != NONE (Deck leak: A paints the city).
 	if deck == null:
 		return
 	var on := false
 	if hud:
-		if hud.has_method("is_menu_open"):
+		var scr = hud.get("screen")
+		if scr != null:
+			on = int(scr) != 0
+		elif hud.has_method("is_menu_open"):
 			on = bool(hud.is_menu_open())
 		else:
 			on = paused
 			if hud.has_method("is_title_open") and hud.is_title_open():
 				on = true
-	if deck.has_method("set_menu_exclusive"):
-		deck.set_menu_exclusive(on)
+	var cur := false
+	if deck.has_method("is_menu_exclusive"):
+		cur = bool(deck.is_menu_exclusive())
 	else:
-		deck.menu_focus = on
-		deck.graphics_focus = on
-		if on:
+		cur = bool(deck.get("menu_focus")) or bool(deck.get("graphics_focus"))
+	if on:
+		if deck.has_method("set_menu_exclusive"):
+			deck.set_menu_exclusive(true)
+		else:
+			deck.menu_focus = true
+			deck.graphics_focus = true
 			deck.pan_vector = Vector2.ZERO
 			deck.orbit_vector = Vector2.ZERO
 			deck.zoom_delta = 0.0
+			deck.painting = false
+	elif cur:
+		if deck.has_method("set_menu_exclusive"):
+			deck.set_menu_exclusive(false)
+		else:
+			deck.menu_focus = false
+			deck.graphics_focus = false
 			deck.painting = false
 
 
@@ -253,6 +277,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(dt: float) -> void:
+	_sync_menu_exclusive()
 	if bench != null and bench.is_running():
 		bench.tick(dt)
 	var menu_up: bool = deck != null and deck.has_method("is_menu_exclusive") and bool(deck.is_menu_exclusive())
@@ -385,6 +410,9 @@ func _on_title_play() -> void:
 
 func _on_paint() -> void:
 	if deck and deck.has_method("is_menu_exclusive") and deck.is_menu_exclusive():
+		# menu_confirm already called activate_focused this press. Compat fallback only.
+		if deck.has_signal("menu_confirm"):
+			return
 		if hud != null and hud.has_method("activate_focused"):
 			hud.activate_focused()
 		return
@@ -675,7 +703,9 @@ func _resume_from_menu() -> void:
 	if hud != null and hud.has_method("is_title_open") and hud.is_title_open():
 		return
 	_apply_city_pause(false)
-	hud.set_paused(false)
+	# activate_focused owns set_paused(false) on Resume. Fallback if HUD still open.
+	if hud != null and hud.has_method("is_menu_open") and hud.is_menu_open():
+		hud.set_paused(false)
 	_refresh_advisor()
 
 

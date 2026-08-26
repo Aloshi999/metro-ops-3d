@@ -369,6 +369,7 @@ func activate_focused() -> void:
 
 func _push_menu_exclusive() -> void:
 	## Tell City Controls a menu is up. Play / hide_title / set_paused(false) clears it.
+	## MUST be true whenever screen != NONE so Deck A cannot paint the city.
 	var on := screen != Screen.NONE
 	var n := get_parent()
 	var d: Node = null
@@ -376,6 +377,10 @@ func _push_menu_exclusive() -> void:
 		d = n.get_node_or_null("DeckController")
 		if d == null and n.get("deck") != null:
 			d = n.deck as Node
+	if d == null and is_inside_tree():
+		var t := get_tree()
+		if t and t.root:
+			d = t.root.find_child("DeckController", true, false)
 	if d == null:
 		return
 	if d.has_method("set_menu_exclusive"):
@@ -399,9 +404,10 @@ func show_title() -> void:
 		paused_label.visible = false
 	_set_play_chrome(false)
 	_set_help(Glyphs.help_title())
+	_claim_visible_menu_buttons()
 	_apply_title_focus()
 	_apply_menu_pause(true)
-	call_deferred("_apply_title_focus")
+	call_deferred("_deferred_title_focus")
 
 
 func hide_title() -> void:
@@ -432,9 +438,10 @@ func show_pause() -> void:
 	_show_graphics_items(false)
 	_set_help(Glyphs.help_pause())
 	_set_play_chrome(false)
+	_claim_visible_menu_buttons()
 	_apply_pause_focus()
 	_apply_menu_pause(true)
-	call_deferred("_apply_pause_focus")
+	call_deferred("_deferred_pause_focus")
 
 
 func show_graphics_screen() -> void:
@@ -445,10 +452,11 @@ func show_graphics_screen() -> void:
 	_show_pause_items(false)
 	_show_graphics_items(true)
 	_set_help(Glyphs.help_graphics())
+	# Do not gui_release_focus — paint the focused gfx row and keep it.
 	_paint_graphics_rows()
 	graphics_opened.emit()
 	_apply_menu_pause(true)
-	call_deferred("_paint_graphics_rows")
+	call_deferred("_deferred_graphics_focus")
 
 
 func back_from_menu() -> String:
@@ -549,14 +557,17 @@ func _ensure_pause_menu() -> void:
 		box.add_theme_constant_override("separation", 10)
 		pause_overlay.add_child(box)
 	box.visible = true
+	_mute_leftover_pause_box()
 	var leftover := pause_overlay.get_node_or_null("PauseBox") as Control
 	if leftover and leftover != box:
 		leftover.visible = false
+		leftover.focus_mode = Control.FOCUS_NONE
 		for ch in leftover.get_children():
 			if ch is Control:
 				(ch as Control).unique_name_in_owner = false
 				(ch as Control).visible = false
 				(ch as Control).focus_mode = Control.FOCUS_NONE
+				(ch as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var title := box.get_node_or_null("PauseTitle") as Label
 	if title == null:
 		title = box.get_node_or_null("PauseRootTitle") as Label
@@ -620,50 +631,23 @@ func _title_overlay() -> Control:
 
 
 func _title_play() -> Button:
-	var box := get_node_or_null("Root/TitleOverlay/TitleBox")
-	if box:
-		var b := box.get_node_or_null("PlayButton") as Button
-		if b:
-			return b
-	return get_node_or_null("%PlayButton") as Button
+	return _find_visible_button("PlayButton")
 
 
 func _title_exit() -> Button:
-	var box := get_node_or_null("Root/TitleOverlay/TitleBox")
-	if box:
-		var b := box.get_node_or_null("TitleExit") as Button
-		if b:
-			return b
-	var b := get_node_or_null("%TitleExit") as Button
-	if b == null:
-		b = get_node_or_null("Root/TitleOverlay/TitleBox/TitleExit") as Button
-	return b
+	return _find_visible_button("TitleExit")
 
 
 func _pause_exit() -> Button:
-	var box := _pause_box()
-	if box:
-		var b := box.get_node_or_null("ExitButton") as Button
-		if b:
-			return b
-	var b := get_node_or_null("%ExitButton") as Button
-	if b == null and pause_overlay:
-		b = pause_overlay.find_child("ExitButton", true, false) as Button
-	if b == null:
-		b = find_child("ExitButton", true, false) as Button
-	return b
+	return _find_visible_button("ExitButton")
 
 
 func _graphics_button() -> Button:
-	var box := _pause_box()
-	if box:
-		var b := box.get_node_or_null("GraphicsButton") as Button
-		if b:
-			return b
-	return get_node_or_null("%GraphicsButton") as Button
+	return _find_visible_button("GraphicsButton")
 
 
 func _apply_title_focus() -> void:
+	_claim_visible_menu_buttons()
 	var play_b := _title_play()
 	var exit_b := _title_exit()
 	_paint_menu_button(play_b, title_index == 0)
@@ -684,15 +668,11 @@ func _pause_item(node_name: String) -> Button:
 
 
 func _pause_resume() -> Button:
-	var box := _pause_box()
-	if box:
-		var b := box.get_node_or_null("ResumeButton") as Button
-		if b:
-			return b
-	return get_node_or_null("%ResumeButton") as Button
+	return _find_visible_button("ResumeButton")
 
 
 func _apply_pause_focus() -> void:
+	_claim_visible_menu_buttons()
 	var resume_b := _pause_resume()
 	resume_button = resume_b
 	var exit_b := _pause_exit()
@@ -708,12 +688,106 @@ func _apply_pause_focus() -> void:
 	_grab_row(target)
 
 
+func _is_under_leftover_pause_box(n: Node) -> bool:
+	var p: Node = n
+	while p:
+		if p.name == "PauseBox":
+			return true
+		p = p.get_parent()
+	return false
+
+
+func _collect_buttons_named(n: Node, node_name: String, out: Array) -> void:
+	if n.name == node_name and n is Button:
+		out.append(n)
+	for c in n.get_children():
+		_collect_buttons_named(c, node_name, out)
+
+
+func _find_visible_button(node_name: String) -> Button:
+	## Prefer the control Allawi actually sees. Skip leftover PauseBox / hidden copies.
+	var hits: Array = []
+	_collect_buttons_named(self, node_name, hits)
+	var fallback: Button = null
+	for item in hits:
+		var b := item as Button
+		if b == null or _is_under_leftover_pause_box(b):
+			continue
+		if fallback == null:
+			fallback = b
+		if b.is_inside_tree() and b.is_visible_in_tree():
+			return b
+	if fallback:
+		return fallback
+	var uniq := get_node_or_null("%" + node_name) as Button
+	if uniq and not _is_under_leftover_pause_box(uniq):
+		return uniq
+	return null
+
+
+func _mute_leftover_pause_box() -> void:
+	if pause_overlay == null:
+		return
+	var live := _pause_box()
+	var leftover := pause_overlay.get_node_or_null("PauseBox") as Control
+	if leftover and leftover != live:
+		leftover.visible = false
+		leftover.focus_mode = Control.FOCUS_NONE
+		leftover.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		for ch in leftover.get_children():
+			if ch is Control:
+				var c := ch as Control
+				c.unique_name_in_owner = false
+				c.visible = false
+				c.focus_mode = Control.FOCUS_NONE
+				c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if live:
+		for extra in ["AudioButton", "ControlsButton", "Item_audio", "Item_controls", "Item_benchmark", "Item_resume", "Item_exit", "Item_graphics", "ItemGraphics"]:
+			var ex := live.get_node_or_null(extra)
+			if ex is Control:
+				(ex as Control).visible = false
+				(ex as Control).focus_mode = Control.FOCUS_NONE
+				(ex as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
+func _claim_visible_menu_buttons() -> void:
+	## Look's tscn buttons may not be in group menu_item — _force_mouse_ignore
+	## then sets FOCUS_NONE and grab_focus is a no-op (no gold box on Deck).
+	_mute_leftover_pause_box()
+	var names: PackedStringArray = ["PlayButton", "TitleExit", "ResumeButton", "ExitButton", "GraphicsButton"]
+	for nm in names:
+		var b := _find_visible_button(nm)
+		if b == null:
+			continue
+		if not b.is_in_group("menu_item"):
+			b.add_to_group("menu_item")
+		b.focus_mode = Control.FOCUS_ALL
+		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.visible = true
+
+
+func _deferred_title_focus() -> void:
+	_claim_visible_menu_buttons()
+	_apply_title_focus()
+
+
+func _deferred_pause_focus() -> void:
+	_claim_visible_menu_buttons()
+	_apply_pause_focus()
+
+
+func _deferred_graphics_focus() -> void:
+	_paint_graphics_rows()
+
+
 func _grab_row(c: Control) -> void:
 	if c == null or not c.is_inside_tree():
 		return
 	c.visible = true
 	c.focus_mode = Control.FOCUS_ALL
 	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if not c.is_in_group("menu_item"):
+		c.add_to_group("menu_item")
 	c.grab_focus()
 	if not c.has_focus():
 		c.call_deferred("grab_focus")
@@ -963,11 +1037,21 @@ func _ensure_graphics_menu() -> void:
 func _ensure_gfx_row(menu: Control, row_name: String, text: String) -> void:
 	var n := menu.get_node_or_null(row_name)
 	if n is Button:
+		var existing := n as Button
+		if not existing.is_in_group("menu_item"):
+			existing.add_to_group("menu_item")
+		existing.focus_mode = Control.FOCUS_ALL
+		existing.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		existing.visible = true
 		return
 	if n != null:
 		n.name = row_name + "_old"
-		menu.remove_child(n)
-		n.free()
+		if n is Control:
+			var oldc := n as Control
+			oldc.visible = false
+			oldc.focus_mode = Control.FOCUS_NONE
+			oldc.unique_name_in_owner = false
+		n.queue_free()
 	var b := Button.new()
 	b.name = row_name
 	b.text = text
@@ -997,8 +1081,8 @@ func _paint_graphics_rows() -> void:
 		if row is Button:
 			(row as Button).text = line
 			_paint_menu_button(row as Button, i == gfx_row)
-			if i == gfx_row and (row as Button).is_inside_tree():
-				(row as Button).grab_focus()
+			if i == gfx_row:
+				_grab_row(row as Button)
 		elif row is Label:
 			(row as Label).text = line
 			(row as Label).add_theme_font_size_override("font_size", 24)

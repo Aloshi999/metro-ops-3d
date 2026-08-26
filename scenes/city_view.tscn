@@ -35,3 +35,8 @@ cast_shadow = 0
 
 [node name="Heatmap" type="Node3D" parent="."]
 
+[node name="Rail" type="Node3D" parent="."]
+
+[node name="Market" type="Node3D" parent="."]
+
+[node name="DowntownStreet" type="Node3D" parent="."]

@@ -11,6 +11,7 @@ const ParkKitGD = preload("res://scripts/world/park_kit.gd")
 const WaterfrontKitGD = preload("res://scripts/world/waterfront_kit.gd")
 const MidriseCardsGD = preload("res://scripts/world/midrise_cards.gd")
 const RailKitGD = preload("res://scripts/world/rail_kit.gd")
+const WorksKitGD = preload("res://scripts/world/works_kit.gd")
 const NightMarketKitGD = preload("res://scripts/world/night_market_kit.gd")
 
 const SUB := "res://assets/city/kenney_suburban/"
@@ -24,6 +25,7 @@ var midrise
 var park
 var waterfront
 var rail
+var works
 var market
 var midrise_cards
 var loaded_count: int = 0
@@ -190,6 +192,8 @@ func load_all() -> void:
 	midrise_cards.load_kit()
 	rail = RailKitGD.new()
 	rail.load_kit()
+	works = WorksKitGD.new()
+	works.load_kit()
 	market = NightMarketKitGD.new()
 	market.load_kit()
 	waterfront = WaterfrontKitGD.new()
@@ -280,7 +284,7 @@ func pick_downtown_building(occupancy: float, lot_index: int) -> Node3D:
 
 
 func pick_midrise_building(occupancy: float, lot_index: int) -> Node3D:
-	## Fail soft — midrise pack has no exterior buildings this pass.
+	## MidriseKit Small/Medium at scale 1.0 when ready. Fail soft otherwise.
 	if midrise == null or not midrise.ready:
 		return null
 	return midrise.pick_building(occupancy, lot_index)
@@ -303,6 +307,13 @@ func pick_rail_piece(kind: String, index: int) -> Node3D:
 	if rail == null or not rail.ready:
 		return null
 	return rail.pick_piece(kind, index)
+
+
+func pick_works_piece(index: int) -> Node3D:
+	## Mesh-callable. Fail soft if the factory pack did not cache.
+	if works == null or not works.ready:
+		return null
+	return works.pick_piece(index)
 
 
 func pick_market_prop(index: int) -> Node3D:

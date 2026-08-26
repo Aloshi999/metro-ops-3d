@@ -15,6 +15,9 @@ var benches: PackedStringArray = PackedStringArray()
 var paths: PackedStringArray = PackedStringArray()
 var statues: PackedStringArray = PackedStringArray()
 var flowers: PackedStringArray = PackedStringArray()
+var rocks: PackedStringArray = PackedStringArray()
+var fences: PackedStringArray = PackedStringArray()
+var bushes: PackedStringArray = PackedStringArray()
 
 
 func load_kit() -> void:
@@ -28,7 +31,10 @@ func load_kit() -> void:
 		"nature/ground_grass.glb", "nature/ground_pathStraight.glb",
 	]
 	var statue_ids := ["nature/statue_obelisk.glb", "nature/statue_column.glb"]
-	var flower_ids := ["nature/flower_purpleA.glb", "nature/flower_yellowA.glb"]
+	var flower_ids := ["nature/flower_purpleA.glb", "nature/flower_yellowA.glb", "nature/flower_redA.glb"]
+	var rock_ids := ["nature/rock_smallA.glb", "nature/rock_largeA.glb", "nature/stone_smallA.glb"]
+	var fence_ids := ["nature/fence_simple.glb", "nature/fence_planks.glb"]
+	var bush_ids := ["nature/plant_bush.glb", "nature/plant_bushLarge.glb"]
 	for p in tree_ids:
 		if _cache(BASE + p):
 			trees.append(BASE + p)
@@ -44,6 +50,15 @@ func load_kit() -> void:
 	for p in flower_ids:
 		if _cache(BASE + p):
 			flowers.append(BASE + p)
+	for p in rock_ids:
+		if _cache(BASE + p):
+			rocks.append(BASE + p)
+	for p in fence_ids:
+		if _cache(BASE + p):
+			fences.append(BASE + p)
+	for p in bush_ids:
+		if _cache(BASE + p):
+			bushes.append(BASE + p)
 	ready = trees.size() >= 2
 	print("[ParkKit] loaded=", loaded_count, " failed=", failed.size(), " ready=", ready, " scale=", SCALE)
 
@@ -125,6 +140,24 @@ func pick_flower(i: int) -> Node3D:
 	if flowers.is_empty():
 		return null
 	return instantiate_shared(flowers[i % flowers.size()])
+
+
+func pick_rock(i: int) -> Node3D:
+	if rocks.is_empty():
+		return null
+	return instantiate_shared(rocks[i % rocks.size()])
+
+
+func pick_fence(i: int) -> Node3D:
+	if fences.is_empty():
+		return null
+	return instantiate_shared(fences[i % fences.size()])
+
+
+func pick_bush(i: int) -> Node3D:
+	if bushes.is_empty():
+		return null
+	return instantiate_shared(bushes[i % bushes.size()])
 
 
 func pick_piece(lot_index: int) -> Node3D:

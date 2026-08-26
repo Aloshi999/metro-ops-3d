@@ -1,45 +1,34 @@
-class_name RailKit
+class_name WorksKit
 extends RefCounted
-## Kenney Train Kit tracks + rolling stock. Shared PackedScenes / shared colormap.
-## Never unique per lot. Scale 14.5. No station building this pass.
-## Curated subset only — do not load the full 103-mesh pack at boot.
+## Kenney Factory Kit hero cache. Shared PackedScenes / shared colormap.
+## Never unique per lot. Scale 14.5. Curated subset only — skip arrows/details.
 
 const GameConstants = preload("res://scripts/core/game_constants.gd")
 
-const BASE := "res://assets/city/district_rail/"
-const MODELS := BASE + "models/"
-const KIT := "res://assets/city/kits/kenney_train-kit/"
+const BASE := "res://assets/city/district_works/"
+const KIT := "res://assets/city/kits/kenney_factory-kit/"
 const MANIFEST_PATH := BASE + "instance_manifest.json"
 
-const TRACK_IDS: Array[String] = [
-	"railroad-straight",
-	"railroad-curve",
-	"railroad-corner-small",
-	"railroad-corner-large",
-	"railroad-rail-straight",
-	"railroad-rail-curve",
-	"railroad-straight-bend",
-	"track",
-	"track-detailed",
-	"track-single",
-	"spline-track",
-]
-const TRAIN_IDS: Array[String] = [
-	"train-locomotive-a",
-	"train-locomotive-passenger-a",
-	"train-diesel-a",
-	"train-electric-subway-a",
-	"train-electric-city-a",
-	"train-tram-modern",
-	"train-carriage-box",
-	"train-carriage-container-red",
-	"train-carriage-flatbed",
-	"train-carriage-tank",
-]
-const LOT_TRACK_IDS: Array[String] = [
-	"track",
-	"track-detailed",
-	"track-single",
+## Factory buildings / hoppers (tanks) / machines / cranes / conveyors. Not arrows/buttons/cogs.
+const HERO_IDS: Array[String] = [
+	"structure-high",
+	"structure-tall",
+	"structure-medium",
+	"structure-yellow-high",
+	"structure-yellow-tall",
+	"structure-yellow-medium",
+	"hopper-high-round",
+	"hopper-high-square",
+	"hopper-round",
+	"machine-fortified",
+	"machine",
+	"machine-window",
+	"crane",
+	"crane-lift",
+	"conveyor-long",
+	"conveyor-long-sides",
+	"box-large",
+	"scanner-high",
 ]
 
 var ready: bool = false
@@ -49,17 +38,13 @@ var skipped: PackedStringArray = []
 var piece_scale: float = GameConstants.BUILDING_SCALE
 
 var _scenes: Dictionary = {}
-var _tracks: Array[String] = []
-var _trains: Array[String] = []
+var _heroes: Array[String] = []
 
 
 func load_kit() -> void:
-	_tracks.clear()
-	_trains.clear()
+	_heroes.clear()
 	var want: Dictionary = {}
-	for id in TRACK_IDS:
-		want[id] = true
-	for id in TRAIN_IDS:
+	for id in HERO_IDS:
 		want[id] = true
 	if FileAccess.file_exists(MANIFEST_PATH):
 		var f := FileAccess.open(MANIFEST_PATH, FileAccess.READ)
@@ -68,7 +53,7 @@ func load_kit() -> void:
 			f.close()
 			if typeof(data) == TYPE_DICTIONARY:
 				if bool(data.get("unique_per_lot", false)):
-					push_warning("[RailKit] unique_per_lot is true; instancing anyway shared")
+					push_warning("[WorksKit] unique_per_lot is true; instancing anyway shared")
 				var slots = data.get("meshes", data.get("slots", []))
 				if typeof(slots) == TYPE_ARRAY:
 					for slot in slots:
@@ -81,18 +66,12 @@ func load_kit() -> void:
 						if sid.is_empty() or want.has(sid):
 							continue
 						skipped.append(sid)
-	for id in TRACK_IDS:
+	for id in HERO_IDS:
 		var p := _cache_id(id)
 		if not p.is_empty():
-			_tracks.append(p)
-	for id in TRAIN_IDS:
-		var p := _cache_id(id)
-		if not p.is_empty():
-			_trains.append(p)
-	var track_ok := _tracks.size()
-	var train_ok := _trains.size()
-	ready = track_ok >= 1 and train_ok >= 1
-	print("[RailKit] loaded=", loaded_count, " failed=", failed.size(), " skipped=", skipped.size(), " ready=", ready, " scale=", piece_scale, " tracks=", track_ok, " trains=", train_ok)
+			_heroes.append(p)
+	ready = _heroes.size() >= 4
+	print("[WorksKit] loaded=", loaded_count, " failed=", failed.size(), " ready=", ready, " scale=", piece_scale)
 
 
 func _path_usable(path: String) -> bool:
@@ -107,13 +86,9 @@ func _path_usable(path: String) -> bool:
 
 
 func _resolve(id: String) -> String:
-	## Prefer manifest kit path; fall back to district_rail/models/ if the kit file is missing.
 	var kit_path := KIT + id + ".glb"
-	var models_path := MODELS + id + ".glb"
 	if _path_usable(kit_path):
 		return kit_path
-	if _path_usable(models_path):
-		return models_path
 	return kit_path
 
 
@@ -122,13 +97,6 @@ func _cache_id(id: String) -> String:
 	_cache(primary)
 	if _scenes.has(primary):
 		return primary
-	var kit_path := KIT + id + ".glb"
-	var models_path := MODELS + id + ".glb"
-	var alt := models_path if primary == kit_path else kit_path
-	if alt != primary:
-		_cache(alt)
-		if _scenes.has(alt):
-			return alt
 	return ""
 
 
@@ -180,31 +148,14 @@ func instantiate_shared(path: String, scale: float) -> Node3D:
 	var wrap := Node3D.new()
 	wrap.name = path.get_file().get_basename()
 	wrap.add_child(n)
-	# Kenney railroad-* bake node translation y=-1. Cancel so scale 14.5 sits on the lot.
-	if path.get_file().begins_with("railroad") and n is Node3D:
-		var nn := n as Node3D
-		if nn.position.y < -0.25:
-			nn.position.y += 1.0
 	wrap.scale = Vector3(scale, scale, scale)
 	return wrap
 
 
-func pick_piece(kind: String, index: int) -> Node3D:
+func pick_piece(index: int) -> Node3D:
 	if not ready:
 		return null
-	var k := kind.to_lower()
-	var arr: Array[String] = []
-	if k == "train" or k == "locomotive" or k == "carriage" or k == "tram":
-		arr = _live(_trains)
-	elif k == "lot" or k == "lot_track" or k == "straight":
-		arr = _lot_tracks()
-		if arr.is_empty():
-			arr = _live(_tracks)
-	elif k == "track" or k == "rail" or k == "railroad":
-		arr = _live(_tracks)
-	else:
-		arr = _live(_tracks)
-		arr.append_array(_live(_trains))
+	var arr := _live(_heroes)
 	if arr.is_empty():
 		return null
 	var path: String = arr[posmod(index, arr.size())]
@@ -212,29 +163,6 @@ func pick_piece(kind: String, index: int) -> Node3D:
 	if n:
 		n.rotate_y(float((index * 17) % 4) * PI * 0.5)
 	return n
-
-
-func pick_lot_track(index: int) -> Node3D:
-	## 1×1 Kenney track tiles (lot-sized). No random yaw — caller aligns the line.
-	if not ready:
-		return null
-	var arr := _lot_tracks()
-	if arr.is_empty():
-		arr = _live(_tracks)
-	if arr.is_empty():
-		return null
-	return instantiate_shared(arr[posmod(index, arr.size())], piece_scale)
-
-
-func _lot_tracks() -> Array[String]:
-	var out: Array[String] = []
-	for p in _tracks:
-		if not _scenes.has(p):
-			continue
-		var id := p.get_file().get_basename()
-		if LOT_TRACK_IDS.has(id):
-			out.append(p)
-	return out
 
 
 func _live(arr: Array[String]) -> Array[String]:

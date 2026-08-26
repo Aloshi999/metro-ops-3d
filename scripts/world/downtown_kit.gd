@@ -24,6 +24,35 @@ var _street_t: String = BASE + "Street_TIntersection.gltf"
 var _street_cross: String = BASE + "Street_4WayIntersection.gltf"
 var _street_curve: String = BASE + "Street_Curve_2Lane.gltf"
 var _street_end: String = BASE + "Street_2Lane_noSidewalk.gltf"
+const PROPS := "res://assets/city/district_downtown/props/"
+## Quaternius / MegaKit / PH street dressing. Scale 1.0. Parked/static only.
+var _cars: Array[String] = [
+	PROPS + "car_Cop.glb",
+	PROPS + "car_NormalCar1.glb",
+	PROPS + "car_NormalCar2.glb",
+	PROPS + "car_SUV.glb",
+	PROPS + "car_SportsCar.glb",
+	PROPS + "car_SportsCar2.glb",
+	PROPS + "car_Taxi.glb",
+	PROPS + "transit_Taxi.glb",
+	PROPS + "transit_Bus.glb",
+	PROPS + "transit_Ambulance.glb",
+	PROPS + "transit_SchoolBus.glb",
+]
+var _street_props: Array[String] = [
+	PROPS + "Prop_Bollard.gltf",
+	PROPS + "Prop_Planter_Single.gltf",
+	PROPS + "Prop_ManholeCover.gltf",
+	PROPS + "Prop_Drain.gltf",
+	PROPS + "Prop_ACUnit.gltf",
+	PROPS + "transit_TrafficCone.glb",
+	PROPS + "transit_TrafficLight.glb",
+	PROPS + "transit_TrafficSign1.glb",
+	PROPS + "polyhaven_street_lamp_01/street_lamp_01_2k.gltf",
+	PROPS + "polyhaven_painted_wooden_bench/painted_wooden_bench_2k.gltf",
+	PROPS + "polyhaven/fire_hydrant/fire_hydrant_2k.gltf",
+	PROPS + "polyhaven/concrete_road_barrier/concrete_road_barrier_2k.gltf",
+]
 
 
 func load_kit() -> void:
@@ -38,6 +67,10 @@ func load_kit() -> void:
 				if bool(data.get("unique_per_lot", false)):
 					push_warning("[DowntownKit] unique_per_lot is true; instancing anyway shared")
 	for p in [_small, _medium, _large, _street_straight, _street_t, _street_cross, _street_curve, _street_end]:
+		_cache(p)
+	for p in _cars:
+		_cache(p)
+	for p in _street_props:
 		_cache(p)
 	ready = _scenes.has(_small) and _scenes.has(_medium) and _scenes.has(_large)
 	print("[DowntownKit] loaded=", loaded_count, " failed=", failed.size(), " ready=", ready, " bscale=", building_scale, " sscale=", street_scale)
@@ -121,6 +154,10 @@ func pick_building(occupancy: float, lot_index: int) -> Node3D:
 	var n := instantiate_shared(path, building_scale)
 	if n:
 		n.rotate_y(float((lot_index * 17) % 4) * PI * 0.5)
+		if path == _large:
+			n.set_meta("downtown_lots", 2)
+		else:
+			n.set_meta("downtown_lots", 1)
 	return n
 
 
@@ -188,3 +225,23 @@ func instantiate_street(mask: int) -> Node3D:
 	if n:
 		n.rotate_y(yaw)
 	return n
+
+
+func pick_car(index: int) -> Node3D:
+	var live: Array[String] = []
+	for p in _cars:
+		if _scenes.has(p):
+			live.append(p)
+	if live.is_empty():
+		return null
+	return instantiate_shared(live[posmod(index, live.size())], building_scale)
+
+
+func pick_street_prop(index: int) -> Node3D:
+	var live: Array[String] = []
+	for p in _street_props:
+		if _scenes.has(p):
+			live.append(p)
+	if live.is_empty():
+		return null
+	return instantiate_shared(live[posmod(index, live.size())], building_scale)

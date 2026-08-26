@@ -1,33 +1,30 @@
 class_name CampaignSystem
 extends RefCounted
-## Act I First District (tutor-era charter) + post-tutor acts (grow / industry / shock / recover).
-## Aggregate sim only. Unlocks gate C/I paint. Shocks reuse SimSystem.start_disaster.
+## Act I (First District) + post-tutor Acts II–IV.
+## Drop in after 0.1.8 tag. Same signals/methods main already wires.
+## Aggregate only. No walkers. Shocks reuse SimSystem.start_war / start_disaster.
 
 signal card_fired(title: String, body: String)
 signal goal_changed(card: Dictionary)
 
-const ACT_ID := "act_i"
+const ACT_I := "act_i"
+const ACT_II := "act_ii"
+const ACT_III := "act_iii"
+const ACT_IV := "act_iv"
+
+const ACT_ID := ACT_I
 const ACT_TITLE := "Act I — First District"
 const PAINT_GOAL := 24
 const CASH_FLOOR := 20000
 const OCC_HOLD := 0.40
-## Matches SimSystem.density_unlock_tier() midrise gate — the long charter bar.
 const MASS_CHARTER := 1100.0
 
-## Post-tutor act ids. Not act_ii — next_act_id() stays the Act I charter hook.
-const ACT_GROW := "grow"
-const ACT_INDUSTRY := "industry"
-const ACT_SHOCK := "shock"
-const ACT_RECOVER := "recover"
-
-const GROW_R_MASS := 48.0
-const INDUSTRY_C_MASS := 24.0
-const INDUSTRY_CASH := 22000
-const SHOCK_OCC := 0.35
-const SHOCK_HAPPINESS := 0.42
-const RECOVER_OCC := 0.28
-const RECOVER_HAPPINESS := 0.40
-const RECOVERY_DEMAND := 1.12
+const ACT_II_COM_MASS := 40.0
+const ACT_III_IND_MASS := 30.0
+const ACT_III_CASH := 18000
+const ACT_IV_HAPPY := 0.42
+const ACT_IV_MASS := 400.0
+const RECOVER_OCC := 0.35
 
 var paints: int = 0
 var complete: bool = false
@@ -38,19 +35,14 @@ var last_mass: float = 0.0
 var last_occ: float = 0.0
 var last_cash: int = 0
 
-var last_tutor_done: bool = false
-var last_mass_r: float = 0.0
-var last_mass_c: float = 0.0
-var last_happiness: float = 0.0
-var act_grow_done: bool = false
-var act_industry_done: bool = false
-var act_shock_done: bool = false
-var act_recover_done: bool = false
+var act_ii_done: bool = false
+var act_iii_done: bool = false
+var act_iv_done: bool = false
 var shock_fired: bool = false
-var shock_kind: String = ""
-var shock_occ_at_fire: float = 0.0
-var recovery_bonus: bool = false
-var last_act_line: String = "Grow homes first — Commercial unlocks when R mass holds."
+var recover_done: bool = false
+var unlock_c: bool = true
+var unlock_i: bool = true
+var last_act_id: String = ACT_I
 
 
 func note_paint() -> void:
@@ -59,31 +51,11 @@ func note_paint() -> void:
 
 
 func evaluate(mass: float, occupancy_01: float, cash: int) -> Dictionary:
-	## Pure evaluate — smoke can inject numbers. Tick() calls this from live sim.
 	last_mass = mass
 	last_occ = clampf(occupancy_01, 0.0, 1.0)
 	last_cash = cash
 	_maybe_survey()
-	var session_ok := paints >= PAINT_GOAL and last_occ >= OCC_HOLD and cash >= CASH_FLOOR
-	if session_ok and not milestone_solvent:
-		milestone_solvent = true
-		card_fired.emit(
-			"District Holds",
-			"Treasury solvent, occupancy holding. Keep growing toward the midrise charter."
-		)
-	var charter_ok := mass >= MASS_CHARTER
-	if charter_ok and not charter_unlocked:
-		charter_unlocked = true
-		card_fired.emit(
-			"Midrise Charter",
-			"Occupied mass crossed the midrise gate. The ring can grow — later acts wait."
-		)
-	if charter_ok and session_ok and not complete:
-		complete = true
-		card_fired.emit(
-			"Act I — First District",
-			"Charter signed. Downtown stands. Acts II–IV stay locked until the city can last 50 hours."
-		)
+	_eval_act_i(cash)
 	var card := goal_card()
 	goal_changed.emit(card)
 	return card
@@ -96,98 +68,114 @@ func tick(map, budget, sim) -> Dictionary:
 	var mass := 0.0
 	if sim != null:
 		mass = float(sim.mass_r) + float(sim.mass_c) + float(sim.mass_i)
-		last_mass_r = float(sim.mass_r)
-		last_mass_c = float(sim.mass_c)
-		last_happiness = float(sim.happiness)
 	var cash := 0
 	if budget != null:
 		cash = int(budget.cash)
-	var card := evaluate(mass, occ, cash)
-	last_tutor_done = sim != null and sim.has_method("first_ten_complete") and bool(sim.first_ten_complete())
-	if last_tutor_done:
-		_advance_acts(map, budget, sim)
-		card = goal_card()
-		goal_changed.emit(card)
+	_eval_act_i(cash)
+	if sim != null and sim.has_method("first_ten_complete") and bool(sim.first_ten_complete()):
+		_eval_post_tutor(map, budget, sim)
+	last_mass = mass
+	last_occ = clampf(occ, 0.0, 1.0)
+	last_cash = cash
+	var card := goal_card()
+	goal_changed.emit(card)
 	return card
 
 
+func _eval_act_i(cash: int) -> void:
+	_maybe_survey()
+	var session_ok := paints >= PAINT_GOAL and last_occ >= OCC_HOLD and cash >= CASH_FLOOR
+	if session_ok and not milestone_solvent:
+		milestone_solvent = true
+		card_fired.emit(
+			"District Holds",
+			"Treasury solvent, occupancy holding. Keep growing toward the midrise charter."
+		)
+	var charter_ok := last_mass >= MASS_CHARTER
+	if charter_ok and not charter_unlocked:
+		charter_unlocked = true
+		card_fired.emit(
+			"Midrise Charter",
+			"Occupied mass crossed the midrise gate. The ring can grow — later acts wait for the first-10 tutor."
+		)
+	if charter_ok and session_ok and not complete:
+		complete = true
+		card_fired.emit(
+			"Act I — First District",
+			"Charter signed. Downtown stands. Acts II–IV open after the first-10 tutor."
+		)
+		last_act_id = ACT_I
+
+
+func _eval_post_tutor(map, budget, sim) -> void:
+	## Soft-gate C/I only after tutor so smoke + first-10 stay unlocked.
+	if not unlock_c:
+		unlock_c = false
+	if not act_ii_done:
+		unlock_c = complete
+	if not act_iii_done:
+		unlock_i = act_ii_done
+	if complete and not act_ii_done:
+		unlock_c = true
+		if float(sim.mass_c) >= ACT_II_COM_MASS or float(sim.mass_r) >= 80.0:
+			act_ii_done = true
+			last_act_id = ACT_II
+			card_fired.emit(
+				"Act II — Shop Streets",
+				"Commerce charter. Commercial is the jobs lever — keep it on roads."
+			)
+	if act_ii_done and not act_iii_done:
+		unlock_i = true
+		if float(sim.mass_i) >= ACT_III_IND_MASS or (last_cash >= ACT_III_CASH and float(sim.mass_c) >= ACT_II_COM_MASS * 0.5):
+			act_iii_done = true
+			last_act_id = ACT_III
+			card_fired.emit(
+				"Act III — Smoke Stacks",
+				"Industry charter. Jobs rise, renters hate the smoke — watch pollution opinion."
+			)
+	if act_iii_done and not shock_fired and not _event_busy(sim):
+		var happy := 0.5
+		if "happiness" in sim:
+			happy = float(sim.happiness)
+		var mass := float(sim.mass_r) + float(sim.mass_c) + float(sim.mass_i)
+		if happy >= ACT_IV_HAPPY or mass >= ACT_IV_MASS:
+			shock_fired = true
+			var info: Dictionary = {}
+			if sim.has_method("start_disaster") and map != null and budget != null:
+				info = sim.start_disaster(map, budget)
+			if info.is_empty():
+				info = {"title": "Act IV — Shock", "body": "The district takes a hit. Rebuild services."}
+			card_fired.emit(str(info.get("title", "Act IV — Shock")), "Act IV shock. " + str(info.get("body", "")))
+			last_act_id = ACT_IV
+	if shock_fired and not recover_done and not _event_busy(sim):
+		if last_occ >= RECOVER_OCC:
+			recover_done = true
+			act_iv_done = true
+			if budget != null:
+				budget.tax_mult = minf(1.0, float(budget.tax_mult) + 0.08)
+			card_fired.emit(
+				"Act IV — Recovered",
+				"Services back. Trade eases. The city held."
+			)
+
+
+func _event_busy(sim) -> bool:
+	if sim == null:
+		return false
+	return int(sim.war_timer) > 0 or int(sim.disaster_timer) > 0
+
+
 func is_unlocked(tool_id: String) -> bool:
+	## During first-10 / before Act I charter, do not soft-lock tools (smoke + tutor).
+	if not complete:
+		return true
 	match tool_id:
 		"zone_c":
-			return act_grow_done
+			return unlock_c
 		"zone_i":
-			return act_industry_done
-		"trade_recovery":
-			return recovery_bonus
+			return unlock_i
 		_:
 			return true
-
-
-func acts() -> Array:
-	return [
-		{
-			"id": ACT_GROW,
-			"title": "Grow",
-			"unlocks": ["zone_c"],
-			"shock": "",
-			"done": act_grow_done,
-			"line": "Grow homes — Commercial unlocks when R occupancy mass holds.",
-		},
-		{
-			"id": ACT_INDUSTRY,
-			"title": "Industry",
-			"unlocks": ["zone_i"],
-			"shock": "",
-			"done": act_industry_done,
-			"line": "Shops need factories — Industrial unlocks after C mass + cash.",
-		},
-		{
-			"id": ACT_SHOCK,
-			"title": "Shock",
-			"unlocks": [],
-			"shock": "disaster",
-			"done": act_shock_done,
-			"line": "City is alive — a disaster shock is coming. Rebuild when it hits.",
-		},
-		{
-			"id": ACT_RECOVER,
-			"title": "Recover",
-			"unlocks": ["trade_recovery"],
-			"shock": "",
-			"done": act_recover_done,
-			"line": "Shock ended — hold occupancy to unlock the trade-recovery bonus.",
-		},
-	]
-
-
-func current_act_id() -> String:
-	if not last_tutor_done:
-		return ACT_ID
-	if not act_grow_done:
-		return ACT_GROW
-	if not act_industry_done:
-		return ACT_INDUSTRY
-	if not act_shock_done:
-		return ACT_SHOCK
-	if not act_recover_done:
-		return ACT_RECOVER
-	return ""
-
-
-func act_done(id: String) -> bool:
-	match id:
-		ACT_GROW:
-			return act_grow_done
-		ACT_INDUSTRY:
-			return act_industry_done
-		ACT_SHOCK:
-			return act_shock_done
-		ACT_RECOVER:
-			return act_recover_done
-		ACT_ID:
-			return complete
-		_:
-			return false
 
 
 func goal_card() -> Dictionary:
@@ -195,11 +183,25 @@ func goal_card() -> Dictionary:
 	var p_occ := clampf(last_occ / OCC_HOLD, 0.0, 1.0)
 	var p_cash := 1.0 if last_cash >= CASH_FLOOR else clampf(float(maxi(0, last_cash)) / float(CASH_FLOOR), 0.0, 1.0)
 	var p_mass := clampf(last_mass / MASS_CHARTER, 0.0, 1.0)
-	## Charter is the long bar; session floor is the short one. Act I progress is the min of charter and session.
 	var session := (p_paint + p_occ + p_cash) / 3.0
 	var progress := minf(p_mass, session) if not complete else 1.0
 	if complete:
 		progress = 1.0
+	if act_iv_done:
+		progress = 1.0
+	elif shock_fired:
+		progress = 0.85
+	elif act_iii_done:
+		progress = 0.7
+	elif act_ii_done:
+		progress = 0.55
+	var title := ACT_TITLE
+	if last_act_id == ACT_II:
+		title = "Act II — Shop Streets"
+	elif last_act_id == ACT_III:
+		title = "Act III — Smoke Stacks"
+	elif last_act_id == ACT_IV:
+		title = "Act IV — Shock + Recover"
 	var body := "Paint %d/%d lots · Occ %.0f%% / %.0f%% · $%s / $%s\nCharter mass %.0f / %.0f%s\nLandmarks park · waterfront · midrise  ·  heatmap" % [
 		paints, PAINT_GOAL,
 		last_occ * 100.0, OCC_HOLD * 100.0,
@@ -207,28 +209,40 @@ func goal_card() -> Dictionary:
 		last_mass, MASS_CHARTER,
 		" — COMPLETE" if complete else "",
 	]
+	if complete:
+		body += "\nII shops %s · III industry %s · IV shock %s / recover %s" % [
+			"done" if act_ii_done else "open",
+			"done" if act_iii_done else "locked",
+			"fired" if shock_fired else "armed",
+			"done" if recover_done else "wait",
+		]
 	return {
-		"title": ACT_TITLE,
+		"title": title,
 		"body": body,
 		"progress": progress,
 		"complete": complete,
-		"act_id": ACT_ID,
+		"act_id": last_act_id,
 		"charter": charter_unlocked,
 		"paints": paints,
 		"mass": last_mass,
-		"post_act": current_act_id() if last_tutor_done else "",
-		"grow": act_grow_done,
-		"industry": act_industry_done,
-		"shock": act_shock_done,
-		"recover": act_recover_done,
+		"act_ii": act_ii_done,
+		"act_iii": act_iii_done,
+		"act_iv": act_iv_done,
+		"shock": shock_fired,
 	}
 
 
 func advisor_line() -> String:
-	if last_tutor_done:
-		return last_act_line
+	if act_iv_done:
+		return "Acts I–IV done. City held the shock. Grow the ring."
+	if shock_fired and not recover_done:
+		return "Act IV: rebuild power/water/roads. Hold occupancy."
+	if act_iii_done:
+		return "Act IV armed — a war/disaster shock will hit when the district is alive."
+	if act_ii_done:
+		return "Act III: paint Industrial beside roads. Jobs now, smoke later."
 	if complete:
-		return "Act I chartered — midrise ring unlocked. Later acts wait."
+		return "Act I chartered. After first-10: grow shops (Act II), then industry (Act III)."
 	if last_mass < 200.0 and paints < 8:
 		return "Act I: grow the first district. Heatmap reads land value and occupancy."
 	return "Act I: grow mass to %.0f (now %.0f) · paint %d/%d · hold occ + cash." % [
@@ -237,70 +251,17 @@ func advisor_line() -> String:
 
 
 func next_act_id() -> String:
-	## Honest: Act I charter has no Act II id. Post-tutor acts use current_act_id().
-	if complete:
+	if act_iv_done:
 		return ""
-	return ACT_ID
-
-
-func _advance_acts(map, budget, sim) -> void:
-	## One act per tick. Progression starts only after first-10 tutor.
-	if not act_grow_done:
-		if last_mass_r >= GROW_R_MASS:
-			act_grow_done = true
-			last_act_line = "Commercial unlocked. Paint shops beside homes."
-			card_fired.emit("Grow", "Residential mass holds. Commercial is unlocked — paint shops beside roads.")
-		else:
-			last_act_line = "Grow homes first — Commercial unlocks at R mass %.0f (now %.0f)." % [GROW_R_MASS, last_mass_r]
-		return
-	if not act_industry_done:
-		if last_mass_c >= INDUSTRY_C_MASS and last_cash >= INDUSTRY_CASH:
-			act_industry_done = true
-			last_act_line = "Industrial unlocked. Jobs feed the shops."
-			card_fired.emit("Industry", "Shops and treasury ready. Industrial is unlocked.")
-		else:
-			last_act_line = "Industry: C mass %.0f/%.0f · cash $%s / $%s." % [
-				last_mass_c, INDUSTRY_C_MASS, _fmt(last_cash), _fmt(INDUSTRY_CASH)
-			]
-		return
-	if not act_shock_done:
-		var alive := last_occ >= SHOCK_OCC or last_happiness >= SHOCK_HAPPINESS
-		if alive and sim != null and sim.has_method("start_disaster"):
-			var busy := int(sim.war_timer) > 0 or int(sim.disaster_timer) > 0 or int(sim.event_cooldown) > 0
-			if busy:
-				last_act_line = "Shock waiting — an event is already running."
-				return
-			var info: Dictionary = sim.start_disaster(map, budget)
-			if int(sim.disaster_timer) > 0:
-				act_shock_done = true
-				shock_fired = true
-				shock_kind = "disaster"
-				shock_occ_at_fire = last_occ
-				last_act_line = "Disaster shock is live. Repair services, hold occupancy."
-				card_fired.emit(str(info.get("title", "Shock")), str(info.get("body", "Disaster struck the district.")))
-			else:
-				last_act_line = "Shock held — %s" % str(info.get("body", "event busy"))
-		else:
-			last_act_line = "Shock: city must be alive (occ or mood) before the hit."
-		return
-	if not act_recover_done:
-		var timers_clear := true
-		if sim != null:
-			timers_clear = int(sim.war_timer) <= 0 and int(sim.disaster_timer) <= 0
-		var rebound := last_occ >= RECOVER_OCC or last_happiness >= RECOVER_HAPPINESS
-		if shock_occ_at_fire > 0.0 and last_occ >= shock_occ_at_fire * 0.75:
-			rebound = true
-		if timers_clear and rebound:
-			act_recover_done = true
-			recovery_bonus = true
-			if budget != null:
-				budget.demand_mult = maxf(float(budget.demand_mult), RECOVERY_DEMAND)
-			last_act_line = "Recovered. Trade-recovery bonus is live."
-			card_fired.emit("Recover", "Shock ended and occupancy held. Trade-recovery bonus is on.")
-		else:
-			last_act_line = "Recover: wait out the shock, then hold occupancy."
-		return
-	last_act_line = "City recovered. Trade bonus is live. Keep the district solvent."
+	if shock_fired:
+		return ACT_IV
+	if act_iii_done:
+		return ACT_IV
+	if act_ii_done:
+		return ACT_III
+	if complete:
+		return ACT_II
+	return ACT_I
 
 
 func _maybe_survey() -> void:

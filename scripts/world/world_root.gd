@@ -71,7 +71,7 @@ func _print_instance_counts() -> void:
 	var svc_n := city_view.services_root.get_child_count() if city_view.services_root else 0
 	var prop_n := city_view.props_root.get_child_count() if city_view.props_root else 0
 	print("CITY_MESH instances buildings=", bld_n, " roads=", rd_n, " lots=", lot_n, " services=", svc_n, " props=", prop_n)
-	print("CITY_MESH park=", city_view.park_count, " waterfront=", city_view.waterfront_count, " cards=", city_view.card_count)
+	print("CITY_MESH park=", city_view.park_count, " waterfront=", city_view.waterfront_count, " cards=", city_view.card_count, " midrise=", city_view.midrise_count, " rail=", city_view.rail_count, " works=", city_view.works_count)
 	if catalog:
 		print("CITY_MESH caches albedo=", catalog._albedo_cache.size(), " emissive=", catalog._emissive_cache.size())
 	_dump_near_hq_aabbs()
@@ -94,6 +94,10 @@ func _dump_near_hq_aabbs() -> void:
 		roots.append(city_view.services_root)
 	if city_view.roads_root:
 		roots.append(city_view.roads_root)
+	if city_view.rail_root:
+		roots.append(city_view.rail_root)
+	if city_view.works_root:
+		roots.append(city_view.works_root)
 	for r in roots:
 		_walk_aabb_dump(r, hq_w, true)
 

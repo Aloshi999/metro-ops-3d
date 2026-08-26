@@ -8,6 +8,7 @@ const ChunkData = preload("res://scripts/core/chunk_data.gd")
 const LotRecord = preload("res://scripts/core/lot_record.gd")
 const MapData = preload("res://scripts/systems/map_data.gd")
 const BudgetSystem = preload("res://scripts/systems/budget_system.gd")
+const EventCatalog = preload("res://scripts/systems/event_catalog.gd")
 
 signal tick_done
 signal demand_changed(res_d: float, com_d: float, ind_d: float)
@@ -18,6 +19,11 @@ var disaster_timer: int = 0
 var event_cooldown: int = 0
 ## Main sets true in _ready. Smoke never sets it, so start_war still applies at tick 0.
 var tutor_active: bool = false
+var active_card: String = ""
+var card_demand_r: float = 1.0
+var card_demand_c: float = 1.0
+var card_demand_i: float = 1.0
+var card_land_mult: float = 1.0
 ## Main assigns CampaignSystem. Tick after budget so acts see live mass/cash.
 var campaign = null
 
@@ -59,7 +65,7 @@ func tick(map: MapData, budget: BudgetSystem) -> void:
 	tick_count += 1
 	if tutor_active and float(tick_count) * GameConstants.SIM_TICK_SEC >= 600.0:
 		tutor_active = false
-	_tick_events(budget)
+	_tick_events(map, budget)
 	_recompute_city_demand(map, budget)
 	_sim_active_chunks(map)
 	_recompute_city_factors(map, budget)
@@ -70,22 +76,32 @@ func tick(map: MapData, budget: BudgetSystem) -> void:
 	demand_changed.emit(demand_r, demand_c, demand_i)
 
 
-func _tick_events(budget: BudgetSystem) -> void:
+func _tick_events(map: MapData, budget: BudgetSystem) -> void:
 	if event_cooldown > 0:
 		event_cooldown -= 1
 	if war_timer > 0:
 		war_timer -= 1
 		if war_timer <= 0:
-			budget.tax_mult = 1.0
-			event_cooldown = GameConstants.WAR_DURATION_TICKS * 2
-		else:
+			var cd := GameConstants.WAR_DURATION_TICKS * 2
+			if active_card == "corridor_interdiction":
+				cd = GameConstants.CORRIDOR_DURATION_TICKS * 2
+			EventCatalog.clear(self, budget, map)
+			event_cooldown = cd
+		elif active_card == "trade_embargo":
 			var t := 1.0 - float(war_timer) / float(GameConstants.WAR_DURATION_TICKS)
 			budget.tax_mult = lerpf(GameConstants.WAR_EMBARGO_TAX_START, GameConstants.WAR_EMBARGO_TAX_MULT, t)
 	if disaster_timer > 0:
 		disaster_timer -= 1
 		if disaster_timer <= 0:
-			budget.demand_mult = 1.0
-			event_cooldown = GameConstants.DISASTER_DURATION_TICKS * 2
+			var dcd := GameConstants.DISASTER_DURATION_TICKS * 2
+			if active_card == "grid_blackout":
+				dcd = GameConstants.BLACKOUT_DURATION_TICKS * 2
+			elif active_card == "dock_walkout":
+				dcd = GameConstants.WALKOUT_DURATION_TICKS * 2
+			elif active_card == "quake_grid":
+				dcd = GameConstants.QUAKE_DURATION_TICKS * 2
+			EventCatalog.clear(self, budget, map)
+			event_cooldown = dcd
 
 
 func _recompute_city_demand(map: MapData, budget: BudgetSystem) -> void:
@@ -118,11 +134,19 @@ func _recompute_city_demand(map: MapData, budget: BudgetSystem) -> void:
 		dc = base + 0.15
 		di = base + 0.10
 
-	if war_timer > 0:
+	if active_card != "":
+		dr *= card_demand_r
+		dc *= card_demand_c
+		di *= card_demand_i
+		if disaster_timer > 0:
+			dr *= budget.demand_mult
+			dc *= lerpf(1.0, budget.demand_mult, 0.5)
+			di *= lerpf(1.0, budget.demand_mult, 0.35)
+	elif war_timer > 0:
 		dr *= GameConstants.WAR_DEMAND_R
 		dc *= GameConstants.WAR_DEMAND_C
 		di *= GameConstants.WAR_DEMAND_I
-	if disaster_timer > 0:
+	elif disaster_timer > 0:
 		dr *= GameConstants.DISASTER_DEMAND_R
 		dc *= GameConstants.DISASTER_DEMAND_C
 		di *= GameConstants.DISASTER_DEMAND_I
@@ -323,7 +347,7 @@ func _recompute_city_factors(map: MapData, budget: BudgetSystem) -> void:
 	factor_pollution = clampf(poll_acc / maxf(1.0, float(n_active)), 0.0, 1.0)
 	var amenity_avg := clampf(amenity_acc / maxf(1.0, float(n_active)), 0.0, 1.0)
 	factor_land = clampf(factor_services * factor_roads * occ_avg - factor_pollution + amenity_avg * 0.20, 0.0, 1.0)
-	land_value = factor_land
+	land_value = clampf(factor_land * card_land_mult, 0.0, 1.0)
 	factor_rci = (
 		clampf(demand_r, 0.0, 1.0) +
 		clampf(demand_c, 0.0, 1.0) +
@@ -331,7 +355,7 @@ func _recompute_city_factors(map: MapData, budget: BudgetSystem) -> void:
 	) / 3.0
 	factor_tax = clampf(budget.tax_mult, 0.0, 1.0)
 	## War embargo is tax_mult; shops' mood (opinion_c) is the second real trade factor.
-	factor_trade = clampf(budget.tax_mult * clampf(city_opinion_c, 0.0, 1.25), 0.0, 1.0)
+	factor_trade = clampf(budget.trade_mult * clampf(city_opinion_c, 0.0, 1.25), 0.0, 1.0)
 	if any_damaged or disaster_timer > 0:
 		var t := 0.0
 		if disaster_timer > 0:
@@ -482,48 +506,20 @@ func density_unlock_tier() -> int:
 	return 0
 
 
-func start_war(budget: BudgetSystem) -> Dictionary:
-	if _in_tutor_window():
-		return _tutor_hold_card()
-	if _event_busy():
-		return _event_busy_card()
-	war_timer = GameConstants.WAR_DURATION_TICKS
-	budget.tax_mult = GameConstants.WAR_EMBARGO_TAX_START
-	budget.apply_levy(GameConstants.WAR_LEVY_HIT)
-	return {
-		"title": "Trade Embargo + Military Levy",
-		"body": "War: tax income starts at %d%% and tightens toward %d%%, levy −$%d. Commercial/industrial demand crushed; residential holds better." % [
-			int(GameConstants.WAR_EMBARGO_TAX_START * 100.0),
-			int(GameConstants.WAR_EMBARGO_TAX_MULT * 100.0),
-			GameConstants.WAR_LEVY_HIT
-		]
-	}
+func start_war(budget: BudgetSystem, map: MapData = null) -> Dictionary:
+	return start_event("trade_embargo", map, budget)
 
 
 func start_disaster(map: MapData, budget: BudgetSystem) -> Dictionary:
+	return start_event("flood_surge", map, budget)
+
+
+func start_event(id: String, map: MapData, budget: BudgetSystem) -> Dictionary:
 	if _in_tutor_window():
 		return _tutor_hold_card()
 	if _event_busy():
 		return _event_busy_card()
-	disaster_timer = GameConstants.DISASTER_DURATION_TICKS
-	budget.demand_mult = GameConstants.DISASTER_DEMAND_MULT
-	var active: Array = []
-	for c in map.chunks:
-		var chunk: ChunkData = c
-		if chunk.active and not chunk.damaged:
-			active.append(chunk)
-	var target: ChunkData
-	if active.is_empty():
-		target = map.chunk_at(map.hq.x, map.hq.y)
-	else:
-		target = active[randi() % active.size()]
-	map.damage_chunk(target.cx, target.cy)
-	return {
-		"title": "Disaster Strikes",
-		"body": "Chunk (%d,%d) damaged — buildings offline. Residential demand collapsed; rebuild power/water/roads to recover." % [
-			target.cx, target.cy
-		]
-	}
+	return EventCatalog.apply(self, map, budget, id)
 
 
 func demand_label() -> String:

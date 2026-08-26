@@ -17,11 +17,24 @@ var cursor_hidden: bool = false
 var park_count: int = 0
 var waterfront_count: int = 0
 var card_count: int = 0
+var midrise_count: int = 0
+var midrise_lots2: int = 0
+var rail_count: int = 0
+var works_count: int = 0
+var market_count: int = 0
+var downtown_street_count: int = 0
 var _park_lots: Dictionary = {}
 var _wf_water: Dictionary = {}
 var _wf_shore: Dictionary = {}
+var _rail_lots: Dictionary = {}
+var _works_lots: Dictionary = {}
+var _market_lots: Dictionary = {}
 var park_root: Node3D
 var waterfront_root: Node3D
+var rail_root: Node3D
+var works_root: Node3D
+var market_root: Node3D
+var downtown_street_root: Node3D
 var landmark_root: Node3D
 var heatmap_root: Node3D
 var landmark_count: int = 0
@@ -70,6 +83,9 @@ func setup(p_map: MapData, p_catalog: BuildingCatalog, _env: WorldEnvironment = 
 	_seed_park()
 	_seed_waterfront()
 	_seed_midrise_ring()
+	_seed_rail()
+	_seed_market()
+	_seed_works()
 	_build_terrain()
 	_build_cursor()
 	_ensure_event_fx()
@@ -182,6 +198,10 @@ func rebuild_all() -> void:
 	_scatter_trees()
 	_scatter_park()
 	_scatter_waterfront()
+	_scatter_rail()
+	_scatter_market()
+	_scatter_works()
+	_scatter_downtown_street()
 	_instance_landmarks()
 
 
@@ -443,6 +463,16 @@ func landmark_world(kind: String) -> Vector3:
 			return map.lot_to_world(map.hq.x + 8, map.hq.y + 4)
 		"midrise":
 			return map.lot_to_world(map.hq.x + 8, map.hq.y - 8)
+		"rail":
+			if not _rail_lots.is_empty():
+				var rv: Vector2i = _rail_lots.values()[_rail_lots.size() / 2]
+				return map.lot_to_world(rv.x, rv.y)
+			return map.lot_to_world(map.hq.x, map.hq.y + 9)
+		"market":
+			if not _market_lots.is_empty():
+				var mv: Vector2i = _market_lots.values()[_market_lots.size() / 2]
+				return map.lot_to_world(mv.x, mv.y)
+			return map.lot_to_world(map.hq.x - 8, map.hq.y - 1)
 		_:
 			return map.lot_to_world(map.hq.x, map.hq.y)
 
@@ -455,7 +485,7 @@ func _downtown_cheb(x: int, y: int) -> int:
 
 
 func _is_overlay_lot(i: int) -> bool:
-	return _park_lots.has(i) or _wf_water.has(i) or _wf_shore.has(i)
+	return _park_lots.has(i) or _wf_water.has(i) or _wf_shore.has(i) or _rail_lots.has(i) or _works_lots.has(i) or _market_lots.has(i)
 
 
 func _rebuild_roads() -> void:
@@ -534,13 +564,14 @@ func _downtown_core_com(x: int, y: int, z: int) -> bool:
 
 
 func _mark_large_pad(pad_skip: Dictionary, x: int, y: int) -> bool:
-	## Reserve the +X neighbor so a 20.64 m Large does not stack a second mesh.
+	## Reserve the +X neighbor so a 2-lot Large / midrise wide does not stack a second mesh.
 	if map == null or not map.in_bounds(x + 1, y):
 		return false
 	var ni := map.idx(x + 1, y)
 	if map.revealed[ni] != 1:
 		return false
-	if map.zone[ni] != TileTypes.Zone.COMMERCIAL:
+	var nz: int = map.zone[ni]
+	if nz != TileTypes.Zone.COMMERCIAL and nz != TileTypes.Zone.RESIDENTIAL:
 		return false
 	if map.road[ni] == 1 or map.service[ni] != TileTypes.Service.NONE:
 		return false
@@ -555,6 +586,8 @@ func _rebuild_lots_and_buildings() -> void:
 		_lot_mesh.orientation = PlaneMesh.FACE_Y
 
 	card_count = 0
+	midrise_count = 0
+	midrise_lots2 = 0
 	var keep: Dictionary = {}
 	var pad_skip: Dictionary = {}  # 2-lot Large pad — neighbor gets decal, no second building
 	for c in map.chunks:
@@ -578,6 +611,17 @@ func _rebuild_lots_and_buildings() -> void:
 				var damaged: bool = map.damaged_tile[i] == 1 or chunk.damaged
 				_ensure_lot_decal(x, y, z, occ, damaged)
 				var downtown_com := _downtown_core_com(x, y, z)
+				var midrise_lot: bool = false
+				if (
+					not downtown_com
+					and catalog != null
+					and catalog.midrise != null
+					and catalog.midrise.ready
+					and (z == TileTypes.Zone.RESIDENTIAL or z == TileTypes.Zone.COMMERCIAL)
+					and occ >= 0.32
+					and occ < 0.62
+				):
+					midrise_lot = true
 				var tier := _occ_tier(occ, damaged)
 				if downtown_com:
 					if damaged or occ < 0.08:
@@ -588,7 +632,9 @@ func _rebuild_lots_and_buildings() -> void:
 						tier = 3
 					else:
 						tier = 1
-				var key := "%s%d:%d:%d" % ["dt" if downtown_com else "", z, tier, 1 if damaged else 0]
+				elif midrise_lot:
+					tier = 2 if occ < 0.45 else 3
+				var key := "%s%d:%d:%d" % ["dt" if downtown_com else ("mr" if midrise_lot else ""), z, tier, 1 if damaged else 0]
 				if pad_skip.has(i):
 					_building_key[i] = key
 					if _building_nodes.has(i) and is_instance_valid(_building_nodes[i]):
@@ -598,6 +644,15 @@ func _rebuild_lots_and_buildings() -> void:
 				if _building_key.get(i, "") == key:
 					if downtown_com and occ >= 0.85 and (x & 1) == 0:
 						_mark_large_pad(pad_skip, x, y)
+					elif midrise_lot and _building_nodes.has(i) and is_instance_valid(_building_nodes[i]):
+						var keep_b: Node = _building_nodes[i]
+						if keep_b.has_meta("midrise_lots") and int(keep_b.get_meta("midrise_lots")) >= 2:
+							_mark_large_pad(pad_skip, x, y)
+					if midrise_lot and _building_nodes.has(i) and is_instance_valid(_building_nodes[i]):
+						midrise_count += 1
+						var keep_n: Node = _building_nodes[i]
+						if keep_n.has_meta("midrise_lots") and int(keep_n.get_meta("midrise_lots")) >= 2:
+							midrise_lots2 += 1
 					continue
 				_building_key[i] = key
 				if _building_nodes.has(i) and is_instance_valid(_building_nodes[i]):
@@ -610,11 +665,21 @@ func _rebuild_lots_and_buildings() -> void:
 				var b: Node3D
 				if downtown_com:
 					b = catalog.pick_downtown_building(occ, i)
+				elif midrise_lot:
+					b = catalog.pick_midrise_building(occ, i)
+					if b:
+						midrise_count += 1
+					else:
+						b = catalog.pick_zone_building(z, occ, i)
 				else:
 					b = catalog.pick_zone_building(z, occ, i)
 				if b:
 					var pos := map.lot_to_world(x, y)
 					if downtown_com and b.has_meta("downtown_lots") and int(b.get_meta("downtown_lots")) >= 2:
+						if _mark_large_pad(pad_skip, x, y):
+							pos.x += GameConstants.LOT_METERS * 0.5
+					elif midrise_lot and b.has_meta("midrise_lots") and int(b.get_meta("midrise_lots")) >= 2:
+						midrise_lots2 += 1
 						if _mark_large_pad(pad_skip, x, y):
 							pos.x += GameConstants.LOT_METERS * 0.5
 					b.position = pos
@@ -642,6 +707,7 @@ func _rebuild_lots_and_buildings() -> void:
 		if is_instance_valid(_lot_nodes[i]):
 			(_lot_nodes[i] as Node).queue_free()
 		_lot_nodes.erase(i)
+	print("[CityView] pick_midrise_building used=", midrise_count, " lots2=", midrise_lots2)
 	_ensure_midrise_landmark()
 	_recount_landmarks()
 	if heatmap_mode == 2:
@@ -988,6 +1054,30 @@ func _ensure_overlay_roots() -> void:
 			heatmap_root = Node3D.new()
 			heatmap_root.name = "Heatmap"
 			add_child(heatmap_root)
+	if rail_root == null or not is_instance_valid(rail_root):
+		rail_root = get_node_or_null("Rail") as Node3D
+		if rail_root == null:
+			rail_root = Node3D.new()
+			rail_root.name = "Rail"
+			add_child(rail_root)
+	if works_root == null or not is_instance_valid(works_root):
+		works_root = get_node_or_null("Works") as Node3D
+		if works_root == null:
+			works_root = Node3D.new()
+			works_root.name = "Works"
+			add_child(works_root)
+	if market_root == null or not is_instance_valid(market_root):
+		market_root = get_node_or_null("Market") as Node3D
+		if market_root == null:
+			market_root = Node3D.new()
+			market_root.name = "Market"
+			add_child(market_root)
+	if downtown_street_root == null or not is_instance_valid(downtown_street_root):
+		downtown_street_root = get_node_or_null("DowntownStreet") as Node3D
+		if downtown_street_root == null:
+			downtown_street_root = Node3D.new()
+			downtown_street_root.name = "DowntownStreet"
+			add_child(downtown_street_root)
 
 
 func _scatter_park() -> void:
@@ -1048,6 +1138,26 @@ func _scatter_park() -> void:
 				fl.position = base + Vector3(rng.randf_range(-4.0, 4.0), 0.0, rng.randf_range(-4.0, 4.0))
 				park_root.add_child(fl)
 				park_count += 1
+		if (x + y) % 5 == 2 and park_count < 80 and catalog.park.has_method("pick_rock"):
+			var rk = catalog.park.pick_rock(i)
+			if rk:
+				rk.position = base + Vector3(rng.randf_range(-4.0, 4.0), 0.0, rng.randf_range(-4.0, 4.0))
+				rk.rotate_y(rng.randf() * TAU)
+				park_root.add_child(rk)
+				park_count += 1
+		if (x + y) % 6 == 0 and park_count < 80 and catalog.park.has_method("pick_bush"):
+			var bush = catalog.park.pick_bush(i)
+			if bush:
+				bush.position = base + Vector3(rng.randf_range(-3.5, 3.5), 0.0, rng.randf_range(-3.5, 3.5))
+				park_root.add_child(bush)
+				park_count += 1
+		if x == lots[0].x and park_count < 80 and catalog.park.has_method("pick_fence"):
+			var fn = catalog.park.pick_fence(i)
+			if fn:
+				fn.position = base
+				fn.rotate_y(float((i * 3) % 4) * PI * 0.5)
+				park_root.add_child(fn)
+				park_count += 1
 	print("[CityView] park instances=", park_count)
 
 
@@ -1082,7 +1192,15 @@ func _scatter_waterfront() -> void:
 		var i := map.idx(x, y)
 		var base := map.lot_to_world(x, y)
 		var yaw := _water_face_yaw(x, y)
-		# no PH pier in boot frustum
+		# no PH pier in boot frustum (look-at HQ+6). One far-shore pier is ok.
+		if waterfront_count < 40 and y != hq.y + 6 and (y <= hq.y or y >= hq.y + 10):
+			if (x + y) % 7 == 0 and catalog.waterfront.has_method("instantiate_pier"):
+				var pier = catalog.waterfront.instantiate_pier()
+				if pier:
+					pier.position = base
+					pier.rotate_y(yaw)
+					waterfront_root.add_child(pier)
+					waterfront_count += 1
 		if waterfront_count < 40:
 			var palm = catalog.waterfront.pick_palm(i)
 			if palm:
@@ -1249,6 +1367,10 @@ func _recount_landmarks() -> void:
 			if is_instance_valid(n) and str(n.name) == "LandmarkMidrise":
 				landmark_count += 1
 				break
+	if rail_root and rail_root.get_node_or_null("LandmarkRail"):
+		landmark_count += 1
+	if market_root and market_root.get_node_or_null("LandmarkMarket"):
+		landmark_count += 1
 
 
 func _instance_landmarks() -> void:
@@ -1257,8 +1379,10 @@ func _instance_landmarks() -> void:
 	_ensure_park_landmark()
 	_ensure_waterfront_landmark()
 	_ensure_midrise_landmark()
+	_ensure_rail_landmark()
+	_ensure_market_landmark()
 	_recount_landmarks()
-	print("[CityView] landmarks=", landmark_count, " park=", park_count, " waterfront=", waterfront_count)
+	print("[CityView] landmarks=", landmark_count, " park=", park_count, " waterfront=", waterfront_count, " rail=", rail_count, " works=", works_count, " market=", market_count)
 
 
 func _ensure_park_landmark() -> bool:
@@ -1310,8 +1434,12 @@ func _ensure_midrise_landmark() -> bool:
 		var n: Node3D = _building_nodes[i]
 		n.name = "LandmarkMidrise"
 		return true
-	## Lot empty / road — spawn a Kenney mid COM (existing catalog, not MidriseKit exteriors).
-	var b: Node3D = catalog.pick_zone_building(TileTypes.Zone.COMMERCIAL, 0.45, i)
+	## Midrise Medium at 1.0 when kit is ready; Kenney fallback otherwise.
+	var b: Node3D = null
+	if catalog.midrise and catalog.midrise.ready:
+		b = catalog.pick_midrise_building(0.50, i)
+	if b == null:
+		b = catalog.pick_zone_building(TileTypes.Zone.COMMERCIAL, 0.45, i)
 	if b == null:
 		b = catalog.pick_zone_building(TileTypes.Zone.RESIDENTIAL, 0.45, i)
 	if b == null:
@@ -1322,4 +1450,283 @@ func _ensure_midrise_landmark() -> bool:
 		catalog.midrise_cards.attach(b, i)
 		card_count += 1
 	landmark_root.add_child(b)
+	return true
+
+
+
+func _seed_rail() -> void:
+	## Short E-W yard south of HQ in the boot frustum (camera 6 lots south, looking north).
+	## Outside downtown cheb<=5; skip park lots and waterfront water.
+	if map == null:
+		return
+	_rail_lots.clear()
+	var hq: Vector2i = map.hq
+	for y in range(hq.y + 8, hq.y + 11):
+		for x in range(hq.x - 6, hq.x + 5):
+			if not map.in_bounds(x, y):
+				continue
+			if _cheb_hq(x, y) <= 5:
+				continue
+			var i := map.idx(x, y)
+			if _park_lots.has(i) or _wf_water.has(i):
+				continue
+			if map.terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if map.service[i] != TileTypes.Service.NONE:
+				continue
+			if _clear_lot_for_overlay(x, y, false) >= 0:
+				_rail_lots[i] = Vector2i(x, y)
+	if map.has_method("_reveal_around"):
+		map._reveal_around(hq.x - 1, hq.y + 9, 8)
+	print("[CityView] seed rail lots=", _rail_lots.size())
+
+
+func _seed_market() -> void:
+	## SW plaza west of HQ, north of park. Stall props only — not lot buildings.
+	if map == null:
+		return
+	_market_lots.clear()
+	var hq: Vector2i = map.hq
+	for y in range(hq.y - 2, hq.y + 1):
+		for x in range(hq.x - 9, hq.x - 5):
+			if not map.in_bounds(x, y):
+				continue
+			if _cheb_hq(x, y) <= 5:
+				continue
+			var i := map.idx(x, y)
+			if _park_lots.has(i) or _wf_water.has(i) or _wf_shore.has(i) or _rail_lots.has(i):
+				continue
+			if map.terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if _clear_lot_for_overlay(x, y, false) >= 0:
+				_market_lots[i] = Vector2i(x, y)
+	if map.has_method("_reveal_around"):
+		map._reveal_around(hq.x - 8, hq.y - 1, 8)
+	print("[CityView] seed market lots=", _market_lots.size())
+
+
+func _scatter_rail() -> void:
+	_ensure_overlay_roots()
+	_clear_children(rail_root)
+	rail_count = 0
+	if catalog == null or catalog.rail == null or not catalog.rail.ready:
+		print("[CityView] rail scatter skipped ready=", catalog != null and catalog.rail != null and catalog.rail.ready)
+		return
+	const TRACK_CAP := 36
+	const STOCK_CAP := 8
+	const TOTAL_CAP := 45
+	var lots: Array = _rail_lots.values()
+	if lots.is_empty():
+		print("[CityView] rail instances=0")
+		return
+	lots.sort_custom(func(a, b): return a.y < b.y or (a.y == b.y and a.x < b.x))
+	var yaw_ew := PI * 0.5
+	var track_n := 0
+	for lot in lots:
+		if track_n >= TRACK_CAP or rail_count >= TOTAL_CAP:
+			break
+		var n: Node3D = null
+		if catalog.rail.has_method("pick_lot_track"):
+			n = catalog.rail.pick_lot_track(map.idx(lot.x, lot.y))
+		if n == null:
+			n = catalog.pick_rail_piece("straight", map.idx(lot.x, lot.y))
+		if n == null:
+			continue
+		n.rotation = Vector3(0.0, yaw_ew, 0.0)
+		n.position = map.lot_to_world(lot.x, lot.y)
+		rail_root.add_child(n)
+		track_n += 1
+		rail_count += 1
+	var hq: Vector2i = map.hq
+	var stock_y := hq.y + 9
+	var stock_xs: Array[int] = [hq.x - 3, hq.x - 1, hq.x + 1, hq.x + 3]
+	var stock_n := 0
+	for si in stock_xs.size():
+		if stock_n >= STOCK_CAP or rail_count >= TOTAL_CAP:
+			break
+		var sx: int = stock_xs[si]
+		if not map.in_bounds(sx, stock_y):
+			continue
+		var train := catalog.pick_rail_piece("train", si)
+		if train == null:
+			continue
+		if rail_root.get_node_or_null("LandmarkRail") == null:
+			train.name = "LandmarkRail"
+		train.rotation = Vector3(0.0, yaw_ew, 0.0)
+		var tp := map.lot_to_world(sx, stock_y)
+		tp.y += 0.12
+		train.position = tp
+		rail_root.add_child(train)
+		stock_n += 1
+		rail_count += 1
+	print("[CityView] rail instances=", rail_count)
+
+
+func _scatter_market() -> void:
+	_ensure_overlay_roots()
+	_clear_children(market_root)
+	market_count = 0
+	if catalog == null or catalog.market == null or not catalog.market.ready:
+		print("[CityView] market scatter skipped ready=", catalog != null and catalog.market != null and catalog.market.ready)
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 51515
+	var lots: Array = _market_lots.values()
+	if lots.is_empty():
+		return
+	var mid: Vector2i = lots[lots.size() / 2]
+	var hero = catalog.pick_market_prop(mid.x + mid.y)
+	if hero:
+		hero.name = "LandmarkMarket"
+		hero.position = map.lot_to_world(mid.x, mid.y)
+		market_root.add_child(hero)
+		market_count += 1
+	for lot in lots:
+		if market_count >= 40:
+			break
+		var x: int = lot.x
+		var y: int = lot.y
+		var i := map.idx(x, y)
+		var base := map.lot_to_world(x, y)
+		var n_here := 2 + (i % 2)
+		for k in n_here:
+			if market_count >= 40:
+				break
+			var prop = catalog.pick_market_prop(i + k * 11)
+			if prop == null:
+				continue
+			prop.position = base + Vector3(rng.randf_range(-5.0, 5.0), 0.0, rng.randf_range(-5.0, 5.0))
+			prop.rotate_y(rng.randf() * TAU)
+			market_root.add_child(prop)
+			market_count += 1
+	print("[CityView] market instances=", market_count)
+
+
+func _seed_works() -> void:
+	## Small factory yard NORTH of HQ. Outside downtown cheb<=5; skip park/waterfront/rail/market.
+	if map == null:
+		return
+	_works_lots.clear()
+	var hq: Vector2i = map.hq
+	for y in range(hq.y - 10, hq.y - 6):
+		for x in range(hq.x - 5, hq.x + 2):
+			if not map.in_bounds(x, y):
+				continue
+			if _cheb_hq(x, y) <= 5:
+				continue
+			var i := map.idx(x, y)
+			if _park_lots.has(i) or _wf_water.has(i) or _wf_shore.has(i) or _rail_lots.has(i) or _market_lots.has(i):
+				continue
+			if map.terrain[i] == TileTypes.Terrain.WATER:
+				continue
+			if map.service[i] != TileTypes.Service.NONE:
+				continue
+			if _clear_lot_for_overlay(x, y, false) >= 0:
+				_works_lots[i] = Vector2i(x, y)
+	if map.has_method("_reveal_around"):
+		map._reveal_around(hq.x - 2, hq.y - 8, 8)
+	print("[CityView] seed works lots=", _works_lots.size())
+
+
+func _scatter_works() -> void:
+	_ensure_overlay_roots()
+	_clear_children(works_root)
+	works_count = 0
+	if catalog == null or catalog.works == null or not catalog.works.ready:
+		print("[CityView] works scatter skipped ready=", catalog != null and catalog.works != null and catalog.works.ready)
+		return
+	const TOTAL_CAP := 24
+	var lots: Array = _works_lots.values()
+	if lots.is_empty():
+		print("[CityView] works instances=0")
+		return
+	lots.sort_custom(func(a, b): return a.y < b.y or (a.y == b.y and a.x < b.x))
+	for lot in lots:
+		if works_count >= TOTAL_CAP:
+			break
+		var n: Node3D = catalog.pick_works_piece(map.idx(lot.x, lot.y))
+		if n == null:
+			continue
+		n.position = map.lot_to_world(lot.x, lot.y)
+		works_root.add_child(n)
+		works_count += 1
+	print("[CityView] works instances=", works_count)
+
+
+func _scatter_downtown_street() -> void:
+	## Parked Quaternius cars + MegaKit/PH street props. Static. Shared PackedScenes.
+	_ensure_overlay_roots()
+	_clear_children(downtown_street_root)
+	downtown_street_count = 0
+	if catalog == null or catalog.downtown == null or not catalog.downtown.ready:
+		return
+	if not catalog.downtown.has_method("pick_car"):
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 80808
+	var hq: Vector2i = map.hq
+	for y in range(hq.y - 8, hq.y + 9):
+		for x in range(hq.x - 8, hq.x + 9):
+			if downtown_street_count >= 32:
+				break
+			if not map.in_bounds(x, y):
+				continue
+			var i := map.idx(x, y)
+			if _is_overlay_lot(i):
+				continue
+			if map.road[i] != 1 or map.revealed[i] != 1:
+				continue
+			if map.service[i] != TileTypes.Service.NONE:
+				continue
+			var base := map.lot_to_world(x, y)
+			if (x + y) % 5 == 0:
+				var car = catalog.downtown.pick_car(i)
+				if car:
+					car.position = base + Vector3(rng.randf_range(-3.0, 3.0), 0.04, rng.randf_range(-3.0, 3.0))
+					car.rotate_y(float((i * 17) % 4) * PI * 0.5)
+					downtown_street_root.add_child(car)
+					downtown_street_count += 1
+			elif (x + y) % 4 == 1 and catalog.downtown.has_method("pick_street_prop"):
+				var pr = catalog.downtown.pick_street_prop(i)
+				if pr:
+					pr.position = base + Vector3(4.2 if (i % 2) == 0 else -4.2, 0.02, 0.0)
+					pr.rotate_y(rng.randf() * TAU)
+					downtown_street_root.add_child(pr)
+					downtown_street_count += 1
+		if downtown_street_count >= 32:
+			break
+	print("[CityView] downtown street instances=", downtown_street_count)
+
+
+func _ensure_rail_landmark() -> bool:
+	if rail_root:
+		var existing := rail_root.get_node_or_null("LandmarkRail")
+		if existing:
+			return true
+	if catalog == null or catalog.rail == null or not catalog.rail.ready or map == null:
+		return false
+	var train = catalog.pick_rail_piece("train", 3)
+	if train == null:
+		return false
+	train.name = "LandmarkRail"
+	train.position = landmark_world("rail")
+	rail_root.add_child(train)
+	rail_count += 1
+	return true
+
+
+func _ensure_market_landmark() -> bool:
+	if market_root:
+		var existing := market_root.get_node_or_null("LandmarkMarket")
+		if existing:
+			return true
+	if catalog == null or catalog.market == null or not catalog.market.ready or map == null:
+		return false
+	var prop = catalog.pick_market_prop(5)
+	if prop == null:
+		return false
+	prop.name = "LandmarkMarket"
+	prop.position = landmark_world("market")
+	market_root.add_child(prop)
+	market_count += 1
 	return true

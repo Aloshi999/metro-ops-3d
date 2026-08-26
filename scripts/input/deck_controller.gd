@@ -19,6 +19,7 @@ signal menu_row_shift(dir: int)
 signal gfx_row(dir: int)
 signal cancel_pressed
 signal heatmap_toggled
+signal menu_confirm
 
 @export var pan_lerp: float = 0.22
 @export var stick_deadzone: float = 0.22
@@ -40,9 +41,61 @@ var rmb_orbit: bool = false
 var graphics_focus: bool = false
 var menu_focus: bool = false
 var bench_blocking: bool = false
+var _confirm_stamp_ms: int = -100000
 
 const BRUSH_STEPS: Array[int] = [1, 3, 5]
 const RADIAL_SLICES: int = 6
+const CONFIRM_DEDUP_MS: int = 180
+
+
+func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_ensure_confirm_aliases()
+
+
+func _ensure_confirm_aliases() -> void:
+	## Steam Input / Deck A is not always "paint". Alias ui_accept / ui_select / confirm.
+	for action in ["ui_accept", "ui_select", "confirm"]:
+		if not InputMap.has_action(action):
+			InputMap.add_action(action)
+		_bind_confirm_events(action)
+
+
+func _bind_confirm_events(action: String) -> void:
+	var have_a := false
+	var have_enter := false
+	var have_space := false
+	var have_kp := false
+	for ev in InputMap.action_get_events(action):
+		if ev is InputEventJoypadButton:
+			var jb := ev as InputEventJoypadButton
+			if jb.button_index == JOY_BUTTON_A or jb.button_index == 0:
+				have_a = true
+		elif ev is InputEventKey:
+			var k := ev as InputEventKey
+			if k.physical_keycode == KEY_ENTER or k.keycode == KEY_ENTER:
+				have_enter = true
+			if k.physical_keycode == KEY_SPACE or k.keycode == KEY_SPACE:
+				have_space = true
+			if k.physical_keycode == KEY_KP_ENTER or k.keycode == KEY_KP_ENTER:
+				have_kp = true
+	if not have_a:
+		var jb := InputEventJoypadButton.new()
+		jb.device = -1
+		jb.button_index = JOY_BUTTON_A
+		InputMap.action_add_event(action, jb)
+	if not have_enter:
+		var k := InputEventKey.new()
+		k.physical_keycode = KEY_ENTER
+		InputMap.action_add_event(action, k)
+	if not have_space:
+		var k2 := InputEventKey.new()
+		k2.physical_keycode = KEY_SPACE
+		InputMap.action_add_event(action, k2)
+	if not have_kp:
+		var k3 := InputEventKey.new()
+		k3.physical_keycode = KEY_KP_ENTER
+		InputMap.action_add_event(action, k3)
 
 
 func is_menu_exclusive() -> bool:
@@ -195,8 +248,18 @@ func _is_menu_nav(event: InputEvent) -> bool:
 		return true
 	if InputMap.has_action("ui_accept") and event.is_action("ui_accept"):
 		return true
+	if InputMap.has_action("ui_select") and event.is_action("ui_select"):
+		return true
 	if InputMap.has_action("confirm") and event.is_action("confirm"):
 		return true
+	if event is InputEventAction:
+		var ia := event as InputEventAction
+		if ia.action in ["paint", "ui_accept", "ui_select", "confirm"]:
+			return true
+	if event is InputEventKey:
+		var k := event as InputEventKey
+		if k.physical_keycode == KEY_ENTER or k.keycode == KEY_ENTER 				or k.physical_keycode == KEY_SPACE or k.keycode == KEY_SPACE 				or k.physical_keycode == KEY_KP_ENTER or k.keycode == KEY_KP_ENTER:
+			return true
 	if event.is_action("pause_advisor") or event.is_action("view_resume"):
 		return true
 	if event.is_action("pan_up") or event.is_action("pan_down") \
@@ -219,43 +282,88 @@ func _is_menu_nav(event: InputEvent) -> bool:
 
 
 func _is_menu_confirm_pressed(event: InputEvent) -> bool:
-	## A / ui_accept / confirm / paint — Deck A is not always mapped as "paint".
+	## A / ui_accept / ui_select / confirm / paint / Enter / Space.
+	## Deck Steam Input A is not always action "paint" and may use any device index.
 	if event == null:
 		return false
+	if event is InputEventKey:
+		var k := event as InputEventKey
+		if (not k.pressed) or k.echo:
+			return false
+		if k.physical_keycode == KEY_ENTER or k.keycode == KEY_ENTER:
+			return true
+		if k.physical_keycode == KEY_SPACE or k.keycode == KEY_SPACE:
+			return true
+		if k.physical_keycode == KEY_KP_ENTER or k.keycode == KEY_KP_ENTER:
+			return true
+	if event is InputEventJoypadButton:
+		var jb := event as InputEventJoypadButton
+		# ANY device. Physical south face is button_index 0 / JOY_BUTTON_A.
+		if jb.pressed and (jb.button_index == JOY_BUTTON_A or jb.button_index == 0):
+			return true
+	if event is InputEventAction:
+		var ia := event as InputEventAction
+		if ia.pressed and ia.action in ["paint", "ui_accept", "ui_select", "confirm"]:
+			return true
 	if event.is_action_pressed("paint"):
 		return true
 	if InputMap.has_action("ui_accept") and event.is_action_pressed("ui_accept"):
 		return true
+	if InputMap.has_action("ui_select") and event.is_action_pressed("ui_select"):
+		return true
 	if InputMap.has_action("confirm") and event.is_action_pressed("confirm"):
 		return true
-	if event is InputEventJoypadButton:
-		var jb := event as InputEventJoypadButton
-		if jb.pressed and jb.button_index == JOY_BUTTON_A:
-			return true
 	return false
 
 
 func _is_menu_confirm_released(event: InputEvent) -> bool:
 	if event == null:
 		return false
+	if event is InputEventKey:
+		var k := event as InputEventKey
+		if k.pressed:
+			return false
+		if k.physical_keycode == KEY_ENTER or k.keycode == KEY_ENTER:
+			return true
+		if k.physical_keycode == KEY_SPACE or k.keycode == KEY_SPACE:
+			return true
+		if k.physical_keycode == KEY_KP_ENTER or k.keycode == KEY_KP_ENTER:
+			return true
+	if event is InputEventJoypadButton:
+		var jb := event as InputEventJoypadButton
+		if (not jb.pressed) and (jb.button_index == JOY_BUTTON_A or jb.button_index == 0):
+			return true
+	if event is InputEventAction:
+		var ia := event as InputEventAction
+		if (not ia.pressed) and ia.action in ["paint", "ui_accept", "ui_select", "confirm"]:
+			return true
 	if event.is_action_released("paint"):
 		return true
 	if InputMap.has_action("ui_accept") and event.is_action_released("ui_accept"):
 		return true
+	if InputMap.has_action("ui_select") and event.is_action_released("ui_select"):
+		return true
 	if InputMap.has_action("confirm") and event.is_action_released("confirm"):
 		return true
-	if event is InputEventJoypadButton:
-		var jb := event as InputEventJoypadButton
-		if (not jb.pressed) and jb.button_index == JOY_BUTTON_A:
-			return true
 	return false
+
+
+func _accept_confirm_once() -> bool:
+	## One physical press = one activate (Steam virtual + physical, ui_accept + A).
+	var now := Time.get_ticks_msec()
+	if now - _confirm_stamp_ms < CONFIRM_DEDUP_MS:
+		return false
+	_confirm_stamp_ms = now
+	return true
 
 
 func _route_menu_event(event: InputEvent) -> bool:
 	## Drive the overlay. Returns true if this event was a menu action.
 	if _is_menu_confirm_pressed(event):
 		painting = false
-		paint_pressed.emit()
+		if _accept_confirm_once():
+			menu_confirm.emit()
+			paint_pressed.emit()
 		return true
 	if _is_menu_confirm_released(event):
 		painting = false

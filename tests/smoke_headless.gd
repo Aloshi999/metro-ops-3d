@@ -150,9 +150,22 @@ func _init() -> void:
 			wf_n.free()
 		if wf_p:
 			wf_p.free()
+	var mid_ext: PackedStringArray = _midrise_exterior_paths()
+	print("midrise exteriors=%d %s" % [mid_ext.size(), ",".join(mid_ext)])
 	if catalog.midrise and catalog.midrise.ready:
+		if mid_ext.is_empty():
+			ok = false
+			errors.append("MidriseKit ready=true but pack has no exterior buildings — do not stub")
+		else:
+			var mr_n := catalog.pick_midrise_building(0.50, 3)
+			if mr_n == null or _first_mesh_class(mr_n) == "":
+				ok = false
+				errors.append("MidriseKit pick_building returned no mesh")
+			elif mr_n:
+				mr_n.free()
+	elif not mid_ext.is_empty():
 		ok = false
-		errors.append("MidriseKit ready=true but pack has no exterior buildings — do not stub")
+		errors.append("MidriseKit not ready but Small/Medium exteriors exist on disk")
 
 	var rail_n: int = int(catalog.rail.loaded_count) if catalog.rail else 0
 	var rail_ready: bool = bool(catalog.rail.ready) if catalog.rail else false
@@ -446,6 +459,48 @@ func _init() -> void:
 		ok = false
 		errors.append("disaster did not damage a chunk")
 
+	sim.disaster_timer = 0
+	sim.event_cooldown = 0
+	sim.active_card = ""
+	budget.tax_mult = 1.0
+	budget.trade_mult = 1.0
+	budget.demand_mult = 1.0
+	var corr := sim.start_event("corridor_interdiction", map, budget)
+	if str(corr.get("title", "")) != "Corridor Interdiction":
+		ok = false
+		errors.append("corridor card missing")
+	var corr_n := 0
+	for cc in map.chunks:
+		if cc.damaged:
+			corr_n += 1
+	if corr_n < 2:
+		ok = false
+		errors.append("corridor did not damage a spine")
+	sim.war_timer = 0
+	sim.disaster_timer = 0
+	sim.event_cooldown = 0
+	sim.active_card = ""
+	budget.tax_mult = 1.0
+	budget.trade_mult = 1.0
+	budget.demand_mult = 1.0
+	var walk := sim.start_event("dock_walkout", map, budget)
+	if budget.trade_mult > 0.25:
+		ok = false
+		errors.append("walkout trade_mult %s" % budget.trade_mult)
+	if "Commercial" not in str(walk.get("body", "")) and "docks" not in str(walk.get("body", "")).to_lower() and "Docks" not in str(walk.get("body", "")):
+		ok = false
+		errors.append("walkout body missing docks")
+	sim.disaster_timer = 0
+	sim.event_cooldown = 0
+	sim.active_card = ""
+	sim.tutor_active = true
+	sim.tick_count = 1
+	var held := sim.start_event("quake_grid", map, budget)
+	if str(held.get("title", "")) != "Advisor":
+		ok = false
+		errors.append("tutor did not hold quake")
+	sim.tutor_active = false
+
 	var main_ps = load("res://scenes/main.tscn")
 	if main_ps == null:
 		ok = false
@@ -638,7 +693,7 @@ func _init() -> void:
 			errors.append("main.gd missing A-from-pause Benchmark start")
 
 
-	## 0.1.6 Act I + heatmap + landmarks. Do not invent Acts II–IV or FPS numbers.
+	## 0.1.6 Act I + heatmap + landmarks. Acts II–IV overlay after first-10.
 	var camp := CampaignSystem.new()
 	var g0: Dictionary = camp.goal_card()
 	if not g0.has("title") or not g0.has("body") or str(g0["title"]) == "":
@@ -647,18 +702,18 @@ func _init() -> void:
 	if str(g0.get("act_id", "")) != "act_i":
 		ok = false
 		errors.append("campaign act_id is %s not act_i" % str(g0.get("act_id", "")))
-	if camp.next_act_id() == "act_ii" or camp.has_method("start_act_ii"):
+	if camp.next_act_id() != "act_i" or camp.has_method("start_act_ii"):
 		ok = false
-		errors.append("invented Act II — only Act I is live")
+		errors.append("campaign should start on Act I (got next=%s)" % camp.next_act_id())
 	for _p in 24:
 		camp.note_paint()
 	var g1: Dictionary = camp.evaluate(1200.0, 0.55, 30000)
-	if not bool(g1.get("complete", false)):
+	if not bool(g1.get("complete", false)) or not camp.complete:
 		ok = false
 		errors.append("Act I did not complete at charter mass + session floor")
-	if camp.next_act_id() != "":
+	if camp.next_act_id() != "act_ii":
 		ok = false
-		errors.append("next_act_id after Act I should be empty (no fake Act II)")
+		errors.append("next_act_id after Act I should be act_ii (got %s)" % camp.next_act_id())
 	# live idle city should expose a real goal card without auto-completing at boot
 	var live_camp := CampaignSystem.new()
 	var live_card: Dictionary = live_camp.tick(idle_map, idle_budget, idle_sim)
@@ -669,24 +724,25 @@ func _init() -> void:
 		ok = false
 		errors.append("Act I completed on idle boot city — charter bar too short")
 
-	## Post-tutor acts: grow / industry / shock / recover. After first-10 only.
+	## Acts II–IV: shops / industry / one start_disaster shock + recover. After first-10 only.
 	if camp == null or not (camp is CampaignSystem):
 		ok = false
 		errors.append("campaign does not exist")
-	if not camp.has_method("is_unlocked") or not camp.has_method("acts"):
+	if not camp.has_method("is_unlocked"):
 		ok = false
-		errors.append("campaign missing is_unlocked / acts")
+		errors.append("campaign missing is_unlocked")
 	var lock_camp := CampaignSystem.new()
-	if lock_camp.is_unlocked("zone_c") or lock_camp.is_unlocked("zone_i"):
+	## Tutor / pre-charter: tools stay unlocked so first-10 + smoke paint do not fail.
+	if not lock_camp.is_unlocked("zone_c") or not lock_camp.is_unlocked("zone_i"):
 		ok = false
-		errors.append("C/I unlocked before grow/industry")
+		errors.append("C/I locked during Act I / first-10 tutor")
 	if not lock_camp.is_unlocked("zone_r") or not lock_camp.is_unlocked("road"):
 		ok = false
 		errors.append("zone_r/road should start unlocked")
 	var lock_adv := AdvisorSystem.new()
-	if not lock_adv.should_block_paint("zone_c", idle_map, lock_camp):
+	if lock_adv.should_block_paint("zone_c", idle_map, lock_camp):
 		ok = false
-		errors.append("advisor did not block locked zone_c")
+		errors.append("advisor blocked zone_c during tutor")
 	if lock_adv.should_block_paint("zone_r", idle_map, lock_camp):
 		ok = false
 		errors.append("advisor blocked unlocked zone_r")
@@ -695,64 +751,99 @@ func _init() -> void:
 	early_sim.mass_c = 40.0
 	early_sim.happiness = 0.8
 	var early_camp := CampaignSystem.new()
+	for _ep in 24:
+		early_camp.note_paint()
+	early_camp.evaluate(1200.0, 0.55, 30000)
 	early_camp.tick(MapData.new(), BudgetSystem.new(), early_sim)
-	if early_camp.is_unlocked("zone_c") or early_camp.act_grow_done:
+	if early_camp.act_ii_done:
 		ok = false
-		errors.append("grow advanced before first-10 tutor")
+		errors.append("Act II advanced before first-10 tutor")
+	## Soft-gate I after Act I complete + post-tutor tick, before Act II mass.
+	var gate_camp := CampaignSystem.new()
+	for _gp in 24:
+		gate_camp.note_paint()
+	gate_camp.evaluate(1200.0, 0.55, 30000)
+	var gate_sim := SimSystem.new()
+	gate_sim.tick_count = 1200
+	gate_sim.mass_r = 0.0
+	gate_sim.mass_c = 0.0
+	gate_sim.mass_i = 0.0
+	gate_camp.tick(MapData.new(), BudgetSystem.new(), gate_sim)
+	if not gate_camp.complete or gate_camp.act_ii_done:
+		ok = false
+		errors.append("gate camp should be Act I complete without Act II")
+	if not gate_camp.is_unlocked("zone_c"):
+		ok = false
+		errors.append("zone_c should open after Act I complete")
+	if gate_camp.is_unlocked("zone_i"):
+		ok = false
+		errors.append("zone_i should stay locked until Act II")
+	if not lock_adv.should_block_paint("zone_i", idle_map, gate_camp):
+		ok = false
+		errors.append("advisor did not block zone_i after Act I before Act II")
 	var prog_map := MapData.new()
 	var prog_budget := BudgetSystem.new()
 	var prog_sim := SimSystem.new()
 	prog_sim.tick_count = 1200
 	prog_sim.mass_r = 80.0
 	prog_sim.mass_c = 0.0
+	prog_sim.mass_i = 0.0
 	prog_sim.happiness = 0.30
 	var prog_camp := CampaignSystem.new()
+	for _pp in 24:
+		prog_camp.note_paint()
+	prog_camp.evaluate(1200.0, 0.55, 30000)
+	if not prog_camp.complete:
+		ok = false
+		errors.append("prog camp Act I not complete")
 	prog_sim.campaign = prog_camp
 	var prog_card: Dictionary = prog_camp.tick(prog_map, prog_budget, prog_sim)
-	if not prog_camp.act_grow_done or not prog_camp.is_unlocked("zone_c"):
+	if not prog_camp.act_ii_done or not prog_camp.is_unlocked("zone_c"):
 		ok = false
-		errors.append("tutor-complete path did not advance grow / unlock zone_c")
-	if prog_camp.is_unlocked("zone_i") or prog_camp.act_industry_done:
+		errors.append("tutor-complete path did not finish Act II / unlock zone_c")
+	if prog_camp.act_iii_done:
 		ok = false
-		errors.append("industry unlocked before C mass + cash")
-	if str(prog_camp.current_act_id()) != "industry":
+		errors.append("Act III completed before industry mass")
+	if str(prog_camp.next_act_id()) != "act_iii":
 		ok = false
-		errors.append("current_act_id after grow is %s not industry" % str(prog_camp.current_act_id()))
-	prog_sim.mass_c = 40.0
-	prog_budget.cash = 30000
-	prog_camp.tick(prog_map, prog_budget, prog_sim)
-	if not prog_camp.act_industry_done or not prog_camp.is_unlocked("zone_i"):
-		ok = false
-		errors.append("industry did not unlock zone_i")
+		errors.append("next_act_id after Act II is %s not act_iii" % str(prog_camp.next_act_id()))
 	if lock_adv.should_block_paint("zone_c", prog_map, prog_camp):
 		ok = false
-		errors.append("advisor still blocks zone_c after grow")
+		errors.append("advisor still blocks zone_c after Act II")
+	prog_sim.mass_c = 40.0
+	prog_sim.mass_i = 40.0
+	prog_budget.cash = 30000
+	prog_camp.tick(prog_map, prog_budget, prog_sim)
+	if not prog_camp.act_iii_done or not prog_camp.is_unlocked("zone_i"):
+		ok = false
+		errors.append("Act III did not unlock zone_i")
+	if str(prog_camp.next_act_id()) != "act_iv":
+		ok = false
+		errors.append("next_act_id after Act III is %s not act_iv" % str(prog_camp.next_act_id()))
 	prog_sim.happiness = 0.70
 	prog_camp.last_occ = 0.50
 	prog_camp.tick(prog_map, prog_budget, prog_sim)
-	if not prog_camp.act_shock_done or int(prog_sim.disaster_timer) <= 0:
+	if not prog_camp.shock_fired or int(prog_sim.disaster_timer) <= 0:
 		ok = false
 		errors.append("campaign shock did not call start_disaster")
-	if str(prog_camp.shock_kind) != "disaster":
+	if str(prog_camp.next_act_id()) != "act_iv":
 		ok = false
-		errors.append("shock_kind is %s not disaster" % str(prog_camp.shock_kind))
+		errors.append("next_act_id during shock is %s not act_iv" % str(prog_camp.next_act_id()))
 	prog_sim.disaster_timer = 0
 	prog_sim.event_cooldown = 0
 	prog_sim.happiness = 0.70
 	prog_camp.last_occ = 0.50
+	prog_budget.tax_mult = 0.80
 	prog_camp.tick(prog_map, prog_budget, prog_sim)
-	if not prog_camp.act_recover_done or not prog_camp.is_unlocked("trade_recovery"):
+	if not prog_camp.recover_done or not prog_camp.act_iv_done:
 		ok = false
-		errors.append("recover did not unlock trade-recovery bonus")
-	if prog_budget.demand_mult < 1.10:
+		errors.append("Act IV recover did not complete")
+	if prog_budget.tax_mult < 0.87 or prog_budget.tax_mult > 1.0:
 		ok = false
-		errors.append("recover demand_mult bonus missing (got %s)" % str(prog_budget.demand_mult))
-	var act_ids: PackedStringArray = PackedStringArray()
-	for a in prog_camp.acts():
-		act_ids.append(str(a.get("id", "")))
-	if act_ids != PackedStringArray(["grow", "industry", "shock", "recover"]):
+		errors.append("recover tax ease missing (got %s)" % str(prog_budget.tax_mult))
+	if str(prog_camp.next_act_id()) != "":
 		ok = false
-		errors.append("acts() ids are %s" % str(act_ids))
+		errors.append("next_act_id after Act IV should be empty (got %s)" % str(prog_camp.next_act_id()))
 	## start_war / start_disaster still work on a clean sim (tutor_active default false).
 	var ev_map := MapData.new()
 	var ev_budget := BudgetSystem.new()
@@ -768,10 +859,12 @@ func _init() -> void:
 	if ev_budget.demand_mult >= 1.0 or int(ev_sim.disaster_timer) <= 0 or not ev_dis.has("title"):
 		ok = false
 		errors.append("start_disaster broken after campaign acts")
-	print("campaign acts grow=%s industry=%s shock=%s recover=%s post=%s" % [
-		prog_camp.act_grow_done, prog_camp.act_industry_done,
-		prog_camp.act_shock_done, prog_camp.act_recover_done, prog_card.get("post_act", "")
+	print("campaign acts I=%s II=%s III=%s IV=%s shock=%s recover=%s next=%s" % [
+		prog_camp.complete, prog_camp.act_ii_done, prog_camp.act_iii_done,
+		prog_camp.act_iv_done, prog_camp.shock_fired, prog_camp.recover_done,
+		prog_card.get("act_id", "")
 	])
+
 
 	var view_ps = load("res://scenes/city_view.tscn")
 	if view_ps == null:
@@ -789,12 +882,22 @@ func _init() -> void:
 		view._seed_waterfront()
 	if view.has_method("_seed_midrise_ring"):
 		view._seed_midrise_ring()
+	if view.has_method("_seed_rail"):
+		view._seed_rail()
+	if view.has_method("_seed_market"):
+		view._seed_market()
 	if view.has_method("_ensure_overlay_roots"):
 		view._ensure_overlay_roots()
 	if view.has_method("_scatter_park"):
 		view._scatter_park()
 	if view.has_method("_scatter_waterfront"):
 		view._scatter_waterfront()
+	if view.has_method("_scatter_rail"):
+		view._scatter_rail()
+	if view.has_method("_scatter_market"):
+		view._scatter_market()
+	if view.has_method("_scatter_downtown_street"):
+		view._scatter_downtown_street()
 	if view.has_method("_instance_landmarks"):
 		view._instance_landmarks()
 	if view.has_method("_ensure_midrise_landmark"):
@@ -804,8 +907,10 @@ func _init() -> void:
 	var parks: int = int(view.get("park_count"))
 	var wfs: int = int(view.get("waterfront_count"))
 	var lms: int = int(view.get("landmark_count"))
-	print("city_view park=%d waterfront=%d landmarks=%d heatmap=%s" % [
-		parks, wfs, lms, view.get("heatmap_mode")
+	var rails: int = int(view.get("rail_count"))
+	var mkts: int = int(view.get("market_count"))
+	print("city_view park=%d waterfront=%d rail=%d market=%d landmarks=%d heatmap=%s" % [
+		parks, wfs, rails, mkts, lms, view.get("heatmap_mode")
 	])
 	if parks < 1:
 		ok = false
@@ -813,6 +918,12 @@ func _init() -> void:
 	if wfs < 1:
 		ok = false
 		errors.append("waterfront not instanced in-scene (waterfront_count=%d)" % wfs)
+	if rails < 1:
+		ok = false
+		errors.append("rail not instanced in-scene (rail_count=%d)" % rails)
+	if mkts < 1:
+		ok = false
+		errors.append("market not instanced in-scene (market_count=%d)" % mkts)
 	if lms < 2:
 		ok = false
 		errors.append("landmarks missing in-scene (landmark_count=%d)" % lms)
@@ -1457,6 +1568,19 @@ func _func_slice(src: String, header: String) -> String:
 	if nxt < 0:
 		return src.substr(start)
 	return src.substr(start, header.length() + nxt)
+
+
+func _midrise_exterior_paths() -> PackedStringArray:
+	## Real Small/Medium shells under buildings/. Furniture GLBs do not count.
+	var found: PackedStringArray = []
+	var want: PackedStringArray = PackedStringArray([
+		"res://assets/city/district_midrise/buildings/Building_Small_1.gltf",
+		"res://assets/city/district_midrise/buildings/Building_Medium_2_001.gltf",
+	])
+	for p in want:
+		if FileAccess.file_exists(p):
+			found.append(p)
+	return found
 
 
 func _first_mesh_class(n: Node) -> String:

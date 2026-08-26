@@ -5,7 +5,7 @@ extends Object
 enum Terrain { DIRT = 0, GRASS = 1, WATER = 2 }
 enum Zone { NONE = 0, RESIDENTIAL = 1, COMMERCIAL = 2, INDUSTRIAL = 3 }
 enum Service { NONE = 0, POWER_PLANT = 1, WATER_TOWER = 2, HQ = 3 }
-enum District { NONE = 0, DOWNTOWN = 1, MIDRISE = 2, PARK = 3, WATERFRONT = 4 }
+enum District { NONE = 0, DOWNTOWN = 1, MIDRISE = 2, PARK = 3, WATERFRONT = 4, RAIL = 5, MARKET = 6 }
 
 static func terrain_color(t: int, revealed: bool = true) -> Color:
 	var c: Color

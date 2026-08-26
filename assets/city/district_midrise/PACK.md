@@ -45,3 +45,17 @@ These are **not** walkable first-person rooms. Read from a 190 m High camera as 
 | photo_studio_01 2K HDR + tonemapped JPG | `interiors/window_cards/photo_studio_01_2k.hdr` | https://polyhaven.com/a/photo_studio_01 |
 
 `instance:true`, `unique_per_lot:false`, `shared_materials:true`. No per-lot unique interiors.
+
+
+## Building exteriors (this pass)
+
+Official CC0 Quaternius **free/standard** packs (not paid Source). Finished building meshes only — no modular doors/windows/AC, no furniture-as-towers, no Kenney skyscraper-a..e.
+
+| Pack | Official | On disk |
+|------|----------|---------|
+| Downtown City MegaKit Standard | itch $0 / quaternius.com | `Building_Small_1`, `Building_Medium_2_001`, `Building_Large_2` (1u=1m) |
+| Ultimate Buildings Pack | https://quaternius.com/packs/ultimatetexturedbuildings.html (official Drive) | Finished 2/3/4/6-story OBJ → glTF. Shared `textures/Texture_*.png`. **3.0 baked** (pack was ~1.25u/story). |
+| Buildings Pack | https://quaternius.com/packs/buildings.html (official Drive) | `Building1_*`…`Building4` vertex-color OBJ → glTF. 3.0 baked. |
+| Simple Buildings Pack | https://quaternius.com/packs/simplebuildings.html (official Drive) | `Bank`, `Flat`, `Flat2`, `Hospital`, `Shop`. Shared `Hotel.png`/`Shop.png`. 3.0 baked. |
+
+`building_scale` **1.0**. `unique_per_lot` false. `shared_materials` true. Image URIs → `../textures/` (MegaKit pair still share downtown PBR).

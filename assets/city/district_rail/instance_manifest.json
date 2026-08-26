@@ -3,635 +3,424 @@
   "instance": true,
   "unique_per_lot": false,
   "shared_materials": true,
+  "lot_m": 16,
   "scale": 14.5,
   "kenney_scale": 14.5,
-  "lot_m": 16,
-  "model_unit": 1.0,
-  "lot_contract": "~1 Kenney model unit, 16m lots, kenney_scale 14.5. Shared colormap. Do not unique materials per lot.",
-  "district": "rail",
-  "audio_bed_long": "res://assets/city/district_rail/audio/bed/rail_day_long.ogg",
-  "note": "Kenney Train Kit 1.1 promoted into models/. Copied from district_downtown/props/train so downtown stays intact for Mesh. No official Kenney/Quaternius $0 rail-station building kit added this pass. Fat extras: GitHub Releases/LFS. Does not change FSR/HUD/camera or Kenney 4-pack / downtown MegaKit.",
-  "counts": {
-    "models": 103
-  },
-  "slots": [
+  "meshes": [
     {
       "id": "railroad-corner-large-ramp",
-      "path": "models/railroad-corner-large-ramp.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-corner-large-ramp.glb"
     },
     {
       "id": "railroad-corner-large",
-      "path": "models/railroad-corner-large.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-corner-large.glb"
     },
     {
       "id": "railroad-corner-small-ramp",
-      "path": "models/railroad-corner-small-ramp.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-corner-small-ramp.glb"
     },
     {
       "id": "railroad-corner-small",
-      "path": "models/railroad-corner-small.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-corner-small.glb"
     },
     {
       "id": "railroad-curve",
-      "path": "models/railroad-curve.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-curve.glb"
     },
     {
       "id": "railroad-damaged-corner-large-ramp",
-      "path": "models/railroad-damaged-corner-large-ramp.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-corner-large-ramp.glb"
     },
     {
       "id": "railroad-damaged-corner-large",
-      "path": "models/railroad-damaged-corner-large.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-corner-large.glb"
     },
     {
       "id": "railroad-damaged-corner-small-ramp",
-      "path": "models/railroad-damaged-corner-small-ramp.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-corner-small-ramp.glb"
     },
     {
       "id": "railroad-damaged-corner-small",
-      "path": "models/railroad-damaged-corner-small.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-corner-small.glb"
     },
     {
       "id": "railroad-damaged-curve",
-      "path": "models/railroad-damaged-curve.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-curve.glb"
     },
     {
       "id": "railroad-damaged-straight-bend-large",
-      "path": "models/railroad-damaged-straight-bend-large.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-bend-large.glb"
     },
     {
       "id": "railroad-damaged-straight-bend",
-      "path": "models/railroad-damaged-straight-bend.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-bend.glb"
     },
     {
       "id": "railroad-damaged-straight-bump-down",
-      "path": "models/railroad-damaged-straight-bump-down.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-bump-down.glb"
     },
     {
       "id": "railroad-damaged-straight-bump-up",
-      "path": "models/railroad-damaged-straight-bump-up.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-bump-up.glb"
     },
     {
       "id": "railroad-damaged-straight-hill-beginning",
-      "path": "models/railroad-damaged-straight-hill-beginning.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-hill-beginning.glb"
     },
     {
       "id": "railroad-damaged-straight-hill-complete-half",
-      "path": "models/railroad-damaged-straight-hill-complete-half.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-hill-complete-half.glb"
     },
     {
       "id": "railroad-damaged-straight-hill-complete",
-      "path": "models/railroad-damaged-straight-hill-complete.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-hill-complete.glb"
     },
     {
       "id": "railroad-damaged-straight-hill-end",
-      "path": "models/railroad-damaged-straight-hill-end.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-hill-end.glb"
     },
     {
       "id": "railroad-damaged-straight-skew-left-side",
-      "path": "models/railroad-damaged-straight-skew-left-side.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-skew-left-side.glb"
     },
     {
       "id": "railroad-damaged-straight-skew-left",
-      "path": "models/railroad-damaged-straight-skew-left.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-skew-left.glb"
     },
     {
       "id": "railroad-damaged-straight-skew-right-side",
-      "path": "models/railroad-damaged-straight-skew-right-side.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-skew-right-side.glb"
     },
     {
       "id": "railroad-damaged-straight-skew-right",
-      "path": "models/railroad-damaged-straight-skew-right.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight-skew-right.glb"
     },
     {
       "id": "railroad-damaged-straight",
-      "path": "models/railroad-damaged-straight.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-damaged-straight.glb"
     },
     {
       "id": "railroad-rail-corner-large-ramp",
-      "path": "models/railroad-rail-corner-large-ramp.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-corner-large-ramp.glb"
     },
     {
       "id": "railroad-rail-corner-large",
-      "path": "models/railroad-rail-corner-large.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-corner-large.glb"
     },
     {
       "id": "railroad-rail-corner-small-ramp",
-      "path": "models/railroad-rail-corner-small-ramp.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-corner-small-ramp.glb"
     },
     {
       "id": "railroad-rail-corner-small",
-      "path": "models/railroad-rail-corner-small.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-corner-small.glb"
     },
     {
       "id": "railroad-rail-curve",
-      "path": "models/railroad-rail-curve.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-curve.glb"
     },
     {
       "id": "railroad-rail-straight-bend-large",
-      "path": "models/railroad-rail-straight-bend-large.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-bend-large.glb"
     },
     {
       "id": "railroad-rail-straight-bend",
-      "path": "models/railroad-rail-straight-bend.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-bend.glb"
     },
     {
       "id": "railroad-rail-straight-bump-down",
-      "path": "models/railroad-rail-straight-bump-down.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-bump-down.glb"
     },
     {
       "id": "railroad-rail-straight-bump-up",
-      "path": "models/railroad-rail-straight-bump-up.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-bump-up.glb"
     },
     {
       "id": "railroad-rail-straight-hill-beginning",
-      "path": "models/railroad-rail-straight-hill-beginning.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-hill-beginning.glb"
     },
     {
       "id": "railroad-rail-straight-hill-complete-half",
-      "path": "models/railroad-rail-straight-hill-complete-half.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-hill-complete-half.glb"
     },
     {
       "id": "railroad-rail-straight-hill-complete",
-      "path": "models/railroad-rail-straight-hill-complete.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-hill-complete.glb"
     },
     {
       "id": "railroad-rail-straight-hill-end",
-      "path": "models/railroad-rail-straight-hill-end.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-hill-end.glb"
     },
     {
       "id": "railroad-rail-straight-skew-left-side",
-      "path": "models/railroad-rail-straight-skew-left-side.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-skew-left-side.glb"
     },
     {
       "id": "railroad-rail-straight-skew-left",
-      "path": "models/railroad-rail-straight-skew-left.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-skew-left.glb"
     },
     {
       "id": "railroad-rail-straight-skew-right-side",
-      "path": "models/railroad-rail-straight-skew-right-side.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-skew-right-side.glb"
     },
     {
       "id": "railroad-rail-straight-skew-right",
-      "path": "models/railroad-rail-straight-skew-right.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight-skew-right.glb"
     },
     {
       "id": "railroad-rail-straight",
-      "path": "models/railroad-rail-straight.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-rail-straight.glb"
     },
     {
       "id": "railroad-straight-bend-large",
-      "path": "models/railroad-straight-bend-large.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-bend-large.glb"
     },
     {
       "id": "railroad-straight-bend",
-      "path": "models/railroad-straight-bend.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-bend.glb"
     },
     {
       "id": "railroad-straight-bump-down",
-      "path": "models/railroad-straight-bump-down.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-bump-down.glb"
     },
     {
       "id": "railroad-straight-bump-up",
-      "path": "models/railroad-straight-bump-up.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-bump-up.glb"
     },
     {
       "id": "railroad-straight-hill-beginning",
-      "path": "models/railroad-straight-hill-beginning.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-hill-beginning.glb"
     },
     {
       "id": "railroad-straight-hill-complete-half",
-      "path": "models/railroad-straight-hill-complete-half.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-hill-complete-half.glb"
     },
     {
       "id": "railroad-straight-hill-complete",
-      "path": "models/railroad-straight-hill-complete.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-hill-complete.glb"
     },
     {
       "id": "railroad-straight-hill-end",
-      "path": "models/railroad-straight-hill-end.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-hill-end.glb"
     },
     {
       "id": "railroad-straight-skew-left-side",
-      "path": "models/railroad-straight-skew-left-side.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-skew-left-side.glb"
     },
     {
       "id": "railroad-straight-skew-left",
-      "path": "models/railroad-straight-skew-left.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-skew-left.glb"
     },
     {
       "id": "railroad-straight-skew-right-side",
-      "path": "models/railroad-straight-skew-right-side.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-skew-right-side.glb"
     },
     {
       "id": "railroad-straight-skew-right",
-      "path": "models/railroad-straight-skew-right.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight-skew-right.glb"
     },
     {
       "id": "railroad-straight",
-      "path": "models/railroad-straight.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/railroad-straight.glb"
     },
     {
       "id": "spline-segment",
-      "path": "models/spline-segment.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/spline-segment.glb"
     },
     {
       "id": "spline-track-damaged",
-      "path": "models/spline-track-damaged.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/spline-track-damaged.glb"
     },
     {
       "id": "spline-track",
-      "path": "models/spline-track.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/spline-track.glb"
     },
     {
       "id": "track-detailed",
-      "path": "models/track-detailed.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/track-detailed.glb"
     },
     {
       "id": "track-single-detailed",
-      "path": "models/track-single-detailed.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/track-single-detailed.glb"
     },
     {
       "id": "track-single",
-      "path": "models/track-single.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/track-single.glb"
     },
     {
       "id": "track",
-      "path": "models/track.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/track.glb"
     },
     {
       "id": "train-carriage-box",
-      "path": "models/train-carriage-box.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-box.glb"
     },
     {
       "id": "train-carriage-coal",
-      "path": "models/train-carriage-coal.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-coal.glb"
     },
     {
       "id": "train-carriage-container-blue",
-      "path": "models/train-carriage-container-blue.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-container-blue.glb"
     },
     {
       "id": "train-carriage-container-green",
-      "path": "models/train-carriage-container-green.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-container-green.glb"
     },
     {
       "id": "train-carriage-container-red",
-      "path": "models/train-carriage-container-red.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-container-red.glb"
     },
     {
       "id": "train-carriage-dirt",
-      "path": "models/train-carriage-dirt.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-dirt.glb"
     },
     {
       "id": "train-carriage-flatbed-wood",
-      "path": "models/train-carriage-flatbed-wood.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-flatbed-wood.glb"
     },
     {
       "id": "train-carriage-flatbed",
-      "path": "models/train-carriage-flatbed.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-flatbed.glb"
     },
     {
       "id": "train-carriage-lumber",
-      "path": "models/train-carriage-lumber.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-lumber.glb"
     },
     {
       "id": "train-carriage-tank-large",
-      "path": "models/train-carriage-tank-large.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-tank-large.glb"
     },
     {
       "id": "train-carriage-tank",
-      "path": "models/train-carriage-tank.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-tank.glb"
     },
     {
       "id": "train-carriage-wood",
-      "path": "models/train-carriage-wood.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-carriage-wood.glb"
     },
     {
       "id": "train-connector",
-      "path": "models/train-connector.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-connector.glb"
     },
     {
       "id": "train-diesel-a",
-      "path": "models/train-diesel-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-diesel-a.glb"
     },
     {
       "id": "train-diesel-b",
-      "path": "models/train-diesel-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-diesel-b.glb"
     },
     {
       "id": "train-diesel-box-a",
-      "path": "models/train-diesel-box-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-diesel-box-a.glb"
     },
     {
       "id": "train-diesel-box-b",
-      "path": "models/train-diesel-box-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-diesel-box-b.glb"
     },
     {
       "id": "train-diesel-box-c",
-      "path": "models/train-diesel-box-c.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-diesel-box-c.glb"
     },
     {
       "id": "train-diesel-c",
-      "path": "models/train-diesel-c.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-diesel-c.glb"
     },
     {
       "id": "train-electric-bullet-a",
-      "path": "models/train-electric-bullet-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-bullet-a.glb"
     },
     {
       "id": "train-electric-bullet-b",
-      "path": "models/train-electric-bullet-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-bullet-b.glb"
     },
     {
       "id": "train-electric-bullet-c",
-      "path": "models/train-electric-bullet-c.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-bullet-c.glb"
     },
     {
       "id": "train-electric-city-a",
-      "path": "models/train-electric-city-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-city-a.glb"
     },
     {
       "id": "train-electric-city-b",
-      "path": "models/train-electric-city-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-city-b.glb"
     },
     {
       "id": "train-electric-city-c",
-      "path": "models/train-electric-city-c.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-city-c.glb"
     },
     {
       "id": "train-electric-double-a",
-      "path": "models/train-electric-double-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-double-a.glb"
     },
     {
       "id": "train-electric-double-b",
-      "path": "models/train-electric-double-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-double-b.glb"
     },
     {
       "id": "train-electric-double-c",
-      "path": "models/train-electric-double-c.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-double-c.glb"
     },
     {
       "id": "train-electric-square-a",
-      "path": "models/train-electric-square-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-square-a.glb"
     },
     {
       "id": "train-electric-square-b",
-      "path": "models/train-electric-square-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-square-b.glb"
     },
     {
       "id": "train-electric-square-c",
-      "path": "models/train-electric-square-c.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-square-c.glb"
     },
     {
       "id": "train-electric-subway-a",
-      "path": "models/train-electric-subway-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-subway-a.glb"
     },
     {
       "id": "train-electric-subway-b",
-      "path": "models/train-electric-subway-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-subway-b.glb"
     },
     {
       "id": "train-electric-subway-c",
-      "path": "models/train-electric-subway-c.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-electric-subway-c.glb"
     },
     {
       "id": "train-locomotive-a",
-      "path": "models/train-locomotive-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-locomotive-a.glb"
     },
     {
       "id": "train-locomotive-b",
-      "path": "models/train-locomotive-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-locomotive-b.glb"
     },
     {
       "id": "train-locomotive-c",
-      "path": "models/train-locomotive-c.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-locomotive-c.glb"
     },
     {
       "id": "train-locomotive-passenger-a",
-      "path": "models/train-locomotive-passenger-a.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-locomotive-passenger-a.glb"
     },
     {
       "id": "train-locomotive-passenger-b",
-      "path": "models/train-locomotive-passenger-b.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-locomotive-passenger-b.glb"
     },
     {
       "id": "train-tram-classic",
-      "path": "models/train-tram-classic.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-tram-classic.glb"
     },
     {
       "id": "train-tram-modern",
-      "path": "models/train-tram-modern.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-tram-modern.glb"
     },
     {
       "id": "train-tram-round",
-      "path": "models/train-tram-round.glb",
-      "exists": true,
-      "kind": "glb"
+      "path": "res://assets/city/kits/kenney_train-kit/train-tram-round.glb"
     }
-  ]
+  ],
+  "mesh_count": 103,
+  "source": "res://assets/city/kits/kenney_train-kit/",
+  "note": "Kenney Train Kit. Scale 14.5 like other Kenney. Instance, shared mats. Rail yard / airport-edge district. Not Kenney city-kit industrial copy."
 }
